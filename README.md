@@ -17,7 +17,7 @@ This package works with Unity 2020.3 and above.
 
 ### Extension Methods
 
-Over several projects, BUCK has collected many useful extension methods that are useful across a wide variety of projects, ranging from math calculations like calculating the volume or surface area of a sphere, to handy algorithms that can rotate 2D arrays. These are available in the BUCK namespace in the ExtensionMethods class.
+Over several projects, BUCK has collected many useful extension methods that are useful across a wide variety of projects, ranging from math calculations like calculating the volume or surface area of a sphere, to handy algorithms that can rotate 2D arrays. These are available in the BUCK namespace in the [ExtensionMethods](Runtime/ExtensionMethods.cs) class.
 
 Extension methods can be used in two ways. You can use the methods directly from the class.
 
