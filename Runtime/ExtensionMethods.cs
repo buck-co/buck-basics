@@ -113,59 +113,6 @@ namespace Buck
         }
 
         /// <summary>
-        /// Returns a BoundsInt with Y set to zero.
-        /// </summary>
-        public static BoundsInt BoundsIntFromXZ(int X, int Z, int Width, int Depth)
-        {
-            return new BoundsInt(new Vector3Int(X, 0, Z), new Vector3Int(Width, 0, Depth));
-        }
-
-        /// <summary>
-        /// Returns a BoundsInt with Y set to zero.
-        /// </summary>
-        public static BoundsInt BoundsIntFromXZ(Vector2Int position, Vector2Int size)
-        {
-            return BoundsIntFromXZ(position.x, position.y, size.x, size.y);
-        }
-
-        /// <summary>
-        /// Returns true if the provided BoundsInt overlaps in the X and Z space.
-        /// </summary>
-        public static bool IntersectsXZ(this BoundsInt A, BoundsInt B)
-        {
-            return (A.min.x <= B.max.x) && (A.max.x >= B.min.x) &&
-                   (A.min.z <= B.max.z) && (A.max.z >= B.min.z);
-        }
-
-        /// <summary>
-        /// Returns true if the provided BoundsInt overlaps in the X and Z space.
-        /// </summary>
-        public static bool IntersectsXZ(this BoundsInt bounds, int bX, int bZ, int bWidth, int bDepth)
-        {
-            return bounds.IntersectsXZ(BoundsIntFromXZ(bX, bZ, bWidth, bDepth));
-        }
-
-        /// <summary>
-        /// Returns a new BoundsInt of the X and Z intersection between two BoundsInts.
-        /// </summary>
-        public static BoundsInt GetIntersectionXZ(this BoundsInt A, BoundsInt B)
-        {
-            int X = Mathf.Max(A.x, B.x);
-            int Z = Mathf.Max(A.z, B.z);
-            int ExtentX = Mathf.Min(A.x + A.size.x, B.x + B.size.x);
-            int ExtentZ = Mathf.Min(A.z + A.size.z, B.z + B.size.z);
-            return BoundsIntFromXZ(X, Z, ExtentX - X, ExtentZ - Z);
-        }
-
-        /// <summary>
-        /// Returns a new BoundsInt of the X and Z intersection between two BoundsInts.
-        /// </summary>
-        public static BoundsInt GetIntersectionXZ(this BoundsInt A, int bX, int bZ, int bWidth, int bDepth)
-        {
-            return A.GetIntersectionXZ(BoundsIntFromXZ(bX, bZ, bWidth, bDepth));
-        }
-
-        /// <summary>
         /// Returns a transposed 2D array (swaps rows and columns)
         /// </summary>
         public static T[,] Transpose<T>(this T[,] arr)
@@ -239,6 +186,82 @@ namespace Buck
         public static T[,] Rotate180<T>(this T[,] arr )
         {
             return arr.ReverseColumns().ReverseRows();
+        }
+
+        /// <summary>
+        /// Returns a BoundsInt with Y set to zero.
+        /// </summary>
+        public static BoundsInt BoundsIntFromXZ(int X, int Z, int Width, int Depth)
+        {
+            return new BoundsInt(new Vector3Int(X, 0, Z), new Vector3Int(Width, 0, Depth));
+        }
+
+        /// <summary>
+        /// Returns a BoundsInt with Y set to zero.
+        /// </summary>
+        public static BoundsInt BoundsIntFromXZ(Vector2Int position, Vector2Int size)
+        {
+            return BoundsIntFromXZ(position.x, position.y, size.x, size.y);
+        }
+
+        /// <summary>
+        /// Returns true if the provided BoundsInt overlaps in the X and Z space.
+        /// </summary>
+        public static bool IntersectsXZ(this BoundsInt A, BoundsInt B)
+        {
+            return (A.min.x <= B.max.x) && (A.max.x >= B.min.x) &&
+                   (A.min.z <= B.max.z) && (A.max.z >= B.min.z);
+        }
+
+        /// <summary>
+        /// Returns true if the provided BoundsInt overlaps in the X and Z space.
+        /// </summary>
+        public static bool IntersectsXZ(this BoundsInt bounds, int bX, int bZ, int bWidth, int bDepth)
+        {
+            return bounds.IntersectsXZ(BoundsIntFromXZ(bX, bZ, bWidth, bDepth));
+        }
+
+        /// <summary>
+        /// Returns a new BoundsInt of the X and Z intersection between two BoundsInts.
+        /// </summary>
+        public static BoundsInt GetIntersectionXZ(this BoundsInt A, BoundsInt B)
+        {
+            int X = Mathf.Max(A.x, B.x);
+            int Z = Mathf.Max(A.z, B.z);
+            int ExtentX = Mathf.Min(A.x + A.size.x, B.x + B.size.x);
+            int ExtentZ = Mathf.Min(A.z + A.size.z, B.z + B.size.z);
+            return BoundsIntFromXZ(X, Z, ExtentX - X, ExtentZ - Z);
+        }
+
+        /// <summary>
+        /// Returns a new BoundsInt of the X and Z intersection between two BoundsInts.
+        /// </summary>
+        public static BoundsInt GetIntersectionXZ(this BoundsInt A, int bX, int bZ, int bWidth, int bDepth)
+        {
+            return A.GetIntersectionXZ(BoundsIntFromXZ(bX, bZ, bWidth, bDepth));
+        }
+
+        /// <summary>
+        /// Given two AABBs (center pos, half widths) returns true if shapes overlap.
+        /// </summary>
+        public static bool AABBvsAABB(Vector2 aPos, Vector2 aHalfWidths, Vector2 bPos, Vector2 bHalfWidths)
+        {
+            return aPos.x - aHalfWidths.x <= bPos.x + bHalfWidths.x && 
+                   aPos.x + aHalfWidths.x >= bPos.x - bHalfWidths.x && 
+                   aPos.y - aHalfWidths.y <= bPos.y + bHalfWidths.y && 
+                   aPos.y + aHalfWidths.y >= bPos.y - bHalfWidths.y;
+        } 
+
+        /// <summary>
+        /// Given an AABB (center pos, half widths) and a circle (center pos, radius), returns true if shapes overlap.
+        /// </summary>
+        public static bool AABBvsCircle(Vector2 aPos, Vector2 aHalfWidths, Vector2 bPos, float bRadius)
+        {
+            Vector2 difference = bPos - aPos;
+            Vector2 clamped = new Vector2(Mathf.Clamp(difference.x, -aHalfWidths.x, aHalfWidths.x), Mathf.Clamp(difference.y, -aHalfWidths.y, aHalfWidths.y));
+            Vector2 closest = aPos + clamped;
+            difference = closest - bPos;
+            return difference.sqrMagnitude <= (bRadius * bRadius);
         }
 
         /// <summary>
@@ -424,6 +447,21 @@ namespace Buck
             float arc = -4 * height * t * t + 4 * height * t;
             Vector3 mid = Vector3.Lerp(start, end, t);
             return new Vector3(mid.x, arc + Mathf.Lerp(start.y, end.y, t), mid.z);
+        }
+
+        /// <summary>
+        /// Adds an explosive force to all Rigidbody components in a specified radius.
+        /// </summary>
+        public static void ExplosiveForce(Vector3 origin, float radius, float force, float upwardsModifier = 3f)
+        {
+            Collider[] colliders = Physics.OverlapSphere(origin, radius);
+            foreach (Collider hit in colliders)
+            {
+                Rigidbody rb = hit.GetComponent<Rigidbody>();
+
+                if (rb != null)
+                    rb.AddExplosionForce(force, origin, radius, upwardsModifier);
+            }
         }
 
         #if UNITY_EDITOR
