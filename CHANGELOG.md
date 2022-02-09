@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 2022-02-08
+
+- Added Singleton class and object pooler classes.
+
 ## [1.0.3] - 2022-02-08
 
 - Added Runtime Sets.
