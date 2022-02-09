@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.3] - 2022-02-08
+
+- Added Runtime Sets.
+
 ## [1.0.2] - 2022-02-08
 
 - Fixed compilation errors resulting from the UnityEditor namespace not being wrapped in pragma definitions.
