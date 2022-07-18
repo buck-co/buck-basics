@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.5] - 2022-07-18
+
+- Fixed an issue in the Remap() methods that could cause them to return NaN.
+
 ## [1.0.4] - 2022-02-08
 
 - Added Singleton class and object pooler classes.

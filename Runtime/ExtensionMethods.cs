@@ -56,14 +56,16 @@ namespace Buck
         /// <summary>
         /// Remaps a value from a minimum and maximum range to another minimum and maximum range.
         /// </summary>
-        public static float Remap (this float value, float fromMin, float fromMax, float toMin, float toMax) {
-            return Mathf.Clamp((value - fromMin) / (fromMax - fromMin) * (toMax - toMin) + toMin, toMin, toMax);
+        public static float Remap (this float value, float fromMin, float fromMax, float toMin, float toMax)
+        {
+            return Mathf.Lerp(toMin, toMax, Mathf.InverseLerp(fromMin, fromMax, value));
         }
 
         /// <summary>
         /// Remaps a value from a minimum and maximum range to a zero to one range.
         /// </summary>
-        public static float Remap01 (this float value, float min, float max) {
+        public static float Remap01 (this float value, float min, float max)
+        {
             return Remap(value, min, max, 0, 1);
         }
 
