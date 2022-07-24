@@ -9,7 +9,7 @@ namespace Buck
         public Guid Guid => new Guid(m_guidByteArray);
         public byte[] GuidByteArray => m_guidByteArray;
 
-        void OnValidate()
+        public void OnValidate()
         {
             #if UNITY_EDITOR
             var path = UnityEditor.AssetDatabase.GetAssetPath(this);
