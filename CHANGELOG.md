@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.6] - 2022-07-23
+
+- Added serialized GUIDs to SO variables via a new BaseScriptableObject class.
+
 ## [1.0.5] - 2022-07-18
 
 - Fixed an issue in the Remap() methods that could cause them to return NaN.

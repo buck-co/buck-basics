@@ -3,7 +3,7 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Bool Variable")]
-    public class BoolVariable : ScriptableObject
+    public class BoolVariable : BaseScriptableObject
     {
         public bool DefaultValue = false;
         

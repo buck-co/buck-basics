@@ -3,7 +3,7 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Float Variable")]
-    public class FloatVariable : ScriptableObject
+    public class FloatVariable : BaseScriptableObject
     {
         public float DefaultValue;
         

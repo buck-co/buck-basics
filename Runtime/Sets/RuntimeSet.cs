@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Buck
 {
-    public abstract class RuntimeSet<T> : ScriptableObject
+    public abstract class RuntimeSet<T> : BaseScriptableObject
     {
         public List<T> Items = new List<T>();
 
