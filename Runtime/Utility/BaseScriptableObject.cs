@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -9,10 +10,22 @@ namespace Buck
         public Guid Guid => new Guid(m_guidByteArray);
         public byte[] GuidByteArray => m_guidByteArray;
 
+        public static List<T> FindAll<T>(string path) where T : BaseScriptableObject
+        {
+            List<T> objs = new List<T>();
+
+            UnityEngine.Object[] objectsFromDisk = Resources.LoadAll(path, typeof(T));
+            foreach (T obj in objectsFromDisk)
+                if (obj.GetType() == typeof(T))
+                    objs.Add((T)obj);
+
+            return objs;
+        }
+
         public static T FindByGuid<T>(Guid guid, string path) where T : BaseScriptableObject
         {
-            UnityEngine.Object[] dataFromDisk = Resources.LoadAll(path, typeof(T));
-            foreach (T obj in dataFromDisk)
+            UnityEngine.Object[] objectsFromDisk = Resources.LoadAll(path, typeof(T));
+            foreach (T obj in objectsFromDisk)
                 if (obj.GetType() == typeof(T) && guid == obj.Guid)
                     return obj;
 
