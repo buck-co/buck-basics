@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.7] - 2022-09-05
+
+- Added FindByGuid() methods to the BaseScriptableObject class.
+
 ## [1.0.6] - 2022-07-23
 
 - Added serialized GUIDs to SO variables via a new BaseScriptableObject class.

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Game Event")]
-    public class GameEvent : ScriptableObject
+    public class GameEvent : BaseScriptableObject
     {
         /// <summary>
         /// The list of listeners that this event will notify if it is raised.

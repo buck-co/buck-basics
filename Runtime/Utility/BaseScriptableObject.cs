@@ -9,6 +9,21 @@ namespace Buck
         public Guid Guid => new Guid(m_guidByteArray);
         public byte[] GuidByteArray => m_guidByteArray;
 
+        public static T FindByGuid<T>(Guid guid, string path) where T : BaseScriptableObject
+        {
+            UnityEngine.Object[] dataFromDisk = Resources.LoadAll(path, typeof(T));
+            foreach (T obj in dataFromDisk)
+                if (obj.GetType() == typeof(T) && guid == obj.Guid)
+                    return obj;
+
+            return null;
+        }
+
+        public static T FindByGuid<T>(byte[] m_guidByteArray, string path) where T : BaseScriptableObject
+        {
+            return FindByGuid<T>(new Guid(m_guidByteArray), path);
+        }
+
         public void OnValidate()
         {
             #if UNITY_EDITOR

@@ -1,13 +1,13 @@
 {
   "name": "co.buck.basics",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "displayName": "BUCK Basics",
   "description": "This is BUCK's general Unity code package. It includes extension methods, utility scripts, and debugging tools.",
   "unity": "2020.3",
   "documentationUrl": "https://github.com/buck-co/unity-pkg-buck-basics.git",
   "changelogUrl": "https://github.com/buck-co/unity-pkg-buck-basics.git",
   "licensesUrl": "https://github.com/buck-co/unity-pkg-buck-basics.git",
- "keywords": [
+  "keywords": [
     "BUCK",
     "Basics",
     "Base",
