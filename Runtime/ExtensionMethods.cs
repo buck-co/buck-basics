@@ -6,15 +6,11 @@ namespace Buck
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Shuffle() will effectively randomize the order of elements in a List using the Fisher–Yates shuffle algorithm.
+        /// Effectively randomizes the order of elements in a List using the Fisher–Yates shuffle algorithm.
         /// </summary>
         public static void Shuffle<T>(this IList<T> list, int seed = 0)
         {
-            System.Random rng;
-            if (seed != 0)
-                rng = new System.Random(seed);
-            else
-                rng = new System.Random();
+            System.Random rng = (seed != 0) ? new System.Random(seed) : new System.Random();
 
             int n = list.Count;
             while (n > 1)
@@ -28,7 +24,7 @@ namespace Buck
         }
 
         /// <summary>
-        /// Swap() takes two List indices and exchanges their places.
+        /// Exchange the places of two given List indices.
         /// </summary>
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
         {
@@ -46,7 +42,7 @@ namespace Buck
         }
 
         /// <summary>
-        /// Random() will return a random element from a List.
+        /// Returns a random element from a List.
         /// </summary>
         public static T Random<T>(this IList<T> list)
         {
@@ -56,7 +52,7 @@ namespace Buck
         /// <summary>
         /// Remaps a value from a minimum and maximum range to another minimum and maximum range.
         /// </summary>
-        public static float Remap (this float value, float fromMin, float fromMax, float toMin, float toMax)
+        public static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
         {
             return Mathf.Lerp(toMin, toMax, Mathf.InverseLerp(fromMin, fromMax, value));
         }
@@ -64,7 +60,7 @@ namespace Buck
         /// <summary>
         /// Remaps a value from a minimum and maximum range to a zero to one range.
         /// </summary>
-        public static float Remap01 (this float value, float min, float max)
+        public static float Remap01(this float value, float min, float max)
         {
             return Remap(value, min, max, 0, 1);
         }
@@ -75,8 +71,6 @@ namespace Buck
         public static float Round(this float value, int digits)
         {
             return (float)System.Math.Round(value, digits);
-            /*float mult = Mathf.Pow(10.0f, digits);
-            return Mathf.Round(value * mult) / mult;*/
         }
 
         /// <summary>
@@ -85,16 +79,14 @@ namespace Buck
         public static double Round(this double value, int digits)
         {
             return System.Math.Round(value, digits);
-            /*float mult = Mathf.Pow(10.0f, digits);
-            return Mathf.Round((float)value * mult) / mult;*/
         }
 
         /// <summary>
-        /// Performs Pow while keeping Sign
+        /// Raises a float value by a power and keeps its sign (positive or negative).
         /// </summary>
-        public static float SignedPow( float value, float pow )
+        public static float SignedPow(float value, float pow)
         {
-            return Mathf.Pow( Mathf.Abs( value ), pow ) * Mathf.Sign( value );
+            return Mathf.Pow(Mathf.Abs(value), pow) * Mathf.Sign(value);
         }
 
         /// <summary>
@@ -115,7 +107,7 @@ namespace Buck
         }
 
         /// <summary>
-        /// Returns a transposed 2D array (swaps rows and columns)
+        /// Returns a transposed 2D array (swaps rows and columns).
         /// </summary>
         public static T[,] Transpose<T>(this T[,] arr)
         {
@@ -124,16 +116,13 @@ namespace Buck
             T[,] transposed = new T[columnCount, rowCount];   
         
             for (int column = 0; column < columnCount; column++)
-            {
                 for (int row = 0; row < rowCount; row++)
-                {
                     transposed[column, row] = arr[row, column];
-                }
-            }
+            
             return transposed;
         }
         /// <summary>
-        /// Returns a 2D array with its column values reversed
+        /// Returns a 2D array with its column values reversed.
         /// </summary>
         public static T[,] ReverseColumns<T>(this T[,] arr)
         {
@@ -142,16 +131,13 @@ namespace Buck
             T[,] reversed = new T[rowCount, columnCount];   
         
             for (int column = 0; column < columnCount; column++)
-            {
                 for (int row = 0; row < rowCount; row++)
-                {
-                    reversed[row, columnCount - 1 - column ] = arr[row, column];
-                }
-            }
+                    reversed[row, columnCount - 1 - column] = arr[row, column];
+            
             return reversed;
         }
         /// <summary>
-        /// Returns a 2D array with its row values reversed
+        /// Returns a 2D array with its row values reversed.
         /// </summary>
         public static T[,] ReverseRows<T>(this T[,] arr)
         {
@@ -160,32 +146,29 @@ namespace Buck
             T[,] reversed = new T[rowCount, columnCount];   
         
             for (int column = 0; column < columnCount; column++)
-            {
                 for (int row = 0; row < rowCount; row++)
-                {
-                    reversed[ rowCount - 1 - row, column] = arr[row, column];
-                }
-            }
+                    reversed[rowCount - 1 - row, column] = arr[row, column];
+            
             return reversed;
         }
         /// <summary>
-        /// Returns a 2D array that has been rotated 90 degrees CW
+        /// Returns a 2D array that has been rotated 90 degrees CW.
         /// </summary>
-        public static T[,] Rotate90<T>(this T[,] arr )
+        public static T[,] Rotate90<T>(this T[,] arr)
         {
             return arr.Transpose().ReverseRows();
         }
         /// <summary>
-        /// Returns a 2D array that has been rotated 270 degrees CW (or 90 degrees CCW)
+        /// Returns a 2D array that has been rotated 270 degrees CW (or 90 degrees CCW).
         /// </summary>
-        public static T[,] Rotate270<T>(this T[,] arr )
+        public static T[,] Rotate270<T>(this T[,] arr)
         {
             return arr.Transpose().ReverseColumns();
         }
         /// <summary>
-        /// Returns a 2D array that has been rotated 180 degrees
+        /// Returns a 2D array that has been rotated 180 degrees.
         /// </summary>
-        public static T[,] Rotate180<T>(this T[,] arr )
+        public static T[,] Rotate180<T>(this T[,] arr)
         {
             return arr.ReverseColumns().ReverseRows();
         }
@@ -267,9 +250,9 @@ namespace Buck
         }
 
         /// <summary>
-        /// Draws a debug circle.
+        /// Draws a wireframe circle in Unity's Game View when the game is running and the gizmo drawing is enabled.
         /// </summary>
-        public static void DrawCircle(Vector3 center, Vector3 normal, float radius, Color c, float duration = 0f )
+        public static void DrawCircle(Vector3 center, Vector3 normal, float radius, Color c, float duration = 0f)
         {   
             Vector3 up = Vector3.up;
             if(normal == up) up = Vector3.right;
@@ -279,11 +262,14 @@ namespace Buck
             for(int i = 0; i<segments; i++)
             {
                 Vector3 p2 = Quaternion.AngleAxis(360f / (float)segments, normal) * p1;
-                Debug.DrawLine(center + p1, center + p2, c, duration );
+                Debug.DrawLine(center + p1, center + p2, c, duration);
                 p1 = p2;
             }
         }
 
+        /// <summary>
+        /// Draws a wireframe sphere (composed of 3 cirles) in Unity's Game View when the game is running and the gizmo drawing is enabled.
+        /// </summary>
         public static void DrawSphere(Vector3 center, float radius, Color c, float duration = 0f)
         {   
             DrawCircle(center, Vector3.forward, radius, c, duration);
@@ -291,10 +277,12 @@ namespace Buck
             DrawCircle(center, Vector3.up, radius, c, duration);
         }
 
-        
-        public static void DrawPin( Vector3 start, Vector3 end, float radius, Color c, float duration = 0f)
+        /// <summary>
+        /// Draws a wireframe pin (composed of 3 cirles) in Unity's Game View when the game is running and the gizmo drawing is enabled.
+        /// </summary>
+        public static void DrawPin(Vector3 start, Vector3 end, float radius, Color c, float duration = 0f)
         {      
-            Debug.DrawLine( start, end, c, duration );
+            Debug.DrawLine(start, end, c, duration);
             DrawCircle(end, Vector3.forward, radius, c, duration);
             DrawCircle(end, Vector3.right, radius, c, duration);
             DrawCircle(end, Vector3.up, radius, c, duration);
@@ -392,13 +380,12 @@ namespace Buck
         }
 
         /// <summary>
-        /// Ken Perlin's better smooth step with 1st and 2nd order derivatives at x = 0 and 1
+        /// Ken Perlin's better smooth step with 1st and 2nd order derivatives at x = 0 and 1.
         /// </summary>
         public static float Smootherstep(float from, float to, float x) 
         {
-            x = Mathf.Clamp01( x );
-            //6x^5 - 15x^2 + 10x^3
-            return Mathf.Lerp( from, to, x * x * x * (x * (x * 6 - 15) + 10) );   
+            x = Mathf.Clamp01(x);
+            return Mathf.Lerp(from, to, x * x * x * (x * (x * 6 - 15) + 10));
         }
 
         /// <summary>
@@ -467,6 +454,9 @@ namespace Buck
         }
 
         #if UNITY_EDITOR
+        /// <summary>
+        /// Draws a text string in as a gizmo in world space. This only works in the Unity Editor.
+        /// </summary>
         static public void DrawGizmoString(this Component component, string text, Vector3 worldPos, Color? color = null)
         {
             var view = UnityEditor.SceneView.currentDrawingSceneView;
