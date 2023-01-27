@@ -1,6 +1,6 @@
 # BUCK Basics
 
-This is BUCK's general Unity code package. It includes extension methods, utility scripts, and debugging tools.
+_BUCK Basics_ is BUCK's general Unity code package that includes broadly applicable extension methods, utility scripts, and a basic framework for architecting applications.
 
 ## Requirements
 
@@ -17,13 +17,21 @@ This package works with Unity 2020.3 and above.
 
 ### Extension Methods
 
-Over several projects, BUCK has collected many useful extension methods that are useful across a wide variety of projects, ranging from math calculations like calculating the volume or surface area of a sphere, to handy algorithms that can rotate 2D arrays. These are available in the BUCK namespace in the [ExtensionMethods](Runtime/ExtensionMethods.cs) class.
+Over several projects, BUCK has collected many useful extension methods that are applicable to a wide variety of scenarios. These are available in the Buck namespace in the [ExtensionMethods](Runtime/ExtensionMethods.cs) class. Here are some highlights:
+
+- [void Shuffle(IList<T> list)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L11) - Effectively randomizes the order of elements in a C# List using the [Fisher–Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) algorithm.
+- [T[,] Rotate90<T>(this T[,] arr)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L174) - Returns a 2D array that has been rotated 90 degrees CW. There are numerous other array manipulation methods like this one that can transpose rows, columns, and more.
+- [bool IsVisibleFrom(Renderer renderer, Camera camera)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L112) - Returns true if a Renderer is visible from the provided Camera.
+- [Vector2 RandomPointOnUnitCircle()](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L328) - Returns a random point on a unit circle.
+- [Color Tint(this Color value, float tint)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L306) - Adds a tint to a Color.
+- [Transform NearestTransform(this Transform origin, List<Transform> positions)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L346) - Given a list of Transforms, return the one that is nearest to an origin Transform.
+- [float Smootherstep(float from, float to, float x)](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L397) - [Ken Perlin's better smooth step](https://en.wikipedia.org/wiki/Smoothstep#Variations) with 1st and 2nd order derivatives at x = 0 and 1
 
 Extension methods can be used in two ways. You can use the methods directly from the class.
 
 ```cs
 // Remap a value from a min and max to the 0-1 range
-float myValue = BUCK.ExtensionMethods.Remap01(originalVar, minValue, maxValue);
+float myValue = Buck.ExtensionMethods.Remap01(originalVar, minValue, maxValue);
 ```
 
 Alternatively, you can call extension methods on existing types. For example, there are several methods that extend Unity's Color class.
