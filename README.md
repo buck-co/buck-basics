@@ -45,7 +45,7 @@ Color myTransparentColor = myColor.SetAlpha(0.5f);
 
 Several Unity projects at BUCK are built on an architecture that makes heavy use of variables and events in the form of Unity's Scriptable Objects. There are numerous benefits to this approach, but generally speaking, it allows for variables and events to be shared among components without specific object references. This tends to help avoid a tangled mess of component dependencies and numerous static singleton classes.
 
-This is a fairly involved subject, but fortunately it's already well documented in several places, [famously in this Unite Austin 2017 talk from its creator, Ryan Hipple of Schell Games](https://www.youtube.com/watch?v=raQ3iHhE_Kk). We strongly recomment you watch this video before attempting to use SO Variables and Events in a production project.
+This is a fairly involved subject, but fortunately it's already well documented in several places, [famously in this Unite Austin 2017 talk from its creator, Ryan Hipple of Schell Games](https://www.youtube.com/watch?v=raQ3iHhE_Kk). We strongly recommend you watch this video before attempting to use SO Variables and Events in a production project.
 
 
 ### Singleton Class
