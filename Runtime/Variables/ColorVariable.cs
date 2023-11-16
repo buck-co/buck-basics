@@ -2,7 +2,7 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/Color Variable", order = 12)]
+    [CreateAssetMenu(menuName = "BUCK/Variables/Color Variable", order = 14)]
     public class ColorVariable : BaseScriptableObject
     {
         public Color DefaultValue = Color.white;

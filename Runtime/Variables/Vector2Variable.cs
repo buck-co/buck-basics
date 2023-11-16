@@ -2,7 +2,7 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/Vector2 Variable", order = 5)]
+    [CreateAssetMenu(menuName = "BUCK/Variables/Vector2 Variable", order = 6)]
     public class Vector2Variable : BaseScriptableObject
     {
         public Vector2 DefaultValue = Vector2.zero;

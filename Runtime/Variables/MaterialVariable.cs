@@ -2,24 +2,24 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/Vector3 Variable", order = 7)]
-    public class Vector3Variable : BaseScriptableObject
+    [CreateAssetMenu(menuName = "BUCK/Variables/Material Variable", order = 17)]
+    public class MaterialVariable : BaseScriptableObject
     {
-        public Vector3 DefaultValue = Vector3.zero;
+        public Material DefaultValue;
         
-        private Vector3 currentValue;
-        public Vector3 CurrentValue
+        private Material currentValue;
+        public Material CurrentValue
         {
             get { return currentValue; }
             set { currentValue = value;}
         }
 
-        public void SetValue(Vector3 value)
+        public void SetValue(Material value)
         {
             CurrentValue = value;
         }
 
-        public void SetValue(Vector3Variable value)
+        public void SetValue(MaterialVariable value)
         {
             CurrentValue = value.CurrentValue;
         }
