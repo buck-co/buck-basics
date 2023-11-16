@@ -392,6 +392,13 @@ namespace Buck
             }
         }
 
+
+
+        //*****[Float animation methods]*****
+        public static float EaseIn(float t) => 1f - Mathf.Cos(t * Mathf.PI * 0.5f);
+        public static float EaseOut(float t) => Mathf.Sin(t * Mathf.PI * 0.5f);
+        public static float Smoothstep(float t) => t * t * (3f - 2f * t);
+        
         /// <summary>
         /// Ken Perlin's better smooth step with 1st and 2nd order derivatives at x = 0 and 1.
         /// </summary>
@@ -633,14 +640,6 @@ namespace Buck
             // Then return the Rect using these corners.
             return Rect.MinMaxRect(minX, minY, maxX, maxY);
         }
-
-
-        //*****[Float animation methods]*****
-        public static float EaseIn(float t) => 1f - Mathf.Cos(t * Mathf.PI * 0.5f);
-        public static float EaseOut(float t) => Mathf.Sin(t * Mathf.PI * 0.5f);
-        public static float Smoothstep(float t) => t * t * (3f - 2f * t);
-        public static float Smootherstep(float t) => t * t * t * (t * (6f*t - 15f) + 10f);
-
         //*****[String methods]*****
 
         /// <summary>
