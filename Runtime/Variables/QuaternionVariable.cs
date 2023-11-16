@@ -2,7 +2,7 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/Quaternion Variable")]
+    [CreateAssetMenu(menuName = "BUCK/Variables/Quaternion Variable", order = 10)]
     public class QuaternionVariable : BaseScriptableObject
     {
         public Quaternion DefaultValue = Quaternion.identity;

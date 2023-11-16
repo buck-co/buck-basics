@@ -2,7 +2,7 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/String Variable")]
+    [CreateAssetMenu(menuName = "BUCK/Variables/String Variable", order = 11)]
     public class StringVariable : BaseScriptableObject
     {
         public string DefaultValue = "";

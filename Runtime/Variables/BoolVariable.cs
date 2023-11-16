@@ -2,7 +2,7 @@
 
 namespace Buck
 {
-    [CreateAssetMenu(menuName = "BUCK/Variables/Bool Variable")]
+    [CreateAssetMenu(menuName = "BUCK/Variables/Bool Variable", order=2)]//Default unset order is 1 so list starts at 2
     public class BoolVariable : BaseScriptableObject
     {
         public bool DefaultValue = false;
