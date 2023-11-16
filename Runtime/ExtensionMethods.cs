@@ -311,6 +311,27 @@ namespace Buck
         }
 
         /// <summary>
+        /// Multiples each R, G, B, and A value of one Color by another Color's respective R,G,B, and A values and clamps them 0-1
+        /// </summary>
+        public static Color Multiply(Color a, Color b)
+        {
+            return new Color (Mathf.Clamp01(a.r * b.r)),
+                             Mathf.Clamp01(a.g * b.g)),
+                             Mathf.Clamp01(a.b * b.b),
+                             Mathf.Clamp01(a.a * b.a))
+            );
+        }
+        
+        /// <summary>
+        /// Multiples each R, G, B, and A value of one Color by another Color's respective R,G,B, and A values and clamps them 0-1
+        /// </summary>
+        public static Color Multiply(this Color a, Color b)
+        {
+            return Multiply(a, b);
+        }
+
+
+        /// <summary>
         /// Returns a random point on a unit circle.
         /// </summary>
         public static Vector2 RandomPointOnUnitCircle()
@@ -628,6 +649,20 @@ namespace Buck
         public static float Smoothstep(float t) => t * t * (3f - 2f * t);
         public static float Smootherstep(float t) => t * t * t * (t * (6f*t - 15f) + 10f);
 
+        //*****[String methods]*****
+
+        /// <summary>
+        /// Returns the string shortened to the max length. Optionally, you can add an elipsis ("...") to the end. If the string is shorter than the max length it will return itself and not add the elipsis.
+        /// </summary>
+        /// <param name="value">The original string to truncate.</param>
+        /// <param name="maxLength">How many characters the string should be shortened to.</param>
+        /// <param name="addEllipsis">If true and the string is shortened, will add "..." to the end.</param>
+        /// <returns></returns>
+        public static string Truncate(this string value, int maxLength, bool addEllipsis = false)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength) + (addEllipsis ? "..." : "");
+        }
 
         #if UNITY_EDITOR
         /// <summary>
