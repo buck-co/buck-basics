@@ -13,17 +13,20 @@ namespace Buck
 
         private void OnEnable()
         {
-            Event.RegisterListener(this);
+            if (Event != null)
+                Event.RegisterListener(this);
         }
 
         private void OnDisable()
         {
-            Event.UnregisterListener(this);
+            if (Event != null)
+                Event.UnregisterListener(this);
         }
 
         public void OnEventRaised()
         {
-            Response.Invoke();
+            if (Response != null)
+                Response.Invoke();
         }
     }
 }
