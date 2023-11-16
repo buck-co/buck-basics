@@ -655,6 +655,40 @@ namespace Buck
             return value.Length <= maxLength ? value : value.Substring(0, maxLength) + (addEllipsis ? "..." : "");
         }
 
+
+        //*****[GUID methods]*****
+
+        /// <summary>
+        /// Returns a new Guid byte array if the given Guid is empty,
+        /// otherwise returns the given Guid.
+        /// </summary>
+        public static byte[] GetSerializableGuid(System.Guid guid)
+            => guid != System.Guid.Empty ? guid.ToByteArray() : new System.Guid().ToByteArray();
+
+        /// <summary>
+        /// Returns a new Guid byte array if the given Guid byte array is empty,
+        /// otherwise returns the given Guid.
+        /// </summary>
+        public static byte[] GetSerializableGuid(this byte[] guid)
+        {
+            // If the byte array is null, return a new Guid byte array.
+            if (guid == null)
+                return new System.Guid().ToByteArray();
+            
+            // If the byte array is empty, return a new Guid byte array.
+            if (guid.Length == 0)
+                return new System.Guid().ToByteArray();
+            
+            // If the byte array is not empty, but is not 16 bytes long, throw an exception.
+            if (guid.Length != 16)
+                throw new System.ArgumentException("Guid byte array must be 16 bytes long.", nameof(guid));
+
+            // If the byte array is not an empty Guid, return a new Guid byte array.
+            // Otherwise, return the given Guid byte array.
+            System.Guid guidObj = new System.Guid(guid);
+            return guidObj != System.Guid.Empty ? guidObj.ToByteArray() : new System.Guid().ToByteArray(); 
+        }
+
         #if UNITY_EDITOR
         /// <summary>
         /// Draws a text string in as a gizmo in world space. This only works in the Unity Editor.
