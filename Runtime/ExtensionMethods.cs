@@ -313,21 +313,13 @@ namespace Buck
         /// <summary>
         /// Multiples each R, G, B, and A value of one Color by another Color's respective R,G,B, and A values and clamps them 0-1
         /// </summary>
-        public static Color Multiply(Color a, Color b)
-        {
-            return new Color (Mathf.Clamp01(a.r * b.r)),
-                             Mathf.Clamp01(a.g * b.g)),
-                             Mathf.Clamp01(a.b * b.b),
-                             Mathf.Clamp01(a.a * b.a))
-            );
-        }
-        
-        /// <summary>
-        /// Multiples each R, G, B, and A value of one Color by another Color's respective R,G,B, and A values and clamps them 0-1
-        /// </summary>
         public static Color Multiply(this Color a, Color b)
         {
-            return Multiply(a, b);
+            return new Color (Mathf.Clamp01(a.r * b.r),
+                             Mathf.Clamp01(a.g * b.g),
+                             Mathf.Clamp01(a.b * b.b),
+                             Mathf.Clamp01(a.a * b.a)
+            );
         }
 
 
