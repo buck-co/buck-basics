@@ -158,7 +158,7 @@ namespace Buck
                             if ((float)(A)>B)
                             */
 
-                            System.TypeCode highestPrecision = HighestComplexity(m_numberA.TypeCode, m_numberB.TypeCode);
+                            System.TypeCode highestPrecision = HighestPrecision(m_numberA.TypeCode, m_numberB.TypeCode);
                             switch(highestPrecision)
                             {
                                 case System.TypeCode.Int32:
