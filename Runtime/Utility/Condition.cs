@@ -126,30 +126,7 @@ namespace Buck
 
                 switch (m_variableType)
                 {
-                    
-                    /*
-                    case VariableType.Float:
-                        {
-                            switch (m_comparison)
-                            {
-                                case BooleanComparisons.EqualTo:
-                                    return m_floatA.Value == m_floatB.Value;
-                                case BooleanComparisons.NotEqualTo:
-                                    return m_floatA.Value != m_floatB.Value;
-                                case BooleanComparisons.LessThan:
-                                    return m_floatA.Value < m_floatB.Value;
-                                case BooleanComparisons.LessThanOrEqualTo:
-                                    return m_floatA.Value <= m_floatB.Value; 
-                                case BooleanComparisons.GreaterThan:
-                                    return m_floatA.Value > m_floatB.Value; 
-                                case BooleanComparisons.GreaterThanOrEqualTo:
-                                    return m_floatA.Value >= m_floatB.Value;
-                                default:
-                                    return false;
-                            }
-                        }
-                    */
-                    
+
                     case VariableType.Bool:
                         {
                             switch (m_comparison)
@@ -173,8 +150,16 @@ namespace Buck
 
                     case VariableType.Number:
                         {
-                            System.TypeCode highestComplexity = HighestComplexity(m_numberA.TypeCode, m_numberB.TypeCode);
-                            switch(highestComplexity)
+                            /*
+                            Number comparisons of different types will cast to the type with the highest precision before doing comparison.
+                            For example, if comparing an int A and a float B.
+                            if (A > B)
+                            would be treated as:
+                            if ((float)(A)>B)
+                            */
+
+                            System.TypeCode highestPrecision = HighestComplexity(m_numberA.TypeCode, m_numberB.TypeCode);
+                            switch(highestPrecision)
                             {
                                 case System.TypeCode.Int32:
                                     switch (m_comparison)
@@ -270,7 +255,7 @@ namespace Buck
             }
         }
 
-        System.TypeCode HighestComplexity(System.TypeCode typeA, System.TypeCode typeB)
+        System.TypeCode HighestPrecision(System.TypeCode typeA, System.TypeCode typeB)
         {
             if (typeA == System.TypeCode.Double || typeB == System.TypeCode.Double)
                 return System.TypeCode.Double;
