@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Buck
 {
     [CustomEditor(typeof(GameEvent))]
-    public class EventEditor : Editor
+    public class GameEventEditor : Editor
     {
         public override void OnInspectorGUI()
         {
