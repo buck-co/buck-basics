@@ -3,7 +3,7 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Float Variable", order = 4)]
-    public class FloatVariable : BaseScriptableObject
+    public class FloatVariable : NumberVariable
     {
         public float DefaultValue;
         
@@ -11,7 +11,10 @@ namespace Buck
         public float CurrentValue
         {
             get { return currentValue; }
-            set { currentValue = value;}
+            set { 
+                    currentValue = value; 
+                    Clamp();
+                }
         }
 
         public void SetValue(float value)
@@ -37,6 +40,23 @@ namespace Buck
         private void OnEnable()
         {
             currentValue = DefaultValue;
+            Clamp();
         }
+
+        public override void Clamp()
+        {
+            if (m_clampToAMin && m_clampMin.ValueFloat > CurrentValue)
+                currentValue = m_clampMin;
+            else
+            if (m_clampToAMax && m_clampMax.ValueFloat < CurrentValue)
+                currentValue = m_clampMax;
+        }
+
+        public override int ToInt() => (int)(CurrentValue);
+
+        public override float ToFloat() => CurrentValue;
+
+        public override double ToDouble() => (double)(CurrentValue);
+     
     }
 }

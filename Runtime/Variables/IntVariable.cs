@@ -3,7 +3,7 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Int Variable", order = 3)]
-    public class IntVariable : BaseScriptableObject
+    public class IntVariable : NumberVariable
     {
         public int DefaultValue = 0;
         
@@ -11,7 +11,10 @@ namespace Buck
         public int CurrentValue
         {
             get { return currentValue; }
-            set { currentValue = value;}
+            set { 
+                    currentValue = value;
+                    Clamp();
+                }
         }
 
         public void SetValue(int value)
@@ -38,5 +41,20 @@ namespace Buck
         {
             currentValue = DefaultValue;
         }
+        public override void Clamp()
+        {
+            if (m_clampToAMin && m_clampMin.ValueInt > CurrentValue)
+                currentValue = m_clampMin;
+            else
+            if (m_clampToAMax && m_clampMax.ValueInt < CurrentValue)
+                currentValue = m_clampMax;
+        }
+
+        public override int ToInt() => CurrentValue;
+
+        public override float ToFloat() => (float)(CurrentValue);
+
+        public override double ToDouble() => (double)(CurrentValue);
+
     }
 }
