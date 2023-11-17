@@ -1,0 +1,98 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Buck
+{
+    //Extension Methods involving Floats
+    public static partial class ExtensionMethods
+    {
+        
+        /// <summary>
+        /// Returns true if a value is between a minimum (inclusive) and maximum (inclusive).
+        /// </summary>
+        public static bool IsBetween(this float value, float min, float max)
+        {
+            return value >= min && value <= max;
+        }
+
+        /// <summary>
+        /// Remaps a value from a minimum and maximum range to another minimum and maximum range.
+        /// </summary>
+        public static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
+        {
+            return Mathf.Lerp(toMin, toMax, Mathf.InverseLerp(fromMin, fromMax, value));
+        }
+
+        /// <summary>
+        /// Remaps a value from a minimum and maximum range to a zero to one range.
+        /// </summary>
+        public static float Remap01(this float value, float min, float max)
+        {
+            return Remap(value, min, max, 0, 1);
+        }
+
+        /// <summary>
+        /// Rounds a float to a specified number of digits after the decimal point.
+        /// </summary>
+        public static float Round(this float value, int digits)
+        {
+            return (float)System.Math.Round(value, digits);
+        }
+
+        /// <summary>
+        /// Rounds a double to a specified number of digits after the decimal point.
+        /// </summary>
+        public static double Round(this double value, int digits)
+        {
+            return System.Math.Round(value, digits);
+        }
+
+        /// <summary>
+        /// Raises a float value by a power and keeps its sign (positive or negative).
+        /// </summary>
+        public static float SignedPow(float value, float pow)
+        {
+            return Mathf.Pow(Mathf.Abs(value), pow) * Mathf.Sign(value);
+        }
+        
+        /// <summary>
+        /// Returns true if the signs of two floats are the same.
+        /// </summary>
+        public static bool SameSign(this float a, float b)
+        {
+            return a * b >= 0.0f;
+        }
+
+
+        //*****[Float animation methods]*****
+        public static float EaseIn(float t) => 1f - Mathf.Cos(t * Mathf.PI * 0.5f);
+        public static float EaseOut(float t) => Mathf.Sin(t * Mathf.PI * 0.5f);
+        public static float Smoothstep(float t) => t * t * (3f - 2f * t);
+        
+        /// <summary>
+        /// Ken Perlin's better smooth step with 1st and 2nd order derivatives at x = 0 and 1.
+        /// </summary>
+        public static float Smootherstep(float from, float to, float x) 
+        {
+            x = Mathf.Clamp01(x);
+            return Mathf.Lerp(from, to, x * x * x * (x * (x * 6 - 15) + 10));
+        }
+
+        /// <summary>
+        /// Get the volume of a sphere from its radius.
+        /// </summary>
+        public static float SphereVolume(float r)
+        {
+            return (4f/3f)*Mathf.PI*r*r*r;
+        }
+
+        /// <summary>
+        /// Get the surface area of a sphere from its radius.
+        /// </summary>
+        public static float SphereSurfaceArea(float r)
+        {
+            return 4f * Mathf.PI * r * r;
+        }
+        
+    }
+}
