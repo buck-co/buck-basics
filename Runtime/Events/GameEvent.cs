@@ -20,7 +20,7 @@ namespace Buck
 
         public void Raise()
         { 
-            #if UNITY_EDITOR || DEVELOPMENTBUILD
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (m_debugChanges)
             {
                 //Log a string containing all event listeners
@@ -47,7 +47,7 @@ namespace Buck
             {
                 eventListeners.Add(listener);
 
-                #if UNITY_EDITOR || DEVELOPMENTBUILD
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (m_debugChanges)
                 {
                     Debug.Log(name + " GameEvent received a new listener attached to this GameObject:" + listener.gameObject.name, listener.gameObject);

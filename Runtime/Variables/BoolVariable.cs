@@ -13,7 +13,7 @@ namespace Buck
         public bool CurrentValue
         {
             get { return currentValue; }
-            set { currentValue = value; LogValueChange();}
+            set { currentValue = value; LogValueChange(); }
         }
 
         public void SetValue(bool value)
@@ -30,5 +30,9 @@ namespace Buck
         {
             currentValue = DefaultValue;
         }
+
+
+        //TODO: Is there a way to emit a warning if you write if (m_someBoolVariable == true) when you meant (m_someBoolVariable.CurrentValue == true)
+        //Try Implicit Operators, try IComparable and IEquatable
     }
 }
