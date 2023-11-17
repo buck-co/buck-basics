@@ -218,7 +218,6 @@ namespace Buck
                                         default:
                                             return false;
                                     }
-                                break;
                             }
 
 
