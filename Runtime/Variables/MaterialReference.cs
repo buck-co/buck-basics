@@ -21,7 +21,7 @@ namespace Buck
 
         public Material Value
         {
-            get { return UseConstant ? ConstantValue : Variable.CurrentValue; }
+            get { return UseConstant ? ConstantValue : Variable.Value; }
         }
 
         public static implicit operator Material(MaterialReference reference)

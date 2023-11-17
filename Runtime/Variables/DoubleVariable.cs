@@ -7,51 +7,54 @@ namespace Buck
     {
         public double DefaultValue;
         
-        private double currentValue;
-        public double CurrentValue
+        private double m_currentValue;
+        public double Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+                }
         }
 
         public void SetValue(double value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(DoubleVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         public void ApplyChange(double amount)
         {
-            CurrentValue += amount;
+            Value += amount;
         }
 
         public void ApplyChange(DoubleVariable amount)
         {
-            CurrentValue += amount.CurrentValue;
+            Value += amount.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
 
         public override void Clamp()
         {
-            if (m_clampToAMin && m_clampMin.ValueDouble > CurrentValue)
-                currentValue = m_clampMin;
+            if (m_clampToAMin && m_clampMin.ValueDouble > Value)
+                m_currentValue = m_clampMin;
             else
-            if (m_clampToAMax && m_clampMax.ValueDouble < CurrentValue)
-                currentValue = m_clampMax;
+            if (m_clampToAMax && m_clampMax.ValueDouble < Value)
+                m_currentValue = m_clampMax;
         }
 
-        public override int ToInt() => (int)(CurrentValue);
+        public override int ToInt() => (int)(Value);
 
-        public override float ToFloat() => (float)(CurrentValue);
+        public override float ToFloat() => (float)(Value);
 
-        public override double ToDouble() => (CurrentValue);
+        public override double ToDouble() => (Value);
     }
 }

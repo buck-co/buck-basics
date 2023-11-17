@@ -21,7 +21,7 @@ namespace Buck
 
         public Vector2 Value
         {
-            get { return UseConstant ? ConstantValue : Variable.CurrentValue; }
+            get { return UseConstant ? ConstantValue : Variable.Value; }
         }
 
         public static implicit operator Vector2(Vector2Reference reference)

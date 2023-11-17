@@ -7,54 +7,69 @@ namespace Buck
     {
         public int DefaultValue = 0;
         
-        private int currentValue;
-        public int CurrentValue
+        private int m_currentValue;
+        public int Value
         {
-            get { return currentValue; }
+            get { return m_currentValue; }
             set { 
-                    currentValue = value;
+                    m_currentValue = value;
                     Clamp();
+                    LogValueChange(m_currentValue.ToString());
                 }
         }
 
         public void SetValue(int value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(IntVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         public void ApplyChange(int amount)
         {
-            CurrentValue += amount;
+            Value += amount;
         }
 
         public void ApplyChange(IntVariable amount)
         {
-            CurrentValue += amount.CurrentValue;
+            Value += amount.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
         public override void Clamp()
         {
-            if (m_clampToAMin && m_clampMin.ValueInt > CurrentValue)
-                currentValue = m_clampMin;
+            if (m_clampToAMin && m_clampMin.ValueInt > Value)
+            {
+                m_currentValue = m_clampMin;
+                
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    if (m_debugChanges)
+                        Debug.Log("Value of " + name + " min clamped to: " + m_currentValue.ToString());
+                #endif
+            }
             else
-            if (m_clampToAMax && m_clampMax.ValueInt < CurrentValue)
-                currentValue = m_clampMax;
+            if (m_clampToAMax && m_clampMax.ValueInt < Value)
+            {
+                m_currentValue = m_clampMax;
+                
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    if (m_debugChanges)
+                        Debug.Log("Value of " + name + " max clamped to: " + m_currentValue.ToString());
+                #endif
+            }
         }
 
-        public override int ToInt() => CurrentValue;
+        public override int ToInt() => Value;
 
-        public override float ToFloat() => (float)(CurrentValue);
+        public override float ToFloat() => (float)(Value);
 
-        public override double ToDouble() => (double)(CurrentValue);
+        public override double ToDouble() => (double)(Value);
 
     }
 }

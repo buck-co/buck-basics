@@ -20,7 +20,7 @@ namespace Buck
 
         public int Value
         {
-            get { return UseConstant ? ConstantValue : Variable.CurrentValue; }
+            get { return UseConstant ? ConstantValue : Variable.Value; }
         }
 
         public static implicit operator int(IntReference reference)

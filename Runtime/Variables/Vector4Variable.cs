@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Vector4 Variable", order = 8)]
-    public class Vector4Variable : BaseScriptableObject
+    public class Vector4Variable : BaseVariable
     {
         public Vector4 DefaultValue = Vector4.zero;
         
-        private Vector4 currentValue;
-        public Vector4 CurrentValue
+        private Vector4 m_currentValue;
+        public Vector4 Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+                }
         }
 
         public void SetValue(Vector4 value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(Vector4Variable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

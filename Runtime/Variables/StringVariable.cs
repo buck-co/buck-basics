@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/String Variable", order = 12)]
-    public class StringVariable : BaseScriptableObject
+    public class StringVariable : BaseVariable
     {
         public string DefaultValue = "";
         
-        private string currentValue;
-        public string CurrentValue
+        private string m_currentValue;
+        public string Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue);
+                }
         }
 
         public void SetValue(string value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(StringVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

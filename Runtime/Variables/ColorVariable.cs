@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Color Variable", order = 14)]
-    public class ColorVariable : BaseScriptableObject
+    public class ColorVariable : BaseVariable
     {
         public Color DefaultValue = Color.white;
         
-        private Color currentValue;
-        public Color CurrentValue
+        private Color m_currentValue;
+        public Color Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+                }
         }
 
         public void SetValue(Color value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(ColorVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

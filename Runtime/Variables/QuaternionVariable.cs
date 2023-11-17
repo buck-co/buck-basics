@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Quaternion Variable", order = 11)]
-    public class QuaternionVariable : BaseScriptableObject
+    public class QuaternionVariable : BaseVariable
     {
         public Quaternion DefaultValue = Quaternion.identity;
         
-        private Quaternion currentValue;
-        public Quaternion CurrentValue
+        private Quaternion m_currentValue;
+        public Quaternion Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+                }
         }
 
         public void SetValue(Quaternion value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(QuaternionVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Sprite Variable", order = 16)]
-    public class SpriteVariable : BaseScriptableObject
+    public class SpriteVariable : BaseVariable
     {
         public Sprite DefaultValue;
         
-        private Sprite currentValue;
-        public Sprite CurrentValue
+        private Sprite m_currentValue;
+        public Sprite Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange((m_currentValue!= null)?m_currentValue.name:"null");
+            }
         }
 
         public void SetValue(Sprite value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(SpriteVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

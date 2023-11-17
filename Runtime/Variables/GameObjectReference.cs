@@ -21,7 +21,7 @@ namespace Buck
 
         public GameObject Value
         {
-            get { return UseConstant ? ConstantValue : Variable.CurrentValue; }
+            get { return UseConstant ? ConstantValue : Variable.Value; }
         }
 
         public static implicit operator GameObject(GameObjectReference reference)

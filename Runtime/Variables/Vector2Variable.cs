@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Vector2 Variable", order = 6)]
-    public class Vector2Variable : BaseScriptableObject
+    public class Vector2Variable : BaseVariable
     {
         public Vector2 DefaultValue = Vector2.zero;
         
-        private Vector2 currentValue;
-        public Vector2 CurrentValue
+        private Vector2 m_currentValue;
+        public Vector2 Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+                }
         }
 
         public void SetValue(Vector2 value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(Vector2Variable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }

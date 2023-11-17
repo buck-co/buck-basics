@@ -6,29 +6,28 @@ namespace Buck
     public class BoolVariable : BaseVariable
     {
 
-        protected override string DebugValue => (CurrentValue)?"true":"false";
         public bool DefaultValue = false;
         
-        private bool currentValue;
-        public bool CurrentValue
+        private bool m_currentValue;
+        public bool Value
         {
-            get { return currentValue; }
-            set { currentValue = value; LogValueChange(); }
+            get { return m_currentValue; }
+            set { m_currentValue = value; LogValueChange((Value)?"true":"false"); }
         }
 
         public void SetValue(bool value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(BoolVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
 
 

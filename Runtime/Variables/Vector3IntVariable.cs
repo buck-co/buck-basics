@@ -3,30 +3,33 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Vector3Int Variable", order = 10)]
-    public class Vector3IntVariable : BaseScriptableObject
+    public class Vector3IntVariable : BaseVariable
     {
         public Vector3Int DefaultValue = Vector3Int.zero;
         
-        private Vector3Int currentValue;
-        public Vector3Int CurrentValue
+        private Vector3Int m_currentValue;
+        public Vector3Int Value
         {
-            get { return currentValue; }
-            set { currentValue = value;}
+            get { return m_currentValue; }
+            set { 
+                m_currentValue = value;
+                LogValueChange(m_currentValue.ToString());
+            }
         }
 
         public void SetValue(Vector3Int value)
         {
-            CurrentValue = value;
+            Value = value;
         }
 
         public void SetValue(Vector3IntVariable value)
         {
-            CurrentValue = value.CurrentValue;
+            Value = value.Value;
         }
 
         private void OnEnable()
         {
-            currentValue = DefaultValue;
+            m_currentValue = DefaultValue;
         }
     }
 }
