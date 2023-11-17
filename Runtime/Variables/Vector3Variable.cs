@@ -13,9 +13,11 @@ namespace Buck
             get { return m_currentValue; }
             set { 
                 m_currentValue = value;
-                LogValueChange(m_currentValue.ToString());
+                LogValueChange();
                 }
         }
+        
+        public override string ValueAsString => m_currentValue.ToString();
 
         public void SetValue(Vector3 value)
         {

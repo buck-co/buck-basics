@@ -1,4 +1,4 @@
-﻿//#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -7,26 +7,26 @@ namespace Buck
     
     // All three of these CustomEditors behave identically and have the same names for their variables so they can just inherit from NumberVariableEditor
 
-    [CustomEditor(typeof(IntVariable))]
+    [CustomEditor(typeof(IntVariable)), CanEditMultipleObjects]
     public class IntVariableEditor:NumberVariableEditor
     {
 
     }
 
-    [CustomEditor(typeof(FloatVariable))]
+    [CustomEditor(typeof(FloatVariable)), CanEditMultipleObjects]
     public class FloatVariableEditor:NumberVariableEditor
     {
 
     }
 
-    [CustomEditor(typeof(DoubleVariable))]
+    [CustomEditor(typeof(DoubleVariable)), CanEditMultipleObjects]
     public class DoubleVariableEditor:NumberVariableEditor
     {
 
     }
 
 
-    public class NumberVariableEditor : Editor
+    public class NumberVariableEditor : BaseVariableEditor
     {
         /*
         Since NumberVariables are abstract they don't have actual property drawers. 
@@ -42,7 +42,7 @@ namespace Buck
         private SerializedProperty m_debugChanges;
         private SerializedProperty DefaultValue;
         
-        protected void OnEnable()
+        void OnEnable()
         {
             //Cache serialized properties:
             m_clampToAMin = serializedObject.FindProperty("m_clampToAMin");
@@ -52,19 +52,22 @@ namespace Buck
 
             m_debugChanges = serializedObject.FindProperty("m_debugChanges");
             DefaultValue = serializedObject.FindProperty("DefaultValue");
+            
         }
 
         public override void OnInspectorGUI()
         {
+            //Script field
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
+            GUI.enabled = true;
+
+
             serializedObject.UpdateIfRequiredOrScript();
 
             
-            EditorGUILayout.PropertyField(m_debugChanges);
             EditorGUILayout.PropertyField(DefaultValue);
-
-
-            // Get properties
-
+            
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Clamps", EditorStyles.boldLabel);
 
@@ -82,11 +85,20 @@ namespace Buck
                 EditorGUILayout.PropertyField(m_clampMax);
             }
 
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
+            
+            EditorGUILayout.PropertyField(m_debugChanges);
+            base.RaiseGameEventButtonGUI();
+            base.LogValueButtonGUI();
+
+            
             
             serializedObject.ApplyModifiedProperties();
+
             
         }
 
     }
 }
-//#endif
+#endif

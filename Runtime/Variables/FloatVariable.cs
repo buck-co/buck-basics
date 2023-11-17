@@ -14,9 +14,11 @@ namespace Buck
             set { 
                     m_currentValue = value; 
                     Clamp();
-                    LogValueChange(m_currentValue.ToString());
+                    LogValueChange();
                 }
         }
+        
+        public override string ValueAsString => m_currentValue.ToString();
 
         public void SetValue(float value)
         {

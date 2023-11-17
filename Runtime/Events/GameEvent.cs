@@ -23,14 +23,21 @@ namespace Buck
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (m_debugChanges)
             {
-                //Log a string containing all event listeners
-                System.Text.StringBuilder sB = new System.Text.StringBuilder();
-                sB.Append(name + " GameEvent was raised to listeners on the following GameObjects:\n");
-                for (int i = eventListeners.Count -1; i >= 0; i--)
+                if (eventListeners.Count == 0)
                 {
-                    sB.Append(i + ":" + eventListeners[i].gameObject.name +"\n");
+                    Debug.Log(name + " GameEvent was raised, but it has 0 listeners subscribed.");
                 }
-                Debug.Log(sB.ToString());
+                else
+                {
+                    //Log a string containing all event listeners
+                    System.Text.StringBuilder sB = new System.Text.StringBuilder();
+                    sB.Append(name + " GameEvent was raised to listeners on the following GameObjects:\n");
+                    for (int i = eventListeners.Count -1; i >= 0; i--)
+                    {
+                        sB.Append(i + ":" + eventListeners[i].gameObject.name +"\n");
+                    }
+                    Debug.Log(sB.ToString());
+                }
             }
             #endif
 

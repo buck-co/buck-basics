@@ -5,15 +5,20 @@ namespace Buck
     [CreateAssetMenu(menuName = "BUCK/Variables/Bool Variable", order=2)]//Default unset order is 1 so list starts at 2
     public class BoolVariable : BaseVariable
     {
-
+        
         public bool DefaultValue = false;
         
         private bool m_currentValue;
         public bool Value
         {
             get { return m_currentValue; }
-            set { m_currentValue = value; LogValueChange((Value)?"true":"false"); }
+            set { 
+                m_currentValue = value; 
+                LogValueChange();
+            }
         }
+
+        public override string ValueAsString => (Value)?"true":"false";
 
         public void SetValue(bool value)
         {

@@ -13,9 +13,12 @@ namespace Buck
             get { return m_currentValue; }
             set { 
                 m_currentValue = value;
-                LogValueChange(m_currentValue);
+                LogValueChange();
                 }
         }
+        
+        public override string ValueAsString => m_currentValue;
+
 
         public void SetValue(string value)
         {
