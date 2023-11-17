@@ -29,19 +29,14 @@ namespace Buck
 
             switch ((Condition.VariableType)(variableType.enumValueIndex))
             {
-                case Condition.VariableType.Int:
-                   var_A = property.FindPropertyRelative("m_intA");
-                   var_B = property.FindPropertyRelative("m_intB");
-                break;
-
-                case Condition.VariableType.Float:
-                   var_A = property.FindPropertyRelative("m_floatA");
-                   var_B = property.FindPropertyRelative("m_floatB");
-                break;
-
                 case Condition.VariableType.Bool:
                    var_A = property.FindPropertyRelative("m_boolA");
                    var_B = property.FindPropertyRelative("m_boolB");
+                break;
+
+                case Condition.VariableType.Number:
+                   var_A = property.FindPropertyRelative("m_numberA");
+                   var_B = property.FindPropertyRelative("m_numberB");
                 break;
 
                 case Condition.VariableType.Vector3:

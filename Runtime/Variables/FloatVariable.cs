@@ -44,6 +44,9 @@ namespace Buck
             Clamp();
         }
 
+        public override System.TypeCode TypeCode => System.TypeCode.Single;
+
+
         public override void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueFloat > Value)
@@ -67,11 +70,11 @@ namespace Buck
             }
         }
 
-        public override int ToInt() => (int)(Value);
+        public override int ValueInt => (int)(Value);
 
-        public override float ToFloat() => Value;
+        public override float ValueFloat => Value;
 
-        public override double ToDouble() => (double)(Value);
+        public override double ValueDouble => (double)(Value);
      
     }
 }

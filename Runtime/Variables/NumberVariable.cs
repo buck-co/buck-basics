@@ -15,14 +15,15 @@ namespace Buck
         
         [SerializeField] protected NumberReference m_clampMax;
 
-
+        public abstract System.TypeCode TypeCode{get;}
         public abstract void Clamp();
         
-        public abstract int ToInt();
+        public abstract int ValueInt{get;}
 
-        public abstract float ToFloat();
+        public abstract float ValueFloat{get;}
 
-        public abstract double ToDouble();
+        public abstract double ValueDouble{get;}
+
 
         
         

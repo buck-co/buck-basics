@@ -93,24 +93,21 @@ namespace Buck
     {
         public enum BooleanComparisons{EqualTo, NotEqualTo, LessThan, LessThanOrEqualTo, GreaterThan, GreaterThanOrEqualTo}
         public enum VariableType{
-            Int = 0, 
-            Float = 1, 
-            Bool = 2, 
-            Vector3 = 3
+            Bool = 0, 
+            Number = 1, 
+            Vector3 = 2
             };
 
         [Tooltip("Use the dropdown to pick which type of Variable you wish to compare.")]
-        [SerializeField] VariableType m_variableType = VariableType.Int;
-        [SerializeField] IntReference m_intA;
-        [SerializeField] FloatReference m_floatA;
+        [SerializeField] VariableType m_variableType = VariableType.Bool;
         [SerializeField] BoolReference m_boolA;
+        [SerializeField] NumberReference m_numberA;
         [SerializeField] Vector3Reference m_vector3A;
 
         [Tooltip("Use the dropdown to pick what kind of boolean comparison you want to use to compare the variables. Booleans will cast to 0 or 1 for size comparions. Vector3 will use magnitude.")]
         [SerializeField] BooleanComparisons m_comparison = BooleanComparisons.EqualTo;
-        [SerializeField] IntReference m_intB;
-        [SerializeField] FloatReference m_floatB;
         [SerializeField] BoolReference m_boolB;
+        [SerializeField] NumberReference m_numberB;
         [SerializeField] Vector3Reference m_vector3B;
         
         /// <summary>
@@ -129,27 +126,8 @@ namespace Buck
 
                 switch (m_variableType)
                 {
-                    case VariableType.Int:
-                        {
-                            switch (m_comparison)
-                            {
-                                case BooleanComparisons.EqualTo:
-                                    return m_intA.Value == m_intB.Value;
-                                case BooleanComparisons.NotEqualTo:
-                                    return m_intA.Value != m_intB.Value;
-                                case BooleanComparisons.LessThan:
-                                    return m_intA.Value < m_intB.Value;
-                                case BooleanComparisons.LessThanOrEqualTo:
-                                    return m_intA.Value <= m_intB.Value; 
-                                case BooleanComparisons.GreaterThan:
-                                    return m_intA.Value > m_intB.Value; 
-                                case BooleanComparisons.GreaterThanOrEqualTo:
-                                    return m_intA.Value >= m_intB.Value;
-                                default:
-                                    return false;
-                            }
-                        }
                     
+                    /*
                     case VariableType.Float:
                         {
                             switch (m_comparison)
@@ -170,6 +148,7 @@ namespace Buck
                                     return false;
                             }
                         }
+                    */
                     
                     case VariableType.Bool:
                         {
@@ -190,6 +169,74 @@ namespace Buck
                                 default:
                                     return false;
                             }
+                        }
+
+                    case VariableType.Number:
+                        {
+                            System.TypeCode highestComplexity = HighestComplexity(m_numberA.TypeCode, m_numberB.TypeCode);
+                            switch(highestComplexity)
+                            {
+                                case System.TypeCode.Int32:
+                                    switch (m_comparison)
+                                    {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_numberA.ValueInt == m_numberB.ValueInt;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_numberA.ValueInt != m_numberB.ValueInt;
+                                        case BooleanComparisons.LessThan:
+                                            return m_numberA.ValueInt < m_numberB.ValueInt;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return m_numberA.ValueInt <= m_numberB.ValueInt; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return m_numberA.ValueInt > m_numberB.ValueInt; 
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return m_numberA.ValueInt >= m_numberB.ValueInt;
+                                        default:
+                                            return false;
+                                    }
+
+                                default:
+                                case System.TypeCode.Single:
+                                    switch (m_comparison)
+                                    {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_numberA.ValueFloat == m_numberB.ValueFloat;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_numberA.ValueFloat != m_numberB.ValueFloat;
+                                        case BooleanComparisons.LessThan:
+                                            return m_numberA.ValueFloat < m_numberB.ValueFloat;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return m_numberA.ValueFloat <= m_numberB.ValueFloat; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return m_numberA.ValueFloat > m_numberB.ValueFloat; 
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return m_numberA.ValueFloat >= m_numberB.ValueFloat;
+                                        default:
+                                            return false;
+                                    }
+
+                                case System.TypeCode.Double:
+                                    switch (m_comparison)
+                                    {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_numberA.ValueDouble == m_numberB.ValueDouble;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_numberA.ValueDouble != m_numberB.ValueDouble;
+                                        case BooleanComparisons.LessThan:
+                                            return m_numberA.ValueDouble < m_numberB.ValueDouble;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return m_numberA.ValueDouble <= m_numberB.ValueDouble; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return m_numberA.ValueDouble > m_numberB.ValueDouble; 
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return m_numberA.ValueDouble >= m_numberB.ValueDouble;
+                                        default:
+                                            return false;
+                                    }
+                                break;
+                            }
+
+
                         }
 
                     case VariableType.Vector3:
@@ -223,6 +270,19 @@ namespace Buck
             }
         }
 
+        System.TypeCode HighestComplexity(System.TypeCode typeA, System.TypeCode typeB)
+        {
+            if (typeA == System.TypeCode.Double || typeB == System.TypeCode.Double)
+                return System.TypeCode.Double;
+
+            if (typeA == System.TypeCode.Single || typeB == System.TypeCode.Single)
+                return System.TypeCode.Single;
+                
+            return System.TypeCode.Int32;
+        }
+
+
+
 
         /// <summary>
         /// Validation method for Conditions. Asserts and logs if any supsicious variable fields are left null in the condition. Not performant. Should only be called in Editor.
@@ -236,17 +296,10 @@ namespace Buck
 
             switch (m_variableType)
             {
-                case VariableType.Int:
+                case VariableType.Number:
                     {
-                        Assert.IsNotNull(m_intA, "m_intA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_intB, "m_intB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        break;
-                    }
-
-                case VariableType.Float:
-                    {
-                        Assert.IsNotNull(m_floatA, "m_floatA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_floatB, "m_floatB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        Assert.IsNotNull(m_numberA, "m_numberA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        Assert.IsNotNull(m_numberB, "m_numberB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
                         break;
                     }
 

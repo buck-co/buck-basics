@@ -42,6 +42,8 @@ namespace Buck
             m_currentValue = DefaultValue;
         }
 
+        public override System.TypeCode TypeCode => System.TypeCode.Double;
+
         public override void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueDouble > Value)
@@ -51,10 +53,10 @@ namespace Buck
                 m_currentValue = m_clampMax;
         }
 
-        public override int ToInt() => (int)(Value);
+        public override int ValueInt => (int)(Value);
 
-        public override float ToFloat() => (float)(Value);
+        public override float ValueFloat => (float)(Value);
 
-        public override double ToDouble() => (Value);
+        public override double ValueDouble => (Value);
     }
 }

@@ -20,17 +20,22 @@ namespace Buck
 
         public int ValueInt
         {
-            get { return UseConstant ? (int)(ConstantValue) : Variable.ToInt(); }
+            get { return UseConstant ? (int)(ConstantValue) : Variable.ValueInt; }
         }
 
         public float ValueFloat
         {
-            get { return UseConstant ? ConstantValue : Variable.ToFloat(); }
+            get { return UseConstant ? ConstantValue : Variable.ValueFloat; }
         }
 
         public double ValueDouble
         {
-            get { return UseConstant ? (double)(ConstantValue) : Variable.ToDouble(); }
+            get { return UseConstant ? (double)(ConstantValue) : Variable.ValueDouble; }
+        }
+
+        public System.TypeCode TypeCode
+        {
+            get { return UseConstant ? System.TypeCode.Single : Variable.TypeCode; }
         }
 
         public static implicit operator int(NumberReference reference)
