@@ -10,6 +10,7 @@
     Basic animation methods for floats: EaseOut, EaseIn, and Smoothstep
     String.Truncate()
     Color.Multiply()
+-ExtensionMethods.cs was split into multiple .cs files using partial class implementation. Purely an organizational improvement of the source code of the package with no impact on usage.
 -Added new ScriptableObject Variables and Reference classes for the following types:
     UnityEngine.Color, Vector2, Vector4, Vector2Int, Vector3Int, Double, GameObject, Texture2D, Sprite, and Material
 -Added new extension methods for converting Guids into serializable byte arrays and vice versa
