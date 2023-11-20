@@ -19,6 +19,16 @@ namespace Buck
             ConstantValue = value;
         }
 
+        public int VectorLength
+        {
+            get { return UseConstant ? 4 : Variable.VectorLength; }
+        }
+
+        public bool IsAVectorInt
+        {
+            get { return UseConstant ? false : Variable.IsAVectorInt; }
+        }
+
         
         public Vector2 ValueVector2
         {

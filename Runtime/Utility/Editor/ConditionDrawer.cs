@@ -39,9 +39,9 @@ namespace Buck
                    var_B = property.FindPropertyRelative("m_numberB");
                 break;
 
-                case Condition.VariableType.Vector3:
-                   var_A = property.FindPropertyRelative("m_vector3A");
-                   var_B = property.FindPropertyRelative("m_vector3B");
+                case Condition.VariableType.Vector:
+                   var_A = property.FindPropertyRelative("m_vectorA");
+                   var_B = property.FindPropertyRelative("m_vectorB");
                 break;
 
 

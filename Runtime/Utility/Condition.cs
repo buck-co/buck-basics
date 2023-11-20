@@ -95,20 +95,20 @@ namespace Buck
         public enum VariableType{
             Bool = 0, 
             Number = 1, 
-            Vector3 = 2
+            Vector = 2
             };
 
         [Tooltip("Use the dropdown to pick which type of Variable you wish to compare.")]
         [SerializeField] VariableType m_variableType = VariableType.Bool;
         [SerializeField] BoolReference m_boolA;
         [SerializeField] NumberReference m_numberA;
-        [SerializeField] Vector3Reference m_vector3A;
+        [SerializeField] VectorReference m_vectorA;
 
         [Tooltip("Use the dropdown to pick what kind of boolean comparison you want to use to compare the variables. Booleans will cast to 0 or 1 for size comparions. Vector3 will use magnitude.")]
         [SerializeField] BooleanComparisons m_comparison = BooleanComparisons.EqualTo;
         [SerializeField] BoolReference m_boolB;
         [SerializeField] NumberReference m_numberB;
-        [SerializeField] Vector3Reference m_vector3B;
+        [SerializeField] VectorReference m_vectorB;
         
         /// <summary>
         /// Checks if the defined condition results in true or false.
@@ -223,26 +223,128 @@ namespace Buck
 
                         }
 
-                    case VariableType.Vector3:
+                    case VariableType.Vector:
                         {
-                            switch (m_comparison)
+                            //Get the larger of the two vectors length and decide whether we are comparing VectorInts
+                            bool compareVectorInts = false;
+                            int compareAtLength = HighestVectorPrecision(m_vectorA.VectorLength, m_vectorA.IsAVectorInt, m_vectorB.VectorLength, m_vectorB.IsAVectorInt, out compareVectorInts);
+
+
+                            if (compareVectorInts)
                             {
-                                case BooleanComparisons.EqualTo:
-                                    return m_vector3A.Value == m_vector3B.Value;
-                                case BooleanComparisons.NotEqualTo:
-                                    return m_vector3A.Value != m_vector3B.Value;
-                                //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
-                                case BooleanComparisons.LessThan:
-                                    return m_vector3A.Value.magnitude < m_vector3B.Value.magnitude;
-                                case BooleanComparisons.LessThanOrEqualTo:
-                                    return  m_vector3A.Value.magnitude <= m_vector3B.Value.magnitude; 
-                                case BooleanComparisons.GreaterThan:
-                                    return  m_vector3A.Value.magnitude > m_vector3B.Value.magnitude;
-                                case BooleanComparisons.GreaterThanOrEqualTo:
-                                    return  m_vector3A.Value.magnitude >= m_vector3B.Value.magnitude;
-                                default:
-                                    return false;
+                                //Int Vectors
+                                switch (compareAtLength)
+                                {
+                                    case 2:
+                                        switch (m_comparison)
+                                        {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_vectorA.ValueVector2Int == m_vectorB.ValueVector2Int;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_vectorA.ValueVector2Int != m_vectorB.ValueVector2Int;
+                                        //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
+                                        case BooleanComparisons.LessThan:
+                                            return m_vectorA.ValueVector2Int.magnitude < m_vectorB.ValueVector2Int.magnitude;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return  m_vectorA.ValueVector2Int.magnitude <= m_vectorB.ValueVector2Int.magnitude; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return  m_vectorA.ValueVector2Int.magnitude > m_vectorB.ValueVector2Int.magnitude;
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return  m_vectorA.ValueVector2Int.magnitude >= m_vectorB.ValueVector2Int.magnitude;
+                                        default:
+                                            return false;
+                                        }
+
+                                    default:
+                                    case 3:
+                                        switch (m_comparison)
+                                        {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_vectorA.ValueVector3Int == m_vectorB.ValueVector3Int;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_vectorA.ValueVector3Int != m_vectorB.ValueVector3Int;
+                                        //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
+                                        case BooleanComparisons.LessThan:
+                                            return m_vectorA.ValueVector3Int.magnitude < m_vectorB.ValueVector3Int.magnitude;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3Int.magnitude <= m_vectorB.ValueVector3Int.magnitude; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return  m_vectorA.ValueVector3Int.magnitude > m_vectorB.ValueVector3Int.magnitude;
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3Int.magnitude >= m_vectorB.ValueVector3Int.magnitude;
+                                        default:
+                                            return false;
+                                        }
+                                }
                             }
+                            else
+                            {
+                                //Floating point Vectors
+                                switch (compareAtLength)
+                                {
+                                    case 2:
+                                        switch (m_comparison)
+                                        {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_vectorA.ValueVector2 == m_vectorB.ValueVector2;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_vectorA.ValueVector2 != m_vectorB.ValueVector2;
+                                        //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
+                                        case BooleanComparisons.LessThan:
+                                            return m_vectorA.ValueVector2.magnitude < m_vectorB.ValueVector2.magnitude;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return  m_vectorA.ValueVector2.magnitude <= m_vectorB.ValueVector2.magnitude; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return  m_vectorA.ValueVector2.magnitude > m_vectorB.ValueVector2.magnitude;
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return  m_vectorA.ValueVector2.magnitude >= m_vectorB.ValueVector2.magnitude;
+                                        default:
+                                            return false;
+                                        }
+
+                                    default:
+                                    case 3:
+                                        switch (m_comparison)
+                                        {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_vectorA.ValueVector3 == m_vectorB.ValueVector3;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_vectorA.ValueVector3 != m_vectorB.ValueVector3;
+                                        //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
+                                        case BooleanComparisons.LessThan:
+                                            return m_vectorA.ValueVector3.magnitude < m_vectorB.ValueVector3.magnitude;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3.magnitude <= m_vectorB.ValueVector3.magnitude; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return  m_vectorA.ValueVector3.magnitude > m_vectorB.ValueVector3.magnitude;
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3.magnitude >= m_vectorB.ValueVector3.magnitude;
+                                        default:
+                                            return false;
+                                        }
+
+                                    case 4:
+                                        switch (m_comparison)
+                                        {
+                                        case BooleanComparisons.EqualTo:
+                                            return m_vectorA.ValueVector3 == m_vectorB.ValueVector3;
+                                        case BooleanComparisons.NotEqualTo:
+                                            return m_vectorA.ValueVector3 != m_vectorB.ValueVector3;
+                                        //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
+                                        case BooleanComparisons.LessThan:
+                                            return m_vectorA.ValueVector3.magnitude < m_vectorB.ValueVector3.magnitude;
+                                        case BooleanComparisons.LessThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3.magnitude <= m_vectorB.ValueVector3.magnitude; 
+                                        case BooleanComparisons.GreaterThan:
+                                            return  m_vectorA.ValueVector3.magnitude > m_vectorB.ValueVector3.magnitude;
+                                        case BooleanComparisons.GreaterThanOrEqualTo:
+                                            return  m_vectorA.ValueVector3.magnitude >= m_vectorB.ValueVector3.magnitude;
+                                        default:
+                                            return false;
+                                        }
+                                }
+                            }
+                                
                         }
                     
 
@@ -263,6 +365,13 @@ namespace Buck
                 return System.TypeCode.Single;
                 
             return System.TypeCode.Int32;
+        }
+
+        int HighestVectorPrecision(int lengthA, bool isAVectorIntA, int lengthB, bool isAVectorIntB, out bool isAVectorInt)
+        {
+            isAVectorInt = isAVectorIntA && isAVectorIntB;//Only use VectorInt if BOTH vectors are a vector int
+
+            return Mathf.Max(lengthA, lengthB);//Return the longest length o the two vectors.
         }
 
 
@@ -294,10 +403,10 @@ namespace Buck
                         break;
                     }
 
-                case VariableType.Vector3:
+                case VariableType.Vector:
                     {
-                        Assert.IsNotNull(m_vector3A, "m_vector3A is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_vector3B, "m_vector3B is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        Assert.IsNotNull(m_vectorA, "m_vectorA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        Assert.IsNotNull(m_vectorB, "m_vectorB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
                         break;
                     }
 
