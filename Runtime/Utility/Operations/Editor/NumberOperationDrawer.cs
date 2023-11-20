@@ -1,0 +1,112 @@
+//#if UNITY_EDITOR
+using UnityEditor;
+using UnityEngine;
+
+namespace Buck
+{
+    [CustomPropertyDrawer(typeof(NumberOperation))]
+    public class NumberOperationDrawer : BaseOperationDrawer
+    {
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+
+            label = EditorGUI.BeginProperty(position, label, property);
+            
+            EditorGUI.BeginChangeCheck();
+
+            SerializedProperty operation = property.FindPropertyRelative("m_operation");
+            EditorGUILayout.PropertyField(operation);
+
+            SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
+            EditorGUILayout.PropertyField(numberA);
+            
+            GUIStyle style = base.CenteredLightLabel;
+
+            NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
+
+            bool drawNumC = false;
+            string bToCOperation ="";//Only used if drawing num c
+
+
+
+            switch (numOperation)
+            {
+                case NumberOperation.Operations.SetTo:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    break;
+
+                case NumberOperation.Operations.AdditionAssignment:
+                    EditorGUILayout.LabelField("+=", style, GUILayout.ExpandWidth(true));
+                    break;
+
+                case NumberOperation.Operations.SubtractionAssignment:
+                    EditorGUILayout.LabelField("-=", style, GUILayout.ExpandWidth(true));
+                    break;
+
+                case NumberOperation.Operations.MultiplicationAssignment:
+                    EditorGUILayout.LabelField("*=", style, GUILayout.ExpandWidth(true)); 
+                    break;
+
+                case NumberOperation.Operations.DivisionAssignment:
+                    EditorGUILayout.LabelField("/=", style, GUILayout.ExpandWidth(true)); 
+                    break;
+
+                case NumberOperation.Operations.PowAssignment:
+                    EditorGUILayout.LabelField("^=", style, GUILayout.ExpandWidth(true)); 
+                    break;
+
+                case NumberOperation.Operations.Addition:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    drawNumC = true;
+                    bToCOperation = "+";
+                    break;
+
+                case NumberOperation.Operations.Subtraction:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    drawNumC = true;
+                    bToCOperation = "-"; 
+                    break;
+                    
+                case NumberOperation.Operations.Multiplication:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true)); 
+                    drawNumC = true;
+                    bToCOperation = "*";
+                    break;
+
+                case NumberOperation.Operations.Division:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true)); 
+                    drawNumC = true;
+                    bToCOperation = "/";
+                    break;
+                    
+                case NumberOperation.Operations.Pow:
+                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    drawNumC = true;
+                    bToCOperation = "^"; 
+                    break;
+
+
+            }
+
+            
+            SerializedProperty numberB = property.FindPropertyRelative("m_numberB");
+            EditorGUILayout.PropertyField(numberB);
+         
+            if (drawNumC)
+            {
+                EditorGUILayout.LabelField(bToCOperation, style, GUILayout.ExpandWidth(true));
+                
+                SerializedProperty numberC = property.FindPropertyRelative("m_numberC");
+                EditorGUILayout.PropertyField(numberC);
+            }
+            
+            if (EditorGUI.EndChangeCheck())
+                property.serializedObject.ApplyModifiedProperties();
+
+            EditorGUI.EndProperty();
+        }
+
+    }
+}
+//#endif
