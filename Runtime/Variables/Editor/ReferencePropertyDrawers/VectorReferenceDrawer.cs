@@ -4,8 +4,13 @@ using UnityEngine;
 
 namespace Buck
 {
+    
     [CustomPropertyDrawer(typeof(Vector4Reference))]
-    public class Vector4ReferenceDrawer : BaseReferenceDrawer
+    public class Vector4ReferenceDrawer:VectorReferenceDrawer{}
+
+
+    [CustomPropertyDrawer(typeof(VectorReference))]
+    public class VectorReferenceDrawer : BaseReferenceDrawer
     {
         protected override void CreateValueGUI(Rect position, SerializedProperty useConstant, SerializedProperty constantValue, SerializedProperty variable)
         {

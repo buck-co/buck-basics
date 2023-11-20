@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Buck
 {
     //All of these VariableReference types use the BaseReferenceDrawer as their parent so that they can share the same base code.
-    //The only variable that has it's own custom editor is Vector4Reference since Vector4s don't GUI in a single line out of the box
+    //The only two variables that have their own custom editor are VectorReference and Vector4Reference since Vector4s don't GUI in a single line out of the box
     [CustomPropertyDrawer(typeof(BoolReference))]
     public class BoolReferenceDrawer:BaseReferenceDrawer{}
 
@@ -26,6 +26,9 @@ namespace Buck
     
     [CustomPropertyDrawer(typeof(MaterialReference))]
     public class MaterialReferenceDrawer:BaseReferenceDrawer{}
+
+    [CustomPropertyDrawer(typeof(NumberReference))]
+    public class NumberReferenceDrawer:BaseReferenceDrawer{}
 
     [CustomPropertyDrawer(typeof(QuaternionReference))]
     public class QuaternionReferenceDrawer:BaseReferenceDrawer{}

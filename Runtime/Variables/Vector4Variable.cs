@@ -3,7 +3,7 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Vector4 Variable", order = 8)]
-    public class Vector4Variable : BaseVariable
+    public class Vector4Variable : VectorVariable
     {
         public Vector4 DefaultValue = Vector4.zero;
         
@@ -33,5 +33,19 @@ namespace Buck
         {
             m_currentValue = DefaultValue;
         }
+        
+
+        public override int VectorLength => 4;
+        public override bool IsAVectorInt => false;
+        
+        public override Vector2 ValueVector2 => (Vector2)(Value);
+
+        public override Vector3 ValueVector3 => (Vector3)(Value);
+
+        public override Vector4 ValueVector4 => Value;
+        
+        public override Vector2Int ValueVector2Int => ((Vector2)Value).ToVector2Int();
+
+        public override Vector3Int ValueVector3Int => ((Vector3)Value).ToVector3Int();
     }
 }
