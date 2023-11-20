@@ -1,0 +1,173 @@
+using System;
+using UnityEngine;
+
+namespace Buck
+{
+    [Serializable]
+    public class NumberOperation
+    {
+        
+        public enum Operations{
+            SetTo = 0,//nA=nB
+            AdditionAssignment = 1,//nA+=nB
+            SubtractionAssignment = 2,//nA-=nB
+            MultiplicationAssignment = 3,//nA*=nB
+            DivisionAssignment = 4,//nA/=nB
+            PowAssignment = 5,//nA^=nB
+            Addition = 6,//nA=nB+nC
+            Subtraction = 7,//nA=nB-nC
+            Multiplication = 8,//nA=nB*nC
+            Division = 9,//nA=nB/nC
+            Pow = 10,//nA=nB^nC
+            };
+        
+        enum RoundingType{
+            RoundToInt=0, 
+            FloorToInt=1, 
+            CeilToInt=2
+            };
+
+        [SerializeField] NumberVariable m_numberA;
+        [SerializeField] Operations m_operation;
+
+        [SerializeField] NumberReference m_numberB;
+        [SerializeField] NumberReference m_numberC;
+        
+        RoundingType m_rounding = RoundingType.RoundToInt;
+
+        [SerializeField] bool m_raiseEvent = true;
+
+
+
+        public void Execute()
+        {
+            switch (m_numberA.TypeCode)
+            {
+                case System.TypeCode.Int32:
+                    IntVariable intA = (IntVariable)(m_numberA);
+                    intA.Value = GetIntResult();
+
+                    break;
+
+                
+                case System.TypeCode.Single:
+                    FloatVariable floatA = (FloatVariable)(m_numberA);
+                    floatA.Value = GetFloatResult();
+
+                    break;
+
+                
+                case System.TypeCode.Double:
+                    DoubleVariable doubleA = (DoubleVariable)(m_numberA);
+                    doubleA.Value = GetDoubleResult();
+                    break;
+            }
+
+            if (m_raiseEvent)
+                m_numberA.Raise();
+
+        }
+        public int GetIntResult()
+        {
+            float floatResult = GetFloatResult();
+
+            switch (m_rounding)
+            {
+                default:
+                case RoundingType.RoundToInt:
+                    return Mathf.RoundToInt(floatResult);
+
+                case RoundingType.FloorToInt:
+                    return Mathf.FloorToInt(floatResult);
+
+                case RoundingType.CeilToInt:
+                    return Mathf.CeilToInt(floatResult);
+
+            }
+        }
+        public float GetFloatResult()
+        {
+            switch(m_operation)
+            {
+                default:
+                case Operations.SetTo://nA=nB
+                    return m_numberB;
+
+                case Operations.AdditionAssignment://nA+=nB
+                    return m_numberA.ValueFloat + m_numberB.ValueFloat;
+
+                case Operations.SubtractionAssignment://nA-=NB
+                    return m_numberA.ValueFloat - m_numberB.ValueFloat;
+
+                case Operations.MultiplicationAssignment://nA*=nB
+                    return m_numberA.ValueFloat * m_numberB.ValueFloat;
+
+                case Operations.DivisionAssignment://nA/=nB
+                    return m_numberA.ValueFloat / m_numberB.ValueFloat;
+
+                case Operations.PowAssignment://nA^=nB
+                    return Mathf.Pow(m_numberA.ValueFloat, m_numberB.ValueFloat);
+                    
+                case Operations.Addition://nA=nB+nC
+                    return m_numberB.ValueFloat + m_numberC.ValueFloat;
+                    
+                case Operations.Subtraction://nA=nB-nC
+                    return m_numberB.ValueFloat - m_numberC.ValueFloat;
+
+                case Operations.Multiplication://nA=nB*nC
+                    return m_numberB.ValueFloat * m_numberC.ValueFloat;
+
+                case Operations.Division://nA=nB/nC
+                    return m_numberB.ValueFloat / m_numberC.ValueFloat;
+
+                case Operations.Pow://nA=nB^nC
+                    return Mathf.Pow(m_numberB.ValueFloat, m_numberC.ValueFloat);
+                    
+            }
+        }
+
+        public double GetDoubleResult()
+        {
+            switch(m_operation)
+            {
+                default:
+                case Operations.SetTo://nA=nB
+                    return m_numberB;
+
+                case Operations.AdditionAssignment://nA+=nB
+                    return m_numberA.ValueDouble + m_numberB.ValueDouble;
+
+                case Operations.SubtractionAssignment://nA-=NB
+                    return m_numberA.ValueDouble - m_numberB.ValueDouble;
+
+                case Operations.MultiplicationAssignment://nA*=nB
+                    return m_numberA.ValueDouble * m_numberB.ValueDouble;
+
+                case Operations.DivisionAssignment://nA/=nB
+                    return m_numberA.ValueDouble / m_numberB.ValueDouble;
+
+                case Operations.PowAssignment://nA^=nB
+                    return (double)(Mathf.Pow(m_numberA.ValueFloat, m_numberB.ValueFloat));
+                    
+                case Operations.Addition://nA=nB+nC
+                    return m_numberB.ValueDouble + m_numberC.ValueDouble;
+                    
+                case Operations.Subtraction://nA=nB-nC
+                    return m_numberB.ValueDouble - m_numberC.ValueDouble;
+
+                case Operations.Multiplication://nA=nB*nC
+                    return m_numberB.ValueDouble * m_numberC.ValueDouble;
+
+                case Operations.Division://nA=nB/nC
+                    return m_numberB.ValueDouble / m_numberC.ValueDouble;
+
+                case Operations.Pow://nA=nB^nC
+                    return (double)(Mathf.Pow(m_numberB.ValueFloat, m_numberC.ValueFloat));
+                    
+            }
+        }
+
+
+
+    }
+}

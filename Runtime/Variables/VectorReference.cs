@@ -40,7 +40,7 @@ namespace Buck
             get { return UseConstant ? (Vector3)(ConstantValue) : Variable.ValueVector3; }
         }
 
-        public Vector3 ValueVector4
+        public Vector4 ValueVector4
         {
             get { return UseConstant ? (Vector4)(ConstantValue) : Variable.ValueVector4; }
         }
