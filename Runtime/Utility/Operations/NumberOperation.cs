@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace Buck
 {
+
     [Serializable]
-    public class NumberOperation
+    public class NumberOperation:BaseOperation
     {
         
         public enum Operations{
@@ -33,13 +34,13 @@ namespace Buck
         [SerializeField] NumberReference m_numberB;
         [SerializeField] NumberReference m_numberC;
         
-        RoundingType m_rounding = RoundingType.RoundToInt;
+        [SerializeField] RoundingType m_rounding = RoundingType.RoundToInt;
 
         [SerializeField] bool m_raiseEvent = true;
 
 
 
-        public void Execute()
+        public override void Execute()
         {
             switch (m_numberA.TypeCode)
             {

@@ -38,6 +38,9 @@ namespace Buck
                 EditorGUILayout.LabelField("!(Bool A)", style, GUILayout.ExpandWidth(true)); 
             }
             
+            SerializedProperty raiseEvent = property.FindPropertyRelative("m_raiseEvent");
+            EditorGUILayout.PropertyField(raiseEvent);
+            
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
 

@@ -3,8 +3,10 @@ using UnityEngine;
 
 namespace Buck
 {
+
+
     [Serializable]
-    public class BoolOperation
+    public class BoolOperation:BaseOperation
     {
         
         public enum Operations{
@@ -19,12 +21,12 @@ namespace Buck
         [SerializeField] BoolReference m_boolB;
 
         [Tooltip("If true, when Execute() is called m_boolA's event will be raised.")]
-        [SerializeField] bool m_raiseEvent = new BoolReference(true);
+        [SerializeField] bool m_raiseEvent = true;
 
         /// <summary>
         /// Applies the operation and sets BoolA. Raises BoolA's event if RaiseEvent is true.
         /// </summary>
-        public void Execute()
+        public override void Execute()
         {
             m_boolA.Value = GetResult();
 

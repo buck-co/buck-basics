@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Buck
 {
     [Serializable]
-    public class VectorOperation
+    public class VectorOperation:BaseOperation
     {
         public enum Operations{
             SetTo = 0,//vA=vB
@@ -25,10 +25,10 @@ namespace Buck
         [SerializeField] NumberReference m_numberScalar;//Used for scalar operations
         
 
-        [SerializeField] BoolReference m_raiseEvent = new BoolReference(true);
+        [SerializeField] bool m_raiseEvent = true;
 
 
-        public void Execute()
+        public override void Execute()
         {
             switch (m_vectorA.IsAVectorInt)
             {

@@ -91,6 +91,9 @@ namespace Buck
                 SerializedProperty numberScalar = property.FindPropertyRelative("m_numberScalar");
                 EditorGUILayout.PropertyField(numberScalar);
             }
+            
+            SerializedProperty raiseEvent = property.FindPropertyRelative("m_raiseEvent");
+            EditorGUILayout.PropertyField(raiseEvent);
 
             
             if (EditorGUI.EndChangeCheck())

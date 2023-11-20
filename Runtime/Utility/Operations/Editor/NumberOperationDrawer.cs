@@ -100,6 +100,18 @@ namespace Buck
                 SerializedProperty numberC = property.FindPropertyRelative("m_numberC");
                 EditorGUILayout.PropertyField(numberC);
             }
+
+            IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
+
+            if (intVarA != null)//This is an int variable
+            {
+                //Show rounding:
+                SerializedProperty rounding = property.FindPropertyRelative("m_rounding");
+                EditorGUILayout.PropertyField(rounding);
+            }
+
+            SerializedProperty raiseEvent = property.FindPropertyRelative("m_raiseEvent");
+            EditorGUILayout.PropertyField(raiseEvent);
             
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
