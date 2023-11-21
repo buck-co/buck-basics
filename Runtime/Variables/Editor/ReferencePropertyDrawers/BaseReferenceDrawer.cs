@@ -96,6 +96,13 @@ namespace Buck
 
             int result = EditorGUI.Popup(buttonRect, useVariable.boolValue ? 1 : 0, popupOptions, popupStyle);
 
+
+            if (useVariable.boolValue != (result == 1) && result == 0)
+            {
+                //The user changed to !UseVariable this frame. If that's the case, let's ensure we clear the variable field that just got hidden back to null.
+                variable.objectReferenceValue = null;
+            }
+
             useVariable.boolValue = result == 1;
 
             CreateValueGUI(position, useVariable, constantValue, variable);
