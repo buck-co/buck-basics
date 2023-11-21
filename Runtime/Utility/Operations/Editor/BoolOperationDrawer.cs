@@ -10,11 +10,6 @@ namespace Buck
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
-            label = EditorGUI.BeginProperty(position, label, property);
-            
-            EditorGUI.BeginChangeCheck();
-
             SerializedProperty operation = property.FindPropertyRelative("m_operation");
             EditorGUILayout.PropertyField(operation);
 
@@ -48,10 +43,6 @@ namespace Buck
             SerializedProperty raiseEvent = property.FindPropertyRelative("m_raiseEvent");
             EditorGUILayout.PropertyField(raiseEvent);
             
-            if (EditorGUI.EndChangeCheck())
-                property.serializedObject.ApplyModifiedProperties();
-
-            EditorGUI.EndProperty();
         }
 
     }
