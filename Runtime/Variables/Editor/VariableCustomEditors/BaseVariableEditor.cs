@@ -43,8 +43,7 @@ namespace Buck
     [CustomEditor(typeof(Vector3Variable)), CanEditMultipleObjects]
     public class Vector3VariableEditor:BaseVariableEditor{}
 
-    [CustomEditor(typeof(Vector4Variable)), CanEditMultipleObjects]
-    public class Vector4VariableEditor:BaseVariableEditor{}
+    //Vector4Variable has it's own separate editor, Vector4VariableEditor.cs
 
     
     public class BaseVariableEditor : GameEventEditor

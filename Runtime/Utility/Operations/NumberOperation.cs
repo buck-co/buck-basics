@@ -28,14 +28,23 @@ namespace Buck
             CeilToInt=2
             };
 
+        [Tooltip("The NumberVariable that this operation acts on. Supports IntVariables, FloatVariables, or DoubleVariables")]
         [SerializeField] NumberVariable m_numberA;
+
+        [Tooltip("The type of operation to execute. Most, but not all common assignments and math operations are included.")]
         [SerializeField] Operations m_operation;
 
+        [Tooltip("First NumberReference used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberB;
+
+        [Tooltip("Second NumberReference possibly used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberC;
         
+        
+        [Tooltip("These rounding operations are only available if NumberA is an IntVariable. They match Unity.Mathf operations of the same name. They are applied as the final step after the operation is calculated as floats.")]
         [SerializeField] RoundingType m_rounding = RoundingType.RoundToInt;
 
+        [Tooltip("If true, when Execute() is called NumberA's event will be raised.")]
         [SerializeField] bool m_raiseEvent = true;
 
 

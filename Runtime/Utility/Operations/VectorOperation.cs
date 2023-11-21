@@ -16,15 +16,23 @@ namespace Buck
             DivideByScalar = 6//vA/=nS
             };
 
+        [Tooltip("The VectgorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
 
+        [Tooltip("The type of operation to execute. Some, but not all common assignments and math operations you may use on a Vector are included.")]
         [SerializeField] Operations m_operation;
 
+        [Tooltip("First VectorReference used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
+
+        [Tooltip("Second VectorReference possibly used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorC;
+        
+        [Tooltip("A NumberReference used in a few of the operations as a scalar. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberScalar;//Used for scalar operations
         
 
+        [Tooltip("If true, when Execute() is called VectorA's event will be raised.")]
         [SerializeField] bool m_raiseEvent = true;
 
 

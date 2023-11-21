@@ -14,13 +14,16 @@ namespace Buck
             Toggle = 1//bA=!bA
             };
             
-
+        [Tooltip("The BoolVariable that this operation acts on.")]
         [SerializeField] BoolVariable m_boolA;
 
+        [Tooltip("The type of operation to execute. SetTo sets BoolA to BoolReference. Toggle will flip the value of BoolA (BoolA = !BoolA)")]
         [SerializeField] Operations m_operation;
+
+        [Tooltip("The value BoolA will be set to when the operation executes.")]
         [SerializeField] BoolReference m_boolB;
 
-        [Tooltip("If true, when Execute() is called m_boolA's event will be raised.")]
+        [Tooltip("If true, when Execute() is called BoolA's event will be raised.")]
         [SerializeField] bool m_raiseEvent = true;
 
         /// <summary>
