@@ -69,11 +69,6 @@ namespace Buck
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            /*
-            EditorGUI.PropertyField(position, 
-                useConstant.boolValue ? constantValue : variable, 
-                GUIContent.none);
-            */
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
 

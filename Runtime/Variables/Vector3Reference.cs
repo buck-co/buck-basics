@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class Vector3Reference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Vector3 ConstantValue;
         public Vector3Variable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public Vector3Reference(Vector3 value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Vector3 Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Vector3(Vector3Reference reference)

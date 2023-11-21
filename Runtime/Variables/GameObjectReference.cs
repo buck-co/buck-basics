@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class GameObjectReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public GameObject ConstantValue;
         public GameObjectVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public GameObjectReference(GameObject value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public GameObject Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator GameObject(GameObjectReference reference)

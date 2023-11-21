@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class DoubleReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public double ConstantValue;
         public DoubleVariable Variable;
 
@@ -14,13 +14,13 @@ namespace Buck
 
         public DoubleReference(double value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public double Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator double(DoubleReference reference)

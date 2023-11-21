@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class SpriteReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Sprite ConstantValue;
         public SpriteVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public SpriteReference(Sprite value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Sprite Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Sprite(SpriteReference reference)

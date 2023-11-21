@@ -80,7 +80,7 @@ namespace Buck
             EditorGUI.BeginChangeCheck();
 
             // Get properties
-            SerializedProperty useConstant = property.FindPropertyRelative("UseConstant");
+            SerializedProperty useVariable = property.FindPropertyRelative("UseVariable");
             SerializedProperty constantValue = property.FindPropertyRelative("ConstantValue");
             SerializedProperty variable = property.FindPropertyRelative("Variable");
 
@@ -94,17 +94,11 @@ namespace Buck
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            int result = EditorGUI.Popup(buttonRect, useConstant.boolValue ? 0 : 1, popupOptions, popupStyle);
+            int result = EditorGUI.Popup(buttonRect, useVariable.boolValue ? 1 : 0, popupOptions, popupStyle);
 
-            useConstant.boolValue = result == 0;
+            useVariable.boolValue = result == 1;
 
-            CreateValueGUI(position, useConstant, constantValue, variable);
-
-            /*
-            EditorGUI.PropertyField(position, 
-                useConstant.boolValue ? constantValue : variable, 
-                GUIContent.none);
-            */
+            CreateValueGUI(position, useVariable, constantValue, variable);
 
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
@@ -113,10 +107,10 @@ namespace Buck
             EditorGUI.EndProperty();
         }
 
-        protected virtual void CreateValueGUI(Rect position, SerializedProperty useConstant, SerializedProperty constantValue, SerializedProperty variable)
+        protected virtual void CreateValueGUI(Rect position, SerializedProperty useVariable, SerializedProperty constantValue, SerializedProperty variable)
         {
             EditorGUI.PropertyField(position, 
-                useConstant.boolValue ? constantValue : variable, 
+                useVariable.boolValue ? variable: constantValue, 
                 GUIContent.none);
         }
     }

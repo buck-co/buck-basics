@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class Vector2IntReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Vector2Int ConstantValue;
         public Vector2IntVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public Vector2IntReference(Vector2Int value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Vector2Int Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Vector2Int(Vector2IntReference reference)

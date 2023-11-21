@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class StringReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public string ConstantValue;
         public StringVariable Variable;
 
@@ -14,13 +14,13 @@ namespace Buck
 
         public StringReference(string value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public string Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator string(StringReference reference)

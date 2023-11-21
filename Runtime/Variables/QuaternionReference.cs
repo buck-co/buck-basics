@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class QuaternionReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Quaternion ConstantValue;
         public QuaternionVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public QuaternionReference(Quaternion value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Quaternion Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Quaternion(QuaternionReference reference)

@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class FloatReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public float ConstantValue;
         public FloatVariable Variable;
 
@@ -14,13 +14,13 @@ namespace Buck
 
         public FloatReference(float value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public float Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator float(FloatReference reference)

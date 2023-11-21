@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class MaterialReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Material ConstantValue;
         public MaterialVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public MaterialReference(Material value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Material Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Material(MaterialReference reference)

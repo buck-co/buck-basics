@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class ColorReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Color ConstantValue = Color.white;
         public ColorVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public ColorReference(Color value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Color Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Color(ColorReference reference)

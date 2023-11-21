@@ -6,7 +6,7 @@ namespace Buck
     [Serializable]
     public class Texture2DReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public Texture2D ConstantValue;
         public Texture2DVariable Variable;
 
@@ -15,13 +15,13 @@ namespace Buck
 
         public Texture2DReference(Texture2D value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public Texture2D Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator Texture2D(Texture2DReference reference)

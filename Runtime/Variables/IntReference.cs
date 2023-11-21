@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class IntReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public int ConstantValue;
         public IntVariable Variable;
 
@@ -14,13 +14,13 @@ namespace Buck
 
         public IntReference(int value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public int Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ? Variable.Value : ConstantValue; }
         }
 
         public static implicit operator int(IntReference reference)

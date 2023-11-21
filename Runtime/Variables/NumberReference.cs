@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class NumberReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public float ConstantValue;
         public NumberVariable Variable;
 
@@ -14,28 +14,28 @@ namespace Buck
 
         public NumberReference(float value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public int ValueInt
         {
-            get { return UseConstant ? (int)(ConstantValue) : Variable.ValueInt; }
+            get { return UseVariable ? Variable.ValueInt:(int)(ConstantValue); }
         }
 
         public float ValueFloat
         {
-            get { return UseConstant ? ConstantValue : Variable.ValueFloat; }
+            get { return UseVariable ? Variable.ValueFloat:ConstantValue; }
         }
 
         public double ValueDouble
         {
-            get { return UseConstant ? (double)(ConstantValue) : Variable.ValueDouble; }
+            get { return UseVariable ? Variable.ValueDouble:(double)(ConstantValue); }
         }
 
         public System.TypeCode TypeCode
         {
-            get { return UseConstant ? System.TypeCode.Single : Variable.TypeCode; }
+            get { return UseVariable ? Variable.TypeCode:System.TypeCode.Single; }
         }
 
         public static implicit operator int(NumberReference reference)

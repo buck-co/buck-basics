@@ -5,7 +5,7 @@ namespace Buck
     [Serializable]
     public class BoolReference
     {
-        public bool UseConstant = true;
+        public bool UseVariable = false;
         public bool ConstantValue;
         public BoolVariable Variable;
 
@@ -14,13 +14,13 @@ namespace Buck
 
         public BoolReference(bool value)
         {
-            UseConstant = true;
+            UseVariable = false;
             ConstantValue = value;
         }
 
         public bool Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get { return UseVariable ?  Variable.Value : ConstantValue; }
         }
 
         public static implicit operator bool(BoolReference reference)
