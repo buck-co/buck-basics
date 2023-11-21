@@ -1,4 +1,4 @@
-﻿//#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -18,6 +18,10 @@ namespace Buck
             //This puts them in a single line like how Vector3 acts.
             if (useVariable.boolValue)
             {
+                //Tint field light red if this Reference is using the variable but the variable is null (likely to create errors)
+                if (variable.objectReferenceValue == null)
+                    GUI.backgroundColor = new Color(1f, .75f, .75f, 1f);
+
                 EditorGUI.PropertyField(position, variable, GUIContent.none);
             }
             else
@@ -28,4 +32,4 @@ namespace Buck
         }
     }
 }
-//#endif
+#endif

@@ -109,9 +109,18 @@ namespace Buck
 
         protected virtual void CreateValueGUI(Rect position, SerializedProperty useVariable, SerializedProperty constantValue, SerializedProperty variable)
         {
-            EditorGUI.PropertyField(position, 
-                useVariable.boolValue ? variable: constantValue, 
-                GUIContent.none);
+            if (useVariable.boolValue)
+            {
+                //Tint field light red if this Reference is using the variable but the variable is null (likely to create errors)
+                if (variable.objectReferenceValue == null)
+                    GUI.backgroundColor = new Color(1f, .75f, .75f, 1f);
+                
+                EditorGUI.PropertyField(position, variable, GUIContent.none);
+            }
+            else
+            {
+                EditorGUI.PropertyField(position, constantValue, GUIContent.none);
+            }
         }
     }
 }

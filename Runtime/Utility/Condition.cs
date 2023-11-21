@@ -395,24 +395,31 @@ namespace Buck
 
             switch (m_variableType)
             {
-                case VariableType.Number:
+                case VariableType.Bool:
                     {
-                        Assert.IsNotNull(m_numberA, "m_numberA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_numberB, "m_numberB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        if (m_boolA.UseVariable)
+                            Assert.IsNotNull(m_boolA, "m_boolA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                            
+                        if (m_boolB.UseVariable)
+                            Assert.IsNotNull(m_boolB, "m_boolB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
                         break;
                     }
 
-                case VariableType.Bool:
+                case VariableType.Number:
                     {
-                        Assert.IsNotNull(m_boolA, "m_boolA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_boolB, "m_boolB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        if (m_numberA.UseVariable)
+                            Assert.IsNotNull(m_numberA, "m_numberA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        if (m_numberB.UseVariable)
+                            Assert.IsNotNull(m_numberB, "m_numberB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
                         break;
                     }
 
                 case VariableType.Vector:
                     {
-                        Assert.IsNotNull(m_vectorA, "m_vectorA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
-                        Assert.IsNotNull(m_vectorB, "m_vectorB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        if (m_vectorA.UseVariable)
+                            Assert.IsNotNull(m_vectorA, "m_vectorA is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
+                        if (m_vectorB.UseVariable)
+                            Assert.IsNotNull(m_vectorB, "m_vectorB is null in a comparison called by " + stackTrace.GetFrame(traceLevel).GetMethod().Name);
                         break;
                     }
 
