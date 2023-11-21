@@ -100,14 +100,20 @@ namespace Buck
 
         [Tooltip("Use the dropdown to pick which type of Variable you wish to compare.")]
         [SerializeField] VariableType m_variableType = VariableType.Bool;
+        [Tooltip("The left side Bool in condition boolean logic.")]
         [SerializeField] BoolReference m_boolA;
+        [Tooltip("The left side NumberReference in condition boolean logic. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberA;
+        [Tooltip("The left side VectorReference in condition boolean logic. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorA;
 
-        [Tooltip("Use the dropdown to pick what kind of boolean comparison you want to use to compare the variables. Booleans will cast to 0 or 1 for size comparions. Vector3 will use magnitude.")]
+        [Tooltip("Use the dropdown to pick what kind of boolean comparison you want to use to compare the two reference objects. For size comparisons, Booleans will cast to 0 (false) or 1 (true). Vectors will use each of their magnitudes.")]
         [SerializeField] BooleanComparisons m_comparison = BooleanComparisons.EqualTo;
+        [Tooltip("The right side Bool in condition boolean logic.")]
         [SerializeField] BoolReference m_boolB;
+        [Tooltip("The right side NumberReference in condition boolean logic. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberB;
+        [Tooltip("The right side VectorReference in condition boolean logic. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
         
         /// <summary>
