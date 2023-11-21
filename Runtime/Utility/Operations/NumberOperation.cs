@@ -45,9 +45,10 @@ namespace Buck
         [SerializeField] RoundingType m_rounding = RoundingType.RoundToInt;
 
         [Tooltip("If true, when Execute() is called NumberA's event will be raised.")]
-        [SerializeField] bool m_raiseEvent = true;
+        [SerializeField] BoolReference m_raiseEvent;
 
-
+        [SerializeField, HideInInspector]bool m_serialized = false;
+        public override bool Serialized {get=> m_serialized; set{m_serialized = value;}}
 
         public override void Execute()
         {
@@ -174,6 +175,20 @@ namespace Buck
                 case Operations.Pow://nA=nB^nC
                     return (double)(Mathf.Pow(m_numberB.ValueFloat, m_numberC.ValueFloat));
                     
+            }
+        }        
+        
+        public override void OnBeforeSerialize()
+        {
+
+        }
+
+        public override void OnAfterDeserialize()
+        {
+            if (!Serialized)
+            {
+                m_raiseEvent = new BoolReference(true);
+                Serialized = true;
             }
         }
 

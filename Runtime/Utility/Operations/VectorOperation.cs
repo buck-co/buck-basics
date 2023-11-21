@@ -33,7 +33,9 @@ namespace Buck
         
 
         [Tooltip("If true, when Execute() is called VectorA's event will be raised.")]
-        [SerializeField] bool m_raiseEvent = true;
+        [SerializeField] BoolReference m_raiseEvent;
+        [SerializeField, HideInInspector]bool m_serialized = false;
+        public override bool Serialized {get=> m_serialized; set{m_serialized = value;}}
 
 
         public override void Execute()
@@ -149,6 +151,20 @@ namespace Buck
                 case Operations.DivideByScalar://nA=nB/nS
                     return m_vectorA.ValueVector3Int / m_numberScalar.ValueInt;
 
+            }
+        }
+
+        public override void OnBeforeSerialize()
+        {
+
+        }
+
+        public override void OnAfterDeserialize()
+        {
+            if (!Serialized)
+            {
+                m_raiseEvent = new BoolReference(true);
+                Serialized = true;
             }
         }
 

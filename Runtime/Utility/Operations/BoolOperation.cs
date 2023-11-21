@@ -24,7 +24,9 @@ namespace Buck
         [SerializeField] BoolReference m_boolB;
 
         [Tooltip("If true, when Execute() is called BoolA's event will be raised.")]
-        [SerializeField] bool m_raiseEvent = true;
+        [SerializeField] BoolReference m_raiseEvent = new BoolReference(true);
+        [SerializeField, HideInInspector]bool m_serialized = false;
+        public override bool Serialized {get=> m_serialized; set{m_serialized = value;}}
 
         /// <summary>
         /// Applies the operation and sets BoolA. Raises BoolA's event if RaiseEvent is true.
@@ -52,6 +54,20 @@ namespace Buck
                 
                 case Operations.Toggle:
                     return !m_boolA.Value;
+            }
+        }
+
+        public override void OnBeforeSerialize()
+        {
+            
+        }
+
+        public override void OnAfterDeserialize()
+        {
+            if (!Serialized)
+            {
+                m_raiseEvent = new BoolReference(true);
+                Serialized = true;
             }
         }
 

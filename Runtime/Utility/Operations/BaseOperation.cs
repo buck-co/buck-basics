@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Buck
 {
@@ -23,8 +24,13 @@ namespace Buck
             
     }
 
-    public abstract class BaseOperation
+    public abstract class BaseOperation : ISerializationCallbackReceiver
     {
+
+        public abstract bool Serialized{get; set;}
         public abstract void Execute();
+
+        public abstract void OnBeforeSerialize();
+        public abstract void OnAfterDeserialize();
     }
 }
