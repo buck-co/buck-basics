@@ -7,6 +7,10 @@ namespace Buck
     public class BaseOperationDrawer : PropertyDrawer
     {
 
+        protected void DrawTextFieldGUI(Rect position, string s, GUIStyle style)
+        {
+            EditorGUI.LabelField(position, s, style);
+        }
         protected GUIStyle CenteredLightLabel
         {
             get

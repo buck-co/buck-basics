@@ -14,15 +14,20 @@ namespace Buck
 
             position.height = EditorGUIUtility.singleLineHeight;
             label = EditorGUI.BeginProperty(position, label, property);
-            //position = EditorGUI.PrefixLabel(position, label);
-            
             EditorGUI.BeginChangeCheck();
+
+
+            EditorGUI.PrefixLabel(position, label);
+
+            int indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel += 2;
+            
 
             SerializedProperty variableType = property.FindPropertyRelative("m_variableType");
             
+            position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, variableType);
             
-
 
             SerializedProperty var_A = null;
             SerializedProperty var_B = null;
@@ -65,9 +70,7 @@ namespace Buck
             if (var_B != null)
                 EditorGUI.PropertyField(position, var_B);
 
-            // Store old indent level and set it to 0, the PrefixLabel takes care of it
-            int indent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
+
 
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
@@ -77,7 +80,7 @@ namespace Buck
         }
 
         public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
-            return EditorGUIUtility.singleLineHeight * 4;
+            return EditorGUIUtility.singleLineHeight * 5;
         }
     }
 }

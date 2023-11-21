@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -10,8 +10,20 @@ namespace Buck
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+
+            position.height = EditorGUIUtility.singleLineHeight;
+            label = EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUI.PrefixLabel(position, label);
+
+            int indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel += 2;
+
             SerializedProperty operation = property.FindPropertyRelative("m_operation");
-            EditorGUILayout.PropertyField(operation);
+
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, operation);
 
             SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
 
@@ -19,7 +31,8 @@ namespace Buck
             if (numberA.objectReferenceValue == null)
                 GUI.backgroundColor = new Color(1f, .75f, .75f, 1f);
 
-            EditorGUILayout.PropertyField(numberA);
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, numberA);
 
             GUI.backgroundColor = Color.white;//Clear tint if it got set
             
@@ -30,60 +43,60 @@ namespace Buck
             bool drawNumC = false;
             string bToCOperation ="";//Only used if drawing num c
 
-
+            position.y += EditorGUIUtility.singleLineHeight;
 
             switch (numOperation)
             {
                 case NumberOperation.Operations.SetTo:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "=", style);
                     break;
 
                 case NumberOperation.Operations.AdditionAssignment:
-                    EditorGUILayout.LabelField("+=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "+=", style);
                     break;
 
                 case NumberOperation.Operations.SubtractionAssignment:
-                    EditorGUILayout.LabelField("-=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "-=", style);
                     break;
 
                 case NumberOperation.Operations.MultiplicationAssignment:
-                    EditorGUILayout.LabelField("*=", style, GUILayout.ExpandWidth(true)); 
+                    base.DrawTextFieldGUI(position, "*=", style);
                     break;
 
                 case NumberOperation.Operations.DivisionAssignment:
-                    EditorGUILayout.LabelField("/=", style, GUILayout.ExpandWidth(true)); 
+                    base.DrawTextFieldGUI(position, "/=", style);
                     break;
 
                 case NumberOperation.Operations.PowAssignment:
-                    EditorGUILayout.LabelField("^=", style, GUILayout.ExpandWidth(true)); 
+                    base.DrawTextFieldGUI(position, "^=", style);
                     break;
 
                 case NumberOperation.Operations.Addition:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "=", style);
                     drawNumC = true;
                     bToCOperation = "+";
                     break;
 
                 case NumberOperation.Operations.Subtraction:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "=", style);
                     drawNumC = true;
                     bToCOperation = "-"; 
                     break;
                     
                 case NumberOperation.Operations.Multiplication:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true)); 
+                    base.DrawTextFieldGUI(position, "=", style);
                     drawNumC = true;
                     bToCOperation = "*";
                     break;
 
                 case NumberOperation.Operations.Division:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true)); 
+                    base.DrawTextFieldGUI(position, "=", style);
                     drawNumC = true;
                     bToCOperation = "/";
                     break;
                     
                 case NumberOperation.Operations.Pow:
-                    EditorGUILayout.LabelField("=", style, GUILayout.ExpandWidth(true));
+                    base.DrawTextFieldGUI(position, "=", style);
                     drawNumC = true;
                     bToCOperation = "^"; 
                     break;
@@ -93,14 +106,19 @@ namespace Buck
 
             
             SerializedProperty numberB = property.FindPropertyRelative("m_numberB");
-            EditorGUILayout.PropertyField(numberB);
+
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, numberB);
          
             if (drawNumC)
             {
-                EditorGUILayout.LabelField(bToCOperation, style, GUILayout.ExpandWidth(true));
+                position.y += EditorGUIUtility.singleLineHeight;
+                base.DrawTextFieldGUI(position, bToCOperation, style);
                 
                 SerializedProperty numberC = property.FindPropertyRelative("m_numberC");
-                EditorGUILayout.PropertyField(numberC);
+
+                position.y += EditorGUIUtility.singleLineHeight;
+                EditorGUI.PropertyField(position, numberC);
             }
 
             IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
@@ -109,13 +127,51 @@ namespace Buck
             {
                 //Show rounding:
                 SerializedProperty rounding = property.FindPropertyRelative("m_rounding");
-                EditorGUILayout.PropertyField(rounding);
+
+                position.y += EditorGUIUtility.singleLineHeight;
+                EditorGUI.PropertyField(position, rounding);
             }
 
             SerializedProperty raiseEvent = property.FindPropertyRelative("m_raiseEvent");
-            EditorGUILayout.PropertyField(raiseEvent);
+
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, raiseEvent);
+
+            
+            if (EditorGUI.EndChangeCheck())
+                property.serializedObject.ApplyModifiedProperties();
+
+            EditorGUI.indentLevel = indent;
+            EditorGUI.EndProperty();
+        }
+
+        
+        public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
+            
+
+            int add = 0;
+            SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
+            IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
+
+            if (intVarA != null)//This is an int variable
+                add+=1;//Add an extra line for RoundToIntField
+
+
+            SerializedProperty operation = property.FindPropertyRelative("m_operation");
+            NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
+
+            if (numOperation == NumberOperation.Operations.Addition ||
+                numOperation == NumberOperation.Operations.Subtraction ||
+                numOperation == NumberOperation.Operations.Multiplication ||
+                numOperation == NumberOperation.Operations.Pow
+            )
+                add+=2;//Add two extra lines for number operations that feature to more fields of lines (numvarC and bToCOperation)
+
+
+
+            return EditorGUIUtility.singleLineHeight * (6+add);
         }
 
     }
 }
-#endif
+//#endif
