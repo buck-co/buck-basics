@@ -61,11 +61,7 @@ namespace Buck
     }
 
     
-    /// <summary>
-    /// A serializable class that can be used to define basic boolean conditional logic comparing two variables. 
-    /// Supports Int, Bool, Float, and Vector3. Uses Buck Basic VariableReferences to support optionally referencing Buck Basics Scriptable Object Variables.
-    /// See script for usage examples./// 
-    /// </summary>
+
     
     /*Usage example (in a Monobehaviour):
         [SerializeField] Condition m_singleCondition; //Define this in the monobehaviour's inspector
@@ -86,8 +82,11 @@ namespace Buck
     */
 
     
-
-    
+    /// <summary>
+    /// A serializable class that can be used to define basic boolean conditional logic comparing two variables. 
+    /// Supports Int, Bool, Float, and Vector3. Uses Buck Basic VariableReferences to support optionally referencing Buck Basics Scriptable Object Variables.
+    /// See script for usage examples./// 
+    /// </summary>
     [Serializable]
     public class Condition
     {
@@ -118,8 +117,6 @@ namespace Buck
         
         /// <summary>
         /// Checks if the defined condition results in true or false.
-        /// </summary> <summary>
-        /// 
         /// </summary>
         /// <value></value>
         public bool PassCondition
