@@ -163,6 +163,7 @@ namespace Buck
             if (numOperation == NumberOperation.Operations.Addition ||
                 numOperation == NumberOperation.Operations.Subtraction ||
                 numOperation == NumberOperation.Operations.Multiplication ||
+                numOperation == NumberOperation.Operations.Division ||
                 numOperation == NumberOperation.Operations.Pow
             )
                 add+=2;//Add two extra lines for number operations that feature to more fields of lines (numvarC and bToCOperation)

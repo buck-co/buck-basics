@@ -114,6 +114,12 @@ namespace Buck
                     return m_numberA.ValueFloat * m_numberB.ValueFloat;
 
                 case Operations.DivisionAssignment://nA/=nB
+                    if (m_numberB.ValueFloat == 0f)
+                    {
+                        Debug.LogWarning("NumberOperation attempted divide by zero. Using Mathf.Infinity as the result.");
+                        return Mathf.Infinity;
+                    }
+
                     return m_numberA.ValueFloat / m_numberB.ValueFloat;
 
                 case Operations.PowAssignment://nA^=nB
@@ -129,6 +135,13 @@ namespace Buck
                     return m_numberB.ValueFloat * m_numberC.ValueFloat;
 
                 case Operations.Division://nA=nB/nC
+
+                    if (m_numberC.ValueFloat == 0f)
+                    {
+                        Debug.LogWarning("NumberOperation attempted divide by zero. Using Mathf.Infinity as the result.");
+                        return Mathf.Infinity;
+                    }
+
                     return m_numberB.ValueFloat / m_numberC.ValueFloat;
 
                 case Operations.Pow://nA=nB^nC
@@ -155,6 +168,12 @@ namespace Buck
                     return m_numberA.ValueDouble * m_numberB.ValueDouble;
 
                 case Operations.DivisionAssignment://nA/=nB
+                    if (m_numberB.ValueDouble == 0d)
+                    {
+                        Debug.LogWarning("NumberOperation attempted divide by zero. Using Mathf.Infinity as the result.");
+                        return Mathf.Infinity;
+                    }
+
                     return m_numberA.ValueDouble / m_numberB.ValueDouble;
 
                 case Operations.PowAssignment://nA^=nB
@@ -170,6 +189,12 @@ namespace Buck
                     return m_numberB.ValueDouble * m_numberC.ValueDouble;
 
                 case Operations.Division://nA=nB/nC
+                    if (m_numberC.ValueDouble == 0d)
+                    {
+                        Debug.LogWarning("NumberOperation attempted divide by zero. Using Mathf.Infinity as the result.");
+                        return Mathf.Infinity;
+                    }
+
                     return m_numberB.ValueDouble / m_numberC.ValueDouble;
 
                 case Operations.Pow://nA=nB^nC
