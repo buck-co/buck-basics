@@ -11,6 +11,8 @@ namespace Buck
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
 
+            GUIStyle style = base.CenteredLightLabel;
+
             position.height = EditorGUIUtility.singleLineHeight;
             label = EditorGUI.BeginProperty(position, label, property);
             EditorGUI.BeginChangeCheck();
@@ -25,6 +27,13 @@ namespace Buck
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, operation);
 
+            SerializedProperty useMultiplier = property.FindPropertyRelative("m_useMultiplier");
+            bool usingMultiplier = BoolReferencePropertyIsTrue(useMultiplier);
+
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, useMultiplier);
+
+
             SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
 
             //Tint the A variable's background color light red if the variable is left null, to help clue the user into errors
@@ -33,11 +42,11 @@ namespace Buck
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, numberA);
-
-            GUI.backgroundColor = Color.white;//Clear tint if it got set
             
-            GUIStyle style = base.CenteredLightLabel;
+            GUI.backgroundColor = Color.white;//Clear tint if it got set
 
+            
+            
             NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
 
             bool drawNumC = false;
@@ -105,6 +114,13 @@ namespace Buck
             }
 
             
+            if (usingMultiplier)
+            {
+                position.y += EditorGUIUtility.singleLineHeight;
+                base.DrawTextFieldGUI(position, "(", style);
+            }
+
+            
             SerializedProperty numberB = property.FindPropertyRelative("m_numberB");
 
             position.y += EditorGUIUtility.singleLineHeight;
@@ -119,6 +135,21 @@ namespace Buck
 
                 position.y += EditorGUIUtility.singleLineHeight;
                 EditorGUI.PropertyField(position, numberC);
+            }
+
+            if (usingMultiplier)
+            {
+                position.y += EditorGUIUtility.singleLineHeight;
+                base.DrawTextFieldGUI(position, ")", style);
+                position.y += EditorGUIUtility.singleLineHeight;
+                base.DrawTextFieldGUI(position, "*", style);
+
+
+                
+                SerializedProperty numberMultiplier = property.FindPropertyRelative("m_numberMultiplier");
+
+                position.y += EditorGUIUtility.singleLineHeight;
+                EditorGUI.PropertyField(position, numberMultiplier);
             }
 
             IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
@@ -168,9 +199,33 @@ namespace Buck
             )
                 add+=2;//Add two extra lines for number operations that feature to more fields of lines (numvarC and bToCOperation)
 
+            
+
+            bool useMultiply = BoolReferencePropertyIsTrue(property.FindPropertyRelative("m_useMultiplier"));
+
+            if (useMultiply)
+            {
+                add+=4;//Add 3 extra lines if we are using multiplier
+            }
 
 
-            return EditorGUIUtility.singleLineHeight * (6+add);
+            return EditorGUIUtility.singleLineHeight * (7+add);
+        }
+
+        public bool BoolReferencePropertyIsTrue(SerializedProperty boolReferenceSerializedProperty)
+        {
+            
+            if (!boolReferenceSerializedProperty.FindPropertyRelative("UseVariable").boolValue)
+            {
+                if (boolReferenceSerializedProperty.FindPropertyRelative("ConstantValue").boolValue)
+                    return true;
+            }
+            else
+            {
+                return true;//If using a variable we want to display the multiplier even if the current state is false (could become true at runtime)
+            }
+
+            return false;
         }
 
     }
