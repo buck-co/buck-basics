@@ -8,7 +8,7 @@ namespace Buck
     {
 
         
-        [Tooltip("Will log all value changes and event calls made by this variable if true and running in Editor or a Development Build.")]
+        [Tooltip("Will log all runtime interactions with this object if true and running in Editor or a Development Build.")]
         [SerializeField] protected bool m_debugChanges;
 
 

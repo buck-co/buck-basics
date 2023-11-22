@@ -24,15 +24,51 @@ namespace Buck
             
 
             SerializedProperty variableType = property.FindPropertyRelative("m_variableType");
+
+
+            Condition.VariableType prevVariableType = (Condition.VariableType)(variableType.enumValueIndex);
             
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, variableType);
+
+            Condition.VariableType afterVariableType = (Condition.VariableType)(variableType.enumValueIndex);
+
+            if (prevVariableType != afterVariableType)//The user just changed the Condition variable type
+            {
+                //Find variables of the type the user just changed from and clear them to null:
+                switch (prevVariableType)
+                {
+                    case Condition.VariableType.Bool:
+                        property.FindPropertyRelative("m_boolA").FindPropertyRelative("ConstantValue").boolValue = false;
+                        ClearReference(property, "m_boolA");
+                        property.FindPropertyRelative("m_boolB").FindPropertyRelative("ConstantValue").boolValue = false;
+                        ClearReference(property, "m_boolB");
+                    break;
+
+                    case Condition.VariableType.Number:
+                        property.FindPropertyRelative("m_numberA").FindPropertyRelative("ConstantValue").floatValue = 0f;
+                        ClearReference(property, "m_numberA");
+                        property.FindPropertyRelative("m_numberB").FindPropertyRelative("ConstantValue").floatValue = 0f;
+                        ClearReference(property, "m_numberB");
+                    break;
+
+                    case Condition.VariableType.Vector:
+                        property.FindPropertyRelative("m_vectorA").FindPropertyRelative("ConstantValue").vector4Value = Vector4.zero;
+                        ClearReference(property, "m_vectorA");
+                        property.FindPropertyRelative("m_vectorB").FindPropertyRelative("ConstantValue").vector4Value = Vector4.zero;
+                        ClearReference(property, "m_vectorB");
+                    break;
+
+                    default:
+                    break;
+                }
+            }
             
 
             SerializedProperty var_A = null;
             SerializedProperty var_B = null;
 
-            switch ((Condition.VariableType)(variableType.enumValueIndex))
+            switch (afterVariableType)
             {
                 case Condition.VariableType.Bool:
                    var_A = property.FindPropertyRelative("m_boolA");
@@ -77,6 +113,17 @@ namespace Buck
 
             EditorGUI.indentLevel = indent;
             EditorGUI.EndProperty();
+        }
+
+        /// <summary>
+        /// Resets a generic reference property to UseVariable = false and clears the variable to null
+        /// </summary>
+        /// <param name="rootProperty"></param>
+        /// <param name="variableReferenceName"></param>
+        void ClearReference(SerializedProperty rootProperty, string variableReferenceName)
+        {
+            rootProperty.FindPropertyRelative(variableReferenceName).FindPropertyRelative("UseVariable").boolValue = false;
+            rootProperty.FindPropertyRelative(variableReferenceName).FindPropertyRelative("Variable").objectReferenceValue = null;
         }
 
         public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {

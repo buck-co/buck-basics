@@ -115,12 +115,14 @@ namespace Buck
         [Tooltip("The right side VectorReference in condition boolean logic. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
         
-        /// <summary>
-        /// Checks if the defined condition results in true or false.
-        /// </summary>
-        /// <value></value>
+    
+        /// <value>Checks if the defined condition results in true or false.</value>
         public bool PassCondition
         {
+            /// <summary>
+            /// Summary!
+            /// </summary>
+            /// <value></value>
             get
             {
                 #if UNITY_EDITOR
@@ -162,6 +164,7 @@ namespace Buck
                             */
 
                             System.TypeCode highestPrecision = HighestPrecision(m_numberA.TypeCode, m_numberB.TypeCode);
+
                             switch(highestPrecision)
                             {
                                 case System.TypeCode.Int32:
@@ -330,18 +333,18 @@ namespace Buck
                                         switch (m_comparison)
                                         {
                                         case BooleanComparisons.EqualTo:
-                                            return m_vectorA.ValueVector3 == m_vectorB.ValueVector3;
+                                            return m_vectorA.ValueVector4 == m_vectorB.ValueVector4;
                                         case BooleanComparisons.NotEqualTo:
-                                            return m_vectorA.ValueVector3 != m_vectorB.ValueVector3;
+                                            return m_vectorA.ValueVector4 != m_vectorB.ValueVector4;
                                         //Less than and greater than comparisons for vectors use magnitudes (kind of weird, but could be useful at some point?)
                                         case BooleanComparisons.LessThan:
-                                            return m_vectorA.ValueVector3.magnitude < m_vectorB.ValueVector3.magnitude;
+                                            return m_vectorA.ValueVector4.magnitude < m_vectorB.ValueVector4.magnitude;
                                         case BooleanComparisons.LessThanOrEqualTo:
-                                            return  m_vectorA.ValueVector3.magnitude <= m_vectorB.ValueVector3.magnitude; 
+                                            return  m_vectorA.ValueVector4.magnitude <= m_vectorB.ValueVector4.magnitude; 
                                         case BooleanComparisons.GreaterThan:
-                                            return  m_vectorA.ValueVector3.magnitude > m_vectorB.ValueVector3.magnitude;
+                                            return  m_vectorA.ValueVector4.magnitude > m_vectorB.ValueVector4.magnitude;
                                         case BooleanComparisons.GreaterThanOrEqualTo:
-                                            return  m_vectorA.ValueVector3.magnitude >= m_vectorB.ValueVector3.magnitude;
+                                            return  m_vectorA.ValueVector4.magnitude >= m_vectorB.ValueVector4.magnitude;
                                         default:
                                             return false;
                                         }
@@ -358,6 +361,7 @@ namespace Buck
                 }
             }
         }
+
 
         System.TypeCode HighestPrecision(System.TypeCode typeA, System.TypeCode typeB)
         {
