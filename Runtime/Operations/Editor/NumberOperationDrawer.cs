@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Buck
 {
+    
     [CustomPropertyDrawer(typeof(NumberOperation))]
     public class NumberOperationDrawer : BaseOperationDrawer
     {
@@ -27,11 +28,12 @@ namespace Buck
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, operation);
 
-            SerializedProperty useMultiplier = property.FindPropertyRelative("m_useMultiplier");
-            bool usingMultiplier = BoolReferencePropertyIsTrue(useMultiplier);
+            
+            SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
 
             position.y += EditorGUIUtility.singleLineHeight;
-            EditorGUI.PropertyField(position, useMultiplier);
+            EditorGUI.PropertyField(position, rightHandArithmetic);
+
 
 
             SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
@@ -48,9 +50,6 @@ namespace Buck
             
             
             NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
-
-            bool drawNumC = false;
-            string bToCOperation ="";//Only used if drawing num c
 
             position.y += EditorGUIUtility.singleLineHeight;
 
@@ -80,77 +79,53 @@ namespace Buck
                     base.DrawTextFieldGUI(position, "^=", style);
                     break;
 
-                case NumberOperation.Operations.Addition:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumC = true;
-                    bToCOperation = "+";
-                    break;
-
-                case NumberOperation.Operations.Subtraction:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumC = true;
-                    bToCOperation = "-"; 
-                    break;
-                    
-                case NumberOperation.Operations.Multiplication:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumC = true;
-                    bToCOperation = "*";
-                    break;
-
-                case NumberOperation.Operations.Division:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumC = true;
-                    bToCOperation = "/";
-                    break;
-                    
-                case NumberOperation.Operations.Pow:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumC = true;
-                    bToCOperation = "^"; 
-                    break;
-
-
             }
 
-            
-            if (usingMultiplier)
-            {
-                position.y += EditorGUIUtility.singleLineHeight;
-                base.DrawTextFieldGUI(position, "(", style);
-            }
 
             
             SerializedProperty numberB = property.FindPropertyRelative("m_numberB");
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, numberB);
-         
-            if (drawNumC)
+
+            
+
+            NumberOperation.RightHandArithmetic rHandArithmetic = (NumberOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
+
+            if (rHandArithmetic != NumberOperation.RightHandArithmetic.None)
             {
                 position.y += EditorGUIUtility.singleLineHeight;
-                base.DrawTextFieldGUI(position, bToCOperation, style);
-                
+
+                switch (rHandArithmetic)
+                {
+                    case NumberOperation.RightHandArithmetic.Addition:
+                        base.DrawTextFieldGUI(position, "+", style);
+                        break;
+
+                    case NumberOperation.RightHandArithmetic.Subtraction:
+                        base.DrawTextFieldGUI(position, "-", style);
+                        break;
+                        
+                    case NumberOperation.RightHandArithmetic.Multiplication:
+                        base.DrawTextFieldGUI(position, "*", style);
+                        break;
+                        
+                    case NumberOperation.RightHandArithmetic.Division:
+                        base.DrawTextFieldGUI(position, "/", style);
+                        break;
+                        
+                    case NumberOperation.RightHandArithmetic.Pow:
+                        base.DrawTextFieldGUI(position, "^", style);
+                        break;
+
+                }
+
                 SerializedProperty numberC = property.FindPropertyRelative("m_numberC");
 
                 position.y += EditorGUIUtility.singleLineHeight;
                 EditorGUI.PropertyField(position, numberC);
             }
-
-            if (usingMultiplier)
-            {
-                position.y += EditorGUIUtility.singleLineHeight;
-                base.DrawTextFieldGUI(position, ")", style);
-                position.y += EditorGUIUtility.singleLineHeight;
-                base.DrawTextFieldGUI(position, "*", style);
-
-
-                
-                SerializedProperty numberMultiplier = property.FindPropertyRelative("m_numberMultiplier");
-
-                position.y += EditorGUIUtility.singleLineHeight;
-                EditorGUI.PropertyField(position, numberMultiplier);
-            }
+         
 
             IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
 
@@ -188,46 +163,23 @@ namespace Buck
                 add+=1;//Add an extra line for RoundToIntField
 
 
-            SerializedProperty operation = property.FindPropertyRelative("m_operation");
-            NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
+            
+            SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
+            NumberOperation.RightHandArithmetic rHandArithmetic = (NumberOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
 
-            if (numOperation == NumberOperation.Operations.Addition ||
-                numOperation == NumberOperation.Operations.Subtraction ||
-                numOperation == NumberOperation.Operations.Multiplication ||
-                numOperation == NumberOperation.Operations.Division ||
-                numOperation == NumberOperation.Operations.Pow
-            )
-                add+=2;//Add two extra lines for number operations that feature to more fields of lines (numvarC and bToCOperation)
 
             
-
-            bool useMultiply = BoolReferencePropertyIsTrue(property.FindPropertyRelative("m_useMultiplier"));
-
-            if (useMultiply)
+            if (rHandArithmetic != NumberOperation.RightHandArithmetic.None)
             {
-                add+=4;//Add 3 extra lines if we are using multiplier
+                add+=2;//Add two extra lines for number operations that feature a third field and an additional arithmetic
             }
+            
 
 
             return EditorGUIUtility.singleLineHeight * (7+add);
         }
 
-        public bool BoolReferencePropertyIsTrue(SerializedProperty boolReferenceSerializedProperty)
-        {
-            
-            if (!boolReferenceSerializedProperty.FindPropertyRelative("UseVariable").boolValue)
-            {
-                if (boolReferenceSerializedProperty.FindPropertyRelative("ConstantValue").boolValue)
-                    return true;
-            }
-            else
-            {
-                return true;//If using a variable we want to display the multiplier even if the current state is false (could become true at runtime)
-            }
-
-            return false;
-        }
-
     }
+    
 }
 //#endif
