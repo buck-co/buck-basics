@@ -166,8 +166,6 @@ namespace Buck
             
             SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
             NumberOperation.RightHandArithmetic rHandArithmetic = (NumberOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
-
-
             
             if (rHandArithmetic != NumberOperation.RightHandArithmetic.None)
             {

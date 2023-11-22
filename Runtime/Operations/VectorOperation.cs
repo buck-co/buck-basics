@@ -10,17 +10,25 @@ namespace Buck
             SetTo = 0,//vA=vB
             AdditionAssignment = 1,//vA+=vB
             SubtractionAssignment = 2,//vA-=vB
-            Addition = 3,//vA=vB+vC
-            Subtraction = 4,//vA=vB-vC
-            MultiplyByScalar = 5,//vA*=nS
-            DivideByScalar = 6//vA/=nS
             };
+
+        public enum RightHandArithmetic
+        {
+            None = 0,
+            Addition = 1,//+
+            Subtraction = 2,//-
+            ScalarMultiplication = 3,//*
+            ScalarDivision = 4,// /
+        }
 
         [Tooltip("The VectgorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
 
-        [Tooltip("The type of operation to execute. Some, but not all common assignments and math operations you may use on a Vector are included.")]
+        [Tooltip("The type of assignment operation to execute. Scalar multiplication + division is not supported here, but instead done using the Right Hand Arithmetic setting.")]
         [SerializeField] Operations m_operation;
+
+        [Tooltip("An additional modifier of the right side of the assignemtn using common arithmetic. Adds a third variable if !None.")]
+        [SerializeField] RightHandArithmetic m_rightHandArithmetic;
 
         [Tooltip("First VectorReference used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
@@ -97,26 +105,36 @@ namespace Buck
             {
                 default:
                 case Operations.SetTo://vA=vB
-                    return m_vectorB;
+                    return GetRightHandVector4();
 
                 case Operations.AdditionAssignment://vA+=vB
-                    return m_vectorA.ValueVector4 + m_vectorB.ValueVector4;
+                    return m_vectorA.ValueVector4 + GetRightHandVector4();
 
                 case Operations.SubtractionAssignment://vA-=vB
-                    return m_vectorA.ValueVector4 - m_vectorB.ValueVector4;
-                    
-                case Operations.Addition://vA=vB+vC
+                    return m_vectorA.ValueVector4 - GetRightHandVector4();
+
+            }
+        }
+
+        public Vector4 GetRightHandVector4()
+        {
+            switch(m_rightHandArithmetic)
+            {
+                default:
+                case RightHandArithmetic.None:
+                    return m_vectorB.ValueVector4;
+
+                case RightHandArithmetic.Addition:
                     return m_vectorB.ValueVector4 + m_vectorC.ValueVector4;
-                    
-                case Operations.Subtraction://vA=vB-vC
+                
+                case RightHandArithmetic.Subtraction:
                     return m_vectorB.ValueVector4 - m_vectorC.ValueVector4;
-
-                case Operations.MultiplyByScalar://vA=vB*nS
-                    return m_vectorA.ValueVector4 * m_numberScalar.ValueFloat;
-
-                case Operations.DivideByScalar://nA=nB/nS
-                    return m_vectorA.ValueVector4 / m_numberScalar.ValueFloat;
-
+                
+                case RightHandArithmetic.ScalarMultiplication:
+                    return m_vectorB.ValueVector4 * m_numberScalar.ValueFloat;
+                
+                case RightHandArithmetic.ScalarDivision:
+                    return m_vectorB.ValueVector4 / m_numberScalar.ValueFloat;
             }
         }
 
@@ -124,33 +142,43 @@ namespace Buck
         /// Returns the result of what VectorA would be set to if the operation happened as a Vector3Int (ints). Does not actually execute the result.
         /// Optionally, use GetVector4Result() if you want to get the result as a floating point Vector4();
         /// Useful for writing code that will query what will happen if the event executes.
-        /// </summary>   
+        /// </summary>         
         public Vector3Int GetVector3IntResult()
         {
             switch(m_operation)
             {
                 default:
                 case Operations.SetTo://vA=vB
-                    return m_vectorB.ValueVector3Int;
+                    return GetRightHandVector3Int();
 
                 case Operations.AdditionAssignment://vA+=vB
-                    return m_vectorA.ValueVector3Int + m_vectorB.ValueVector3Int;
+                    return m_vectorA.ValueVector3Int + GetRightHandVector3Int();
 
                 case Operations.SubtractionAssignment://vA-=vB
-                    return m_vectorA.ValueVector3Int - m_vectorB.ValueVector3Int;
-                    
-                case Operations.Addition://vA=vB+vC
+                    return m_vectorA.ValueVector3Int - GetRightHandVector3Int();
+
+            }
+        }
+
+        public Vector3Int GetRightHandVector3Int()
+        {
+            switch(m_rightHandArithmetic)
+            {
+                default:
+                case RightHandArithmetic.None:
+                    return m_vectorB.ValueVector3Int;
+
+                case RightHandArithmetic.Addition:
                     return m_vectorB.ValueVector3Int + m_vectorC.ValueVector3Int;
-                    
-                case Operations.Subtraction://vA=vB-vC
+                
+                case RightHandArithmetic.Subtraction:
                     return m_vectorB.ValueVector3Int - m_vectorC.ValueVector3Int;
-
-                case Operations.MultiplyByScalar://vA=vB*nS
-                    return m_vectorA.ValueVector3Int * m_numberScalar.ValueInt;
-
-                case Operations.DivideByScalar://nA=nB/nS
-                    return m_vectorA.ValueVector3Int / m_numberScalar.ValueInt;
-
+                
+                case RightHandArithmetic.ScalarMultiplication:
+                    return m_vectorB.ValueVector3Int * m_numberScalar.ValueInt;
+                
+                case RightHandArithmetic.ScalarDivision:
+                    return m_vectorB.ValueVector3Int / m_numberScalar.ValueInt;
             }
         }
 

@@ -23,6 +23,11 @@ namespace Buck
             
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, operation);
+            
+            SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
+
+            position.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(position, rightHandArithmetic);
 
             SerializedProperty vectorA = property.FindPropertyRelative("m_vectorA");
 
@@ -38,10 +43,6 @@ namespace Buck
             GUIStyle style = base.CenteredLightLabel;
 
             VectorOperation.Operations vectorOperation = (VectorOperation.Operations)(operation.enumValueIndex);
-
-            bool drawVecC = false;
-            bool drawNumScalar = false;
-            string bToCOperation ="";//Only used if drawing num c
 
 
             position.y += EditorGUIUtility.singleLineHeight;
@@ -59,30 +60,6 @@ namespace Buck
                 case VectorOperation.Operations.SubtractionAssignment:
                     base.DrawTextFieldGUI(position, "-=", style);
                     break;
-                    
-                case VectorOperation.Operations.Addition:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawVecC = true;
-                    bToCOperation = "+";
-                    break;
-
-                case VectorOperation.Operations.Subtraction:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawVecC = true;
-                    bToCOperation = "-"; 
-                    break;
-                    
-                case VectorOperation.Operations.MultiplyByScalar:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumScalar = true;
-                    bToCOperation = "*";
-                    break;
-
-                case VectorOperation.Operations.DivideByScalar:
-                    base.DrawTextFieldGUI(position, "=", style);
-                    drawNumScalar = true;
-                    bToCOperation = "/";
-                    break;
 
             }
             
@@ -90,13 +67,47 @@ namespace Buck
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, vectorB);
-         
+            
+            VectorOperation.RightHandArithmetic rHandArithmetic = (VectorOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
+
+            bool drawVecC = false;
+            bool drawNumScalar = false;
+            string bToCString = "";
+            
+            if (rHandArithmetic != VectorOperation.RightHandArithmetic.None)
+            {
+                switch (rHandArithmetic)
+                {
+                    case VectorOperation.RightHandArithmetic.Addition:
+                        bToCString = "+";
+                        drawVecC = true;
+                        break;
+
+                    case VectorOperation.RightHandArithmetic.Subtraction:
+                        bToCString = "-";
+                        drawVecC = true;
+                        break;
+                        
+                    case VectorOperation.RightHandArithmetic.ScalarMultiplication:
+                        bToCString = "*";
+                        drawNumScalar = true;
+                        break;
+                        
+                    case VectorOperation.RightHandArithmetic.ScalarDivision:
+                        bToCString = "/";
+                        drawNumScalar = true;
+                        break;
+                        
+                }
+            }
 
             if (drawVecC || drawNumScalar)
             {
+                
                 position.y += EditorGUIUtility.singleLineHeight;
-                base.DrawTextFieldGUI(position, bToCOperation, style);
+                base.DrawTextFieldGUI(position, bToCString, style);
             }
+
 
             if (drawVecC)
             {
@@ -136,13 +147,14 @@ namespace Buck
             SerializedProperty operation = property.FindPropertyRelative("m_operation");
             VectorOperation.Operations vecOperation = (VectorOperation.Operations)(operation.enumValueIndex);
 
-            if (vecOperation == VectorOperation.Operations.Addition ||
-                vecOperation == VectorOperation.Operations.Subtraction ||
-                vecOperation == VectorOperation.Operations.MultiplyByScalar ||
-                vecOperation == VectorOperation.Operations.DivideByScalar
-            )
-                add+=2;//Add two extra lines for number operations that feature to more fields of lines (numvarC and bToCOperation)
-
+            
+            SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
+            VectorOperation.RightHandArithmetic rHandArithmetic = (VectorOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
+            
+            if (rHandArithmetic != VectorOperation.RightHandArithmetic.None)
+            {
+                add+=2;//Add two extra lines for number operations that feature a third field and an additional arithmetic
+            }
 
 
             return EditorGUIUtility.singleLineHeight * (6+add);

@@ -36,9 +36,10 @@ namespace Buck
         [Tooltip("The NumberVariable that this operation acts on. Supports IntVariables, FloatVariables, or DoubleVariables")]
         [SerializeField] NumberVariable m_numberA;
 
-        [Tooltip("The type of operation to execute. Most, but not all common assignments and math operations are included.")]
+        [Tooltip("The type of assignment operation to execute.")]
         [SerializeField] Operations m_operation;
 
+        [Tooltip("An additional modifier of the right side of the assignemtn using common arithmetic. Adds a third NumberReference variable if !None.")]
         [SerializeField] RightHandArithmetic m_rightHandArithmetic;
 
         [Tooltip("First NumberReference used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
