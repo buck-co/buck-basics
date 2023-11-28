@@ -7,8 +7,6 @@ namespace Buck
     //Note that ExtensionMethods is defined as a partial and is spread accross multiple scripts (see Runtime/ExtensionMethods_Vectors.cs, for example)
     public static partial class ExtensionMethods
     {
-
-        
         /// <summary>
         /// Given a list of Transforms, return the one that is nearest to an origin Transform.
         /// If there are no positions, returns null. If there's 1 position, returns it.
@@ -48,8 +46,6 @@ namespace Buck
             return NearestTransform(origin, transforms);
         }
 
-
-
         /// <summary>
         /// Adds an explosive force to all Rigidbody components in a specified radius.
         /// </summary>
@@ -64,7 +60,6 @@ namespace Buck
                     rb.AddExplosionForce(force, origin, radius, upwardsModifier);
             }
         }
-
         
         /// <summary>
         /// Quick method for showing or hiding a CanvasGroup. Effects alpha, blocksraycasts, and interacteable properties. Possible to optionally not effect all three by passing in false for parameters in extended signature.
@@ -82,43 +77,41 @@ namespace Buck
             if (effectBlocksRaycasts)
                 canvasGroup.blocksRaycasts = on;
         }
-
-
-
-
-        //*****[GUID methods]*****
-
+        
         /// <summary>
-        /// Returns a new Guid byte array if the given Guid is empty,
-        /// otherwise returns the given Guid.
+        /// Sets the given Guid byte array to a new Guid byte array if it is null, empty, or an empty Guid.
         /// </summary>
-        public static byte[] GetSerializableGuid(System.Guid guid)
-            => guid != System.Guid.Empty ? guid.ToByteArray() : new System.Guid().ToByteArray();
-
-        /// <summary>
-        /// Returns a new Guid byte array if the given Guid byte array is empty,
-        /// otherwise returns the given Guid.
-        /// </summary>
-        public static byte[] GetSerializableGuid(this byte[] guid)
+        public static byte[] GetSerializableGuid(ref byte[] guidBytes)
         {
             // If the byte array is null, return a new Guid byte array.
-            if (guid == null)
-                return new System.Guid().ToByteArray();
+            if (guidBytes == null)
+            {
+                Debug.Log("Guid byte array is null. Generating a new Guid.");
+                guidBytes = System.Guid.NewGuid().ToByteArray();
+            }
             
             // If the byte array is empty, return a new Guid byte array.
-            if (guid.Length == 0)
-                return new System.Guid().ToByteArray();
+            if (guidBytes.Length == 0)
+            {
+                Debug.Log("Guid byte array is empty. Generating a new Guid.");
+                guidBytes = System.Guid.NewGuid().ToByteArray();
+            }
             
             // If the byte array is not empty, but is not 16 bytes long, throw an exception.
-            if (guid.Length != 16)
-                throw new System.ArgumentException("Guid byte array must be 16 bytes long.", nameof(guid));
+            if (guidBytes.Length != 16)
+                throw new System.ArgumentException("Guid byte array must be 16 bytes long.");
 
             // If the byte array is not an empty Guid, return a new Guid byte array.
             // Otherwise, return the given Guid byte array.
-            System.Guid guidObj = new System.Guid(guid);
-            return guidObj != System.Guid.Empty ? guidObj.ToByteArray() : new System.Guid().ToByteArray(); 
+            System.Guid guidObj = new System.Guid(guidBytes);
+
+            if (guidObj == System.Guid.Empty)
+            {
+                Debug.Log("Guid is empty. Generating a new Guid.");
+                guidBytes = System.Guid.NewGuid().ToByteArray();
+            }
+            
+            return guidBytes;
         }
-
-
     }
 }
