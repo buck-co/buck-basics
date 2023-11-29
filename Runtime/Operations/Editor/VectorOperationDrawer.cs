@@ -157,7 +157,7 @@ namespace Buck
             }
 
 
-            return EditorGUIUtility.singleLineHeight * (6+add);
+            return EditorGUIUtility.singleLineHeight * (7+add);
         }
 
     }

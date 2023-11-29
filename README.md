@@ -50,24 +50,24 @@ This is a fairly involved subject, but fortunately it's already well documented 
 Our unique approach collapses Scriptable Object Variables and Events together. Every Variable type inherits from a GameEvent base, allowing you to subscribe GameEventListeners to whenever that variable changes. In addition, each variable type is paired with a Reference object class that can be added to the inspector. This 
 
 We also support a wide variety of Variable types. There is also a base class for NumberVariables and VectorVariables that more specific types inherit from.
-*BoolVariable
-*NumberVariable base class
-..*IntVariable
-..*FloatVariable
-..*DoubleVariable
-*VectorVariable base class
-..*Vector2Variable
-..*Vector3Variable
-..*Vector4Variable
-..*Vector2IntVariable
-..*Vector3IntVariable
-*QuaternionVariable
-*StringVariable
-*GameObjectVariable
-*ColorVariable
-*Texture2DVariable
-*SpriteVariable
-*MaterialVariable
+* BoolVariable
+* NumberVariable base class
+  * IntVariable
+  * FloatVariable
+  * DoubleVariable
+* VectorVariable base class
+  * Vector2Variable
+  * Vector3Variable
+  * Vector4Variable
+  * Vector2IntVariable
+  * Vector3IntVariable
+* QuaternionVariable
+* StringVariable
+* GameObjectVariable
+* ColorVariable
+* Texture2DVariable
+* SpriteVariable
+* MaterialVariable
 
 All variables can be created by right clicking in the Project> Create > BUCK > Variables.
 
@@ -83,13 +83,15 @@ To create a reference simply create a new field for it then edit it in the edito
 ### Operations
 
 Operations are an extension of our Scriptable Object variable systems that allow you to execute some common operations upon a subset of our Variable types. It approximates writing a single line of code while being entirely editor facing and requiring no actual scripting. The three supported operations are as follows:
-*BoolOperation
-..*Set To and Toggle
-*NumberOperation
-..*Set To, Addition, Subtraction, Multiplication, Division, Pow
-..*If acting on an IntVariable supports rounding: RoundToInt, FloorToInt, and CeilToInt
-*VectorOperation
-..*Set To, Addition, Subtraction, Scalar Multiplication, Scalar Division
+* BoolOperation
+  * Set To and Toggle
+* NumberOperation
+  * Set To, Addition, Subtraction, Multiplication, Division, Pow
+  * If acting on an IntVariable supports rounding: RoundToInt, FloorToInt, and CeilToInt
+* VectorOperation
+  * Set To, Addition, Subtraction, Scalar Multiplication, Scalar Division
+
+Every Operation has a BoolReference RaiseEvent field that if true, will raise the GameEvent of the A variable in the operation and notify all of its listeners of the change. Typically this is the behaviour you want, but in special situations you may want to change this to false to "silently" edit a variable.
 
 To use an Operation, create a new field for a single Operation or a collection of muliple Operations with the following:
 ```cs
@@ -97,7 +99,7 @@ To use an Operation, create a new field for a single Operation or a collection o
 [SerializeField] VectorOperation[] m_multipleVectorOperations;//A collection of multiple operations to execute all together
 ```
 
-Then edit them in the Inpsector. Finally, execute them with the following:
+Then edit them in the Inspector. Finally, execute them with the following:
 ```cs
 m_boolOperation.Execute();//Execute the one operation
 m_multipleVectorOperations.Execute();//Executes all operations within the collection in order
@@ -107,12 +109,12 @@ m_multipleVectorOperations.Execute();//Executes all operations within the collec
 
 Similar to Operations, Conditions allow you to set up conditional boolean logic as if you are writing an if statemenmt but define it in editor without editing scripts. Unlike Operations, the Condition class is flexible and one class serves Bool, Number, and Vector comparisons. To switch between what type you are comparing use the VariableType enum dropdown. The supported comparisons and their symbol equivalent are as follows:
 
-*Equal To (==)
-*Not Equal To (!=)
-*Less Than (<)
-*Less Than or Equal To (<=)
-*Greater Than (>)
-*Greater Than or Equal To (>=)
+* Equal To (==)
+* Not Equal To (!=)
+* Less Than (<)
+* Less Than or Equal To (<=)
+* Greater Than (>)
+* Greater Than or Equal To (>=)
 
 If using a Condition that imply a numeric value (Less Than or Greater Than for example), variables that are not inheritly numbers are treated as followsL: BoolReferences are cast to 0  (false) or 1 (true). VectorReferences calculate their magnitudes and use that to compare.
 
