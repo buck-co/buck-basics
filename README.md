@@ -69,7 +69,7 @@ We also support a wide variety of Variable types. There is also a base class for
 * SpriteVariable
 * MaterialVariable
 
-All variables can be created by right clicking in the Project> Create > BUCK > Variables. Once created a Default Value can be assigned. This is the value the variable will begin with each time you enter the play mode.
+All variables can be created by right clicking in the `Project> Create > BUCK > Variables`. Once created a Default Value can be assigned. This is the value the variable will begin with each time you enter the play mode.
 
 You can reference a Variable in a script with:
 ```cs
@@ -166,3 +166,6 @@ Many of our Scriptable Object types inherit from our [`BaseScriptableObject`](ht
   
 We cultivated our own [`ObjectPooler`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs) class over several projects, following as many Unity best practices as we could find for [object pooling](https://en.wikipedia.org/wiki/Object_pool_pattern), and put them into one place. This class also has a companion class, [`PoolerIdentifier`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs), which is a MonoBehaviour component that gets attached to any object created by the object pooler. This way, if another script needs to grab a pooled object and potentially recycle it back to its original object pooler, it can identify the pooler from which the object was generated. This allows pooled objects to be instantiated anywhere in the Unity hierarchy without relying on their parent GameObject for identification.
   
+### Sample Project
+
+A Sample Project is available and can optionally be imported using the Package manager. It demonstrates the use of Variables, Events, Conditions, and Operations to simulate some RPG like mechanics. The sample scene file is called `_BuckBasicsSampleScene`.
