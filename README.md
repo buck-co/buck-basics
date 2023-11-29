@@ -47,6 +47,94 @@ Several Unity projects at BUCK make heavy use of variables and events that are b
 
 This is a fairly involved subject, but fortunately it's already well documented in several places, [most notably in this Unite Austin 2017 talk from its creator, Ryan Hipple of Schell Games](https://www.youtube.com/watch?v=raQ3iHhE_Kk). We strongly recommend you watch this video before attempting to use SO Variables and Events in a production project.
 
+Our unique approach collapses Scriptable Object Variables and Events together. Every Variable type inherits from a GameEvent base, allowing you to subscribe GameEventListeners to whenever that variable changes. In addition, each variable type is paired with a Reference object class that can be added to the inspector. This 
+
+We also support a wide variety of Variable types. There is also a base class for NumberVariables and VectorVariables that more specific types inherit from.
+*BoolVariable
+*NumberVariable base class
+..*IntVariable
+..*FloatVariable
+..*DoubleVariable
+*VectorVariable base class
+..*Vector2Variable
+..*Vector3Variable
+..*Vector4Variable
+..*Vector2IntVariable
+..*Vector3IntVariable
+*QuaternionVariable
+*StringVariable
+*GameObjectVariable
+*ColorVariable
+*Texture2DVariable
+*SpriteVariable
+*MaterialVariable
+
+All variables can be created by right clicking in the Project> Create > BUCK > Variables.
+
+### Variable References
+
+Each supported Scriptable Object variable is also paired with an equivalent (NAMEOFVARIABLE)Reference class. These classes can be used to create Inspector fields in the editor that can either reference a Scriptable Object or a constant equivalent variable. This is usually the best way to reference variables while writing code since it offers more flexibility than directly referencing a Scriptable Object variable. References are heavily used  for the Condition and Operator classes. References for base types also exist (NumberReference and VectorReference) and offer even more flexibility, although each assumes a particular type when used as a constant. NumberReferences use floats as their constant and VectorReferences use Vector4s.
+
+To create a reference simply create a new field for it then edit it in the editor:
+```cs
+[SerializeField] NumberReference m_numberReference;
+```
+
+### Operations
+
+Operations are an extension of our Scriptable Object variable systems that allow you to execute some common operations upon a subset of our Variable types. It approximates writing a single line of code while being entirely editor facing and requiring no actual scripting. The three supported operations are as follows:
+*BoolOperation
+..*Set To and Toggle
+*NumberOperation
+..*Set To, Addition, Subtraction, Multiplication, Division, Pow
+..*If acting on an IntVariable supports rounding: RoundToInt, FloorToInt, and CeilToInt
+*VectorOperation
+..*Set To, Addition, Subtraction, Scalar Multiplication, Scalar Division
+
+To use an Operation, create a new field for a single Operation or a collection of muliple Operations with the following:
+```cs
+[SerializeField] BoolOperation m_boolOperation;//Single operation
+[SerializeField] VectorOperation[] m_multipleVectorOperations;//A collection of multiple operations to execute all together
+```
+
+Then edit them in the Inpsector. Finally, execute them with the following:
+```cs
+m_boolOperation.Execute();//Execute the one operation
+m_multipleVectorOperations.Execute();//Executes all operations within the collection in order
+```
+
+### Conditions
+
+Similar to Operations, Conditions allow you to set up conditional boolean logic as if you are writing an if statemenmt but define it in editor without editing scripts. Unlike Operations, the Condition class is flexible and one class serves Bool, Number, and Vector comparisons. To switch between what type you are comparing use the VariableType enum dropdown. The supported comparisons and their symbol equivalent are as follows:
+
+*Equal To (==)
+*Not Equal To (!=)
+*Less Than (<)
+*Less Than or Equal To (<=)
+*Greater Than (>)
+*Greater Than or Equal To (>=)
+
+If using a Condition that imply a numeric value (Less Than or Greater Than for example), variables that are not inheritly numbers are treated as followsL: BoolReferences are cast to 0  (false) or 1 (true). VectorReferences calculate their magnitudes and use that to compare.
+
+To use a Condition, create a new field for a single Condition or a collection of multiple Operations with the following. Then edit them in the Inpsector.
+```cs
+[SerializeField] NumberCondition m_numberCondition;//Single condition
+[SerializeField] BoolCondition[] m_multipleBoolConditions;//A collection of multiple conditions to execute all together
+```
+
+Then edit them in the Inpsector. Finally, evaluate them with the following code:
+```cs
+if (m_numberCondition.PassCondition)
+{
+    //Do something if the number condition is true
+}
+
+if (m_multipleBoolConditions.PassConditions())
+{
+    //Do something if all of the BoolConditions in the collection are true (if any single condition  fails, PassConditions() return false)
+}
+```
+
 
 ### Singleton Class
 
