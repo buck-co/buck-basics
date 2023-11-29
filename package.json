@@ -23,5 +23,12 @@
   "author": {
     "name": "BUCK",
     "url": "https://buck.co/"
-  }
+  },
+  "samples": [
+    {
+        "displayName": "Sample Project",
+        "description": "A sample scene and some scripts that demonstrate some functionality of Scriptable Object variables, Conditions, and Operations.",
+        "path": "Samples~/SamplesProject"
+    }
+  ]
 }
