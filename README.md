@@ -69,7 +69,21 @@ We also support a wide variety of Variable types. There is also a base class for
 * SpriteVariable
 * MaterialVariable
 
-All variables can be created by right clicking in the Project> Create > BUCK > Variables.
+All variables can be created by right clicking in the Project> Create > BUCK > Variables. Once created a Default Value can be assigned. This is the value the variable will begin with each time you enter the play mode.
+
+You can reference a Variable in a script with:
+```cs
+[SerializeField] IntVariable m_intVariable;//Fill reference in editor
+```
+
+Then read or write the variables value as follows:
+```cs
+    if (m_intVariable.Value > 0)
+    {
+        m_intVariable.Value -= 10;
+        m_intVariable.Raise();//Notify any listeners to the IntVariable event that it has changed
+    }
+```
 
 ### Variable References
 
