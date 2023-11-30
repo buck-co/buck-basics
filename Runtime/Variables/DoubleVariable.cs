@@ -13,6 +13,7 @@ namespace Buck
             get { return m_currentValue; }
             set { 
                 m_currentValue = value;
+                Clamp();
                 LogValueChange();
                 }
         }
