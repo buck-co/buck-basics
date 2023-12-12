@@ -1,20 +1,26 @@
 # Changelog
 
-## [1.0.8] - 2022-11-16
+## [2.0.1] - 2023-12-11
 
--Added Condition class that can be used to create boolean logic comparisons of a subset of BUCK Basics Reference variable types defined in the inspector
--Added many new extension methods: 
+- Updated the Singleton class to use the more modern Object.FindAnyObjectByType method, since Object.FindObjectOfType is becoming obsolete.
+- Required Unity version has been bumped to 2021.3 to support Object.FindAnyObjectByType.
+- Added this keyword to some extension method arguments in order to support implicit calls.
+
+## [2.0.0] - 2023-11-16
+
+- Added Condition class that can be used to create boolean logic comparisons of a subset of BUCK Basics Reference variable types defined in the inspector
+- Added many new extension methods: 
     CanvasGroup.SetVisible() 
     VectorInt to/from regular Vector transformation methods
     Math calculations for RectTransforms, Bounds, and Screen Space
     Basic animation methods for floats: EaseOut, EaseIn, and Smoothstep
     String.Truncate()
     Color.Multiply()
--ExtensionMethods.cs was split into multiple .cs files using partial class implementation. Purely an organizational improvement of the source code of the package with no impact on usage.
--Added new ScriptableObject Variables and Reference classes for the following types:
+- ExtensionMethods.cs was split into multiple .cs files using partial class implementation. Purely an organizational improvement of the source code of the package with no impact on usage.
+- Added new ScriptableObject Variables and Reference classes for the following types:
     UnityEngine.Color, Vector2, Vector4, Vector2Int, Vector3Int, Double, GameObject, Texture2D, Sprite, and Material
--Added new extension methods for converting Guids into serializable byte arrays and vice versa
--Fixed potential errors with GameEvents constructed at runtime by adding null checks
+- Added new extension methods for converting Guids into serializable byte arrays and vice versa
+- Fixed potential errors with GameEvents constructed at runtime by adding null checks
 
 ## [1.0.7] - 2022-09-05
 
