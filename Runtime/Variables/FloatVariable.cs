@@ -53,7 +53,7 @@ namespace Buck
         {
             if (m_clampToAMin && m_clampMin.ValueFloat > Value)
             {
-                m_currentValue = m_clampMin;
+                m_currentValue = m_clampMin.ValueFloat;
                 
                 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     if (m_debugChanges)
@@ -63,7 +63,7 @@ namespace Buck
             else
             if (m_clampToAMax && m_clampMax.ValueFloat < Value)
             {
-                m_currentValue = m_clampMax;
+                m_currentValue = m_clampMax.ValueFloat;
                 
                 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     if (m_debugChanges)

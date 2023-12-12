@@ -50,10 +50,10 @@ namespace Buck
         public override void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueDouble > Value)
-                m_currentValue = m_clampMin;
+                m_currentValue = m_clampMin.ValueDouble;
             else
             if (m_clampToAMax && m_clampMax.ValueDouble < Value)
-                m_currentValue = m_clampMax;
+                m_currentValue = m_clampMax.ValueDouble;
         }
 
         public override int ValueInt => (int)(Value);
