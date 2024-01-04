@@ -93,6 +93,24 @@ namespace Buck
         {
             return 4f * Mathf.PI * r * r;
         }
+
+        /// <summary>
+        /// Remaps any value to 0-360 as if it is a positive value in degrees. For example, 362f will return 2f. -10 will return 350f.
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <returns></returns>
+        public static float Angle360Positive(this float degrees)
+        {
+            float ret = degrees % 360f;
+
+            if (ret < 0f)
+            {
+                ret = 360f + ret;
+            }
+
+            return ret;
+
+        }
         
     }
 }
