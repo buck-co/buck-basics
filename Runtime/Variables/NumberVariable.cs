@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Buck
 {
@@ -23,6 +24,10 @@ namespace Buck
         public abstract float ValueFloat{get;}
 
         public abstract double ValueDouble{get;}
+
+        public abstract string ValueAsStringFormatted(string formatter);
+
+        public abstract string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider);
 
 
         

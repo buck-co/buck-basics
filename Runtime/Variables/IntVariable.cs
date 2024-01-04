@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 namespace Buck
 {
@@ -19,6 +20,10 @@ namespace Buck
         }
         
         public override string ValueAsString => m_currentValue.ToString();
+
+        public override string ValueAsStringFormatted(string formatter) => m_currentValue.ToString(formatter);
+        
+        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider) => m_currentValue.ToString(formatter, formatProvider);
 
         public void SetValue(int value)
         {
