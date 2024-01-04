@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.2] - 2024-01-04
+
+- Added Angle360Positive method to extension methods
+- All NumberVariable classes now support ValueAsStringFormatted() methods which support returing the variable's value as a string using particular formatters.
+
 ## [2.0.1] - 2023-12-11
 
 - Updated the Singleton class to use the more modern Object.FindAnyObjectByType method, since Object.FindObjectOfType is becoming obsolete.
