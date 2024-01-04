@@ -4,7 +4,7 @@ _BUCK Basics_ is BUCK's general Unity code package that includes broadly applica
 
 ## Requirements
 
-This package works with Unity 2020.3 and above.
+This package works with Unity 2021.3 and above.
 
 ## Installation
 

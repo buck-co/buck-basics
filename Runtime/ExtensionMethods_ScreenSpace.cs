@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Buck
@@ -6,7 +5,6 @@ namespace Buck
     //Extension Methods relying on Cameras to convert objects like RectTransforms or Bounds in world space into positions on screen or vice versa
     public static partial class ExtensionMethods
     {
-
         /// <summary>
         /// Returns true if Bounds are visible from the provided camera.
         /// </summary>
@@ -24,12 +22,11 @@ namespace Buck
             return IsVisibleFrom(renderer.bounds, camera);
         }
 
-
         //*****[Rects, Bounds, RectTransforms, and Screen Space]*****
         /// <summary>
         /// Converts a RectTransform into a Bounds
         /// </summary>
-        public static Bounds GetRectTransformBounds(RectTransform rectTransform)
+        public static Bounds GetRectTransformBounds(this RectTransform rectTransform)
         {
             Vector3 min = Vector3.positiveInfinity;
             Vector3 max = Vector3.negativeInfinity;
@@ -57,29 +54,27 @@ namespace Buck
         /// </summary>
         /// <param name="bounds"></param>
         /// <returns></returns>
-        public static Rect GetBoundsRectangle(Bounds bounds)
+        public static Rect GetBoundsRectangle(this Bounds bounds)
             => Rect.MinMaxRect(bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y);
-
-
 
         /// <summary>
         /// Returns a Rect that represents the screen space position of the bounding box around a world space object.
         /// Credit to YouTube user quill18creates in this video https://www.youtube.com/watch?v=2Tgqr1_ajqE
         /// </summary>
-        public static Rect GetScreenRectangle(Renderer renderer, Camera camera = null)
+        public static Rect GetScreenRectangle(this Renderer renderer, Camera camera = null)
             => GetScreenRectangle(renderer.bounds, camera);
         /// <summary>
         /// Returns a Rect that represents the screen space position of the bounding box around a world space object.
         /// Credit to YouTube user quill18creates in this video https://www.youtube.com/watch?v=2Tgqr1_ajqE
         /// </summary>
-        public static Rect GetScreenRectangle(RectTransform rectTransform, Camera camera = null)
+        public static Rect GetScreenRectangle(this RectTransform rectTransform, Camera camera = null)
             => GetScreenRectangle(GetRectTransformBounds(rectTransform), camera);
 
         /// <summary>
         /// Returns a Rect that represents the screen space position of the bounding box around a world space object.
         /// Credit to YouTube user quill18creates in this video https://www.youtube.com/watch?v=2Tgqr1_ajqE
         /// </summary>
-        public static Rect GetScreenRectangle(Bounds bounds, Camera camera = null)
+        public static Rect GetScreenRectangle(this Bounds bounds, Camera camera = null)
         {
             if (camera == null)
                 return Rect.MinMaxRect(bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y);
@@ -127,7 +122,5 @@ namespace Buck
             // Then return the Rect using these corners.
             return Rect.MinMaxRect(minX, minY, maxX, maxY);
         }
-
-
     }
 }

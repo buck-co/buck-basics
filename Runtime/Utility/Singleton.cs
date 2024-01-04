@@ -2,7 +2,6 @@
 
 namespace Buck
 {
-
     /// <summary>
     /// Inherit from this base class to create a singleton.
     /// e.g. public class MyClassName : Singleton<MyClassName> {}
@@ -10,9 +9,9 @@ namespace Buck
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         // Check to see if we're about to be destroyed.
-        private static bool m_ShuttingDown = false;
-        private static object m_Lock = new object();
-        private static T m_Instance;
+        static bool m_ShuttingDown = false;
+        static object m_Lock = new object();
+        static T m_Instance;
 
         /// <summary>
         /// Access singleton instance through this propriety.
@@ -33,7 +32,7 @@ namespace Buck
                     if (m_Instance == null)
                     {
                         // Search for existing instance.
-                        m_Instance = (T)FindObjectOfType(typeof(T));
+                        m_Instance = (T)FindAnyObjectByType(typeof(T));
 
                         // Create new instance if one doesn't already exist.
                         if (m_Instance == null)
@@ -53,16 +52,10 @@ namespace Buck
             }
         }
 
+        void OnApplicationQuit()
+            => m_ShuttingDown = true;
 
-        private void OnApplicationQuit()
-        {
-            m_ShuttingDown = true;
-        }
-
-
-        private void OnDestroy()
-        {
-            m_ShuttingDown = true;
-        }
+        void OnDestroy()
+            => m_ShuttingDown = true;
     }
 }
