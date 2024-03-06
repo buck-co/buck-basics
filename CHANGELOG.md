@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3] - TO BE PUBLISHED
+- Added GenericOperation Monobehaviour
+- RuntimeSet now inherits from GameEvent and can be subscribed to or raised.
+- Added a couple more casting methods to the Vector ExtensionMethods: Vector3.ToVector2Int() and Vector2Int.ToVector3()
+
+
 ## [2.0.2] - 2024-01-04
 
 - Added Angle360Positive method to extension methods
