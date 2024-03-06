@@ -30,6 +30,11 @@ namespace Buck
         /// Reconstructs a Vector2 as a Vector2Int rounding each value to the nearest int
         /// </summary>
         public static Vector2Int ToVector2Int(this Vector2 v2) => new Vector2Int(UnityEngine.Mathf.RoundToInt(v2.x), UnityEngine.Mathf.RoundToInt(v2.y));
+        
+        /// <summary>
+        /// Reconstructs a Vector3 as a Vector2Int rounding the x and y value to the nearest int and dropping the z axis
+        /// </summary>
+        public static Vector2Int ToVector2Int(this Vector3 v3) => new Vector2Int(UnityEngine.Mathf.RoundToInt(v3.x), UnityEngine.Mathf.RoundToInt(v3.y));
 
         /// <summary>
         /// Reconstructs a Vector2Int as a Vector2, casting x and y to floats
@@ -44,6 +49,15 @@ namespace Buck
         /// </summary>
         public static Vector3Int ToVector3Int(this Vector3 v3) => new Vector3Int(UnityEngine.Mathf.RoundToInt(v3.x), UnityEngine.Mathf.RoundToInt(v3.y), UnityEngine.Mathf.RoundToInt(v3.z));
 
+        
+
+                
+        /// <summary>
+        /// Reconstructs a Vector2Int as a Vector3, casting x and y to floats and setting z to 0f
+        /// </summary>
+        public static Vector3 ToVector3(this Vector2Int v2Int) => new Vector3((float)(v2Int.x), (float)(v2Int.y), 0f);
+
+        
         /// <summary>
         /// Reconstructs a Vector3Int as a Vector3, casting x, y, and z to floats
         /// </summary>
