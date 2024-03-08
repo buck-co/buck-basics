@@ -7,24 +7,18 @@ namespace Buck
     [CustomPropertyDrawer(typeof(Condition))]
     public class ConditionDrawer : PropertyDrawer
     {
-
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
             position.height = EditorGUIUtility.singleLineHeight;
             label = EditorGUI.BeginProperty(position, label, property);
             EditorGUI.BeginChangeCheck();
-
 
             EditorGUI.PrefixLabel(position, label);
 
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel += 2;
-            
 
             SerializedProperty variableType = property.FindPropertyRelative("m_variableType");
-
 
             Condition.VariableType prevVariableType = (Condition.VariableType)(variableType.enumValueIndex);
             
@@ -33,9 +27,9 @@ namespace Buck
 
             Condition.VariableType afterVariableType = (Condition.VariableType)(variableType.enumValueIndex);
 
-            if (prevVariableType != afterVariableType)//The user just changed the Condition variable type
+            if (prevVariableType != afterVariableType) // The user just changed the Condition variable type
             {
-                //Find variables of the type the user just changed from and clear them to null:
+                // Find variables of the type the user just changed from and clear them to null:
                 switch (prevVariableType)
                 {
                     case Condition.VariableType.Bool:
@@ -63,7 +57,6 @@ namespace Buck
                     break;
                 }
             }
-            
 
             SerializedProperty var_A = null;
             SerializedProperty var_B = null;
@@ -85,8 +78,6 @@ namespace Buck
                    var_B = property.FindPropertyRelative("m_vectorB");
                 break;
 
-
-
                 default:
                 break;
             }
@@ -106,8 +97,6 @@ namespace Buck
             if (var_B != null)
                 EditorGUI.PropertyField(position, var_B);
 
-
-
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
 
@@ -118,17 +107,14 @@ namespace Buck
         /// <summary>
         /// Resets a generic reference property to UseVariable = false and clears the variable to null
         /// </summary>
-        /// <param name="rootProperty"></param>
-        /// <param name="variableReferenceName"></param>
         void ClearReference(SerializedProperty rootProperty, string variableReferenceName)
         {
             rootProperty.FindPropertyRelative(variableReferenceName).FindPropertyRelative("UseVariable").boolValue = false;
             rootProperty.FindPropertyRelative(variableReferenceName).FindPropertyRelative("Variable").objectReferenceValue = null;
         }
 
-        public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
-            return EditorGUIUtility.singleLineHeight * 5;
-        }
+        public override float GetPropertyHeight (SerializedProperty property, GUIContent label)
+            => EditorGUIUtility.singleLineHeight * 5;
     }
 }
 #endif

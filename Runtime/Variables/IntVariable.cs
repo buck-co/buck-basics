@@ -8,49 +8,44 @@ namespace Buck
     {
         public int DefaultValue = 0;
         
-        private int m_currentValue;
+        int m_currentValue;
         public int Value
         {
-            get { return m_currentValue; }
-            set { 
-                    m_currentValue = value;
-                    Clamp();
-                    LogValueChange();
-                }
+            get => m_currentValue;
+            set
+            { 
+                m_currentValue = value;
+                Clamp();
+                LogValueChange();
+            }
         }
         
-        public override string ValueAsString => m_currentValue.ToString();
+        public override string ValueAsString
+            => m_currentValue.ToString();
 
-        public override string ValueAsStringFormatted(string formatter) => m_currentValue.ToString(formatter);
+        public override string ValueAsStringFormatted(string formatter)
+            => m_currentValue.ToString(formatter);
         
-        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider) => m_currentValue.ToString(formatter, formatProvider);
+        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
+            => m_currentValue.ToString(formatter, formatProvider);
 
         public void SetValue(int value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public void SetValue(IntVariable value)
-        {
-            Value = value.Value;
-        }
+            => Value = value.Value;
 
         public void ApplyChange(int amount)
-        {
-            Value += amount;
-        }
+            => Value += amount;
 
         public void ApplyChange(IntVariable amount)
-        {
-            Value += amount.Value;
-        }
+            => Value += amount.Value;
 
         private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-        }
+            => m_currentValue = DefaultValue;
 
-        public override System.TypeCode TypeCode => System.TypeCode.Int32;
+        public override System.TypeCode TypeCode
+            => System.TypeCode.Int32;
 
         public override void Clamp()
         {
@@ -58,28 +53,29 @@ namespace Buck
             {
                 m_currentValue = m_clampMin.ValueInt;
                 
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    if (m_debugChanges)
-                        Debug.Log("Value of " + name + " min clamped to: " + m_currentValue.ToString());
-                #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (m_debugChanges)
+                    Debug.Log("Value of " + name + " min clamped to: " + m_currentValue.ToString());
+#endif
             }
-            else
-            if (m_clampToAMax && m_clampMax.ValueInt < Value)
+            else if (m_clampToAMax && m_clampMax.ValueInt < Value)
             {
                 m_currentValue = m_clampMax.ValueInt;
                 
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    if (m_debugChanges)
-                        Debug.Log("Value of " + name + " max clamped to: " + m_currentValue.ToString());
-                #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (m_debugChanges)
+                    Debug.Log("Value of " + name + " max clamped to: " + m_currentValue.ToString());
+#endif
             }
         }
 
-        public override int ValueInt => Value;
+        public override int ValueInt
+            => Value;
 
-        public override float ValueFloat => (float)(Value);
+        public override float ValueFloat
+            => (float)(Value);
 
-        public override double ValueDouble => (double)(Value);
-
+        public override double ValueDouble
+            => (double)(Value);
     }
 }

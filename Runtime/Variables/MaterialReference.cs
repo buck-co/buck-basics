@@ -20,13 +20,9 @@ namespace Buck
         }
 
         public Material Value
-        {
-            get { return UseVariable ? Variable.Value : ConstantValue; }
-        }
+            => UseVariable ? Variable.Value : ConstantValue;
 
         public static implicit operator Material(MaterialReference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

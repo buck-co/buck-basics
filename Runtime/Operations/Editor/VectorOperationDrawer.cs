@@ -7,7 +7,6 @@ namespace Buck
     [CustomPropertyDrawer(typeof(VectorOperation))]
     public class VectorOperationDrawer : BaseOperationDrawer
     {
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             position.height = EditorGUIUtility.singleLineHeight;
@@ -31,14 +30,14 @@ namespace Buck
 
             SerializedProperty vectorA = property.FindPropertyRelative("m_vectorA");
 
-            //Tint the A variable's background color light red if the variable is left null, to help clue the user into errors
+            // Tint the A variable's background color light red if the variable is left null, to help clue the user into errors
             if (vectorA.objectReferenceValue == null)
                 GUI.backgroundColor = new Color(1f, .75f, .75f, 1f);
             
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, vectorA);
 
-            GUI.backgroundColor = Color.white;//Clear tint if it got set
+            GUI.backgroundColor = Color.white; // Clear tint if it got set
             
             GUIStyle style = base.CenteredLightLabel;
 
@@ -97,17 +96,14 @@ namespace Buck
                         bToCString = "/";
                         drawNumScalar = true;
                         break;
-                        
                 }
             }
 
             if (drawVecC || drawNumScalar)
             {
-                
                 position.y += EditorGUIUtility.singleLineHeight;
                 base.DrawTextFieldGUI(position, bToCString, style);
             }
-
 
             if (drawVecC)
             {
@@ -129,19 +125,16 @@ namespace Buck
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, raiseEvent);
-
             
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
 
             EditorGUI.indentLevel = indent;
             EditorGUI.EndProperty();
-
         }
                 
-        public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
-            
-
+        public override float GetPropertyHeight (SerializedProperty property, GUIContent label)
+        {
             int add = 0;
 
             SerializedProperty operation = property.FindPropertyRelative("m_operation");
@@ -152,14 +145,10 @@ namespace Buck
             VectorOperation.RightHandArithmetic rHandArithmetic = (VectorOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
             
             if (rHandArithmetic != VectorOperation.RightHandArithmetic.None)
-            {
-                add+=2;//Add two extra lines for number operations that feature a third field and an additional arithmetic
-            }
-
+                add+=2; // Add two extra lines for number operations that feature a third field and an additional arithmetic
 
             return EditorGUIUtility.singleLineHeight * (7+add);
         }
-
     }
 }
 #endif

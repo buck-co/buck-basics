@@ -4,13 +4,14 @@ using UnityEngine;
 namespace Buck
 {
     [Serializable]
-    public class VectorOperation:BaseOperation
+    public class VectorOperation : BaseOperation
     {
-        public enum Operations{
+        public enum Operations
+        {
             SetTo = 0,//vA=vB
             AdditionAssignment = 1,//vA+=vB
             SubtractionAssignment = 2,//vA-=vB
-            };
+        };
 
         public enum RightHandArithmetic
         {
@@ -27,7 +28,7 @@ namespace Buck
         [Tooltip("The type of assignment operation to execute. Scalar multiplication + division is not supported here, but instead done using the Right Hand Arithmetic setting.")]
         [SerializeField] Operations m_operation;
 
-        [Tooltip("An additional modifier of the right side of the assignemtn using common arithmetic. Adds a third variable if !None.")]
+        [Tooltip("An additional modifier of the right side of the assignment using common arithmetic. Adds a third variable if !None.")]
         [SerializeField] RightHandArithmetic m_rightHandArithmetic;
 
         [Tooltip("First VectorReference used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
@@ -37,15 +38,19 @@ namespace Buck
         [SerializeField] VectorReference m_vectorC;
         
         [Tooltip("A NumberReference used in a few of the operations as a scalar. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
-        [SerializeField] NumberReference m_numberScalar;//Used for scalar operations
+        [SerializeField] NumberReference m_numberScalar; // Used for scalar operations
         
 
         [Tooltip("If true, when Execute() is called VectorA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent;
         [SerializeField, HideInInspector]bool m_serialized = false;
-        public override bool Serialized {get=> m_serialized; set{m_serialized = value;}}
 
-
+        public override bool Serialized
+        {
+            get => m_serialized;
+            set => m_serialized = value;
+        }
+            
         public override void Execute()
         {
             switch (m_vectorA.IsAVectorInt)
@@ -67,13 +72,11 @@ namespace Buck
                             Vector4Variable vector4Variable = (Vector4Variable)(m_vectorA);
                             vector4Variable.Value = GetVector4Result();
                             break;
-
                     }
-                    
                     break;
 
                 case true:
-                    switch(m_vectorA.VectorLength)
+                    switch (m_vectorA.VectorLength)
                     {
                         case 2:
                             Vector2IntVariable vector2IntVariable = (Vector2IntVariable)(m_vectorA);
@@ -85,11 +88,9 @@ namespace Buck
                             vector3IntVariable.Value = GetVector3IntResult();
                             break;
                     }
-                    
                     break;
             }
 
-                
             if (m_raiseEvent)
                 m_vectorA.Raise();
         }
@@ -101,7 +102,7 @@ namespace Buck
         /// </summary>       
         public Vector4 GetVector4Result()
         {
-            switch(m_operation)
+            switch (m_operation)
             {
                 default:
                 case Operations.SetTo://vA=vB
@@ -112,13 +113,12 @@ namespace Buck
 
                 case Operations.SubtractionAssignment://vA-=vB
                     return m_vectorA.ValueVector4 - GetRightHandVector4();
-
             }
         }
 
         public Vector4 GetRightHandVector4()
         {
-            switch(m_rightHandArithmetic)
+            switch (m_rightHandArithmetic)
             {
                 default:
                 case RightHandArithmetic.None:
@@ -145,7 +145,7 @@ namespace Buck
         /// </summary>         
         public Vector3Int GetVector3IntResult()
         {
-            switch(m_operation)
+            switch (m_operation)
             {
                 default:
                 case Operations.SetTo://vA=vB
@@ -162,7 +162,7 @@ namespace Buck
 
         public Vector3Int GetRightHandVector3Int()
         {
-            switch(m_rightHandArithmetic)
+            switch (m_rightHandArithmetic)
             {
                 default:
                 case RightHandArithmetic.None:
@@ -195,6 +195,5 @@ namespace Buck
                 Serialized = true;
             }
         }
-
     }
 }

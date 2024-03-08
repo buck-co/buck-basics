@@ -4,23 +4,21 @@ namespace Buck
 {
     public class BaseVariable : GameEvent
     {
-
-        public virtual string ValueAsString=>"ValueAsString unimplemented for this type of BaseVariable.";
+        public virtual string ValueAsString => "ValueAsString unimplemented for this type of BaseVariable.";
 
         public void LogValueChange()
         {
-            #if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 if (m_debugChanges)
                     Debug.Log("Value of " + name + " set to: " + ValueAsString);
-            #endif
+#endif
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public void LogValue()
         {
             Debug.Log("Value of " + name + " is: " + ValueAsString);
         }
-
-        #endif
+#endif
     }
 }

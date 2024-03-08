@@ -7,31 +7,27 @@ namespace Buck
     {
         public Sprite DefaultValue;
         
-        private Sprite m_currentValue;
+        Sprite m_currentValue;
         public Sprite Value
         {
-            get { return m_currentValue; }
-            set { 
+            get => m_currentValue;
+            set
+            { 
                 m_currentValue = value;
                 LogValueChange();
             }
         }
         
-        public override string ValueAsString => (m_currentValue != null)?m_currentValue.name:"null";
+        public override string ValueAsString
+            => (m_currentValue != null) ? m_currentValue.name : "null";
 
         public void SetValue(Sprite value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public void SetValue(SpriteVariable value)
-        {
-            Value = value.Value;
-        }
+            => Value = value.Value;
 
-        private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-        }
+        void OnEnable()
+            => m_currentValue = DefaultValue;
     }
 }

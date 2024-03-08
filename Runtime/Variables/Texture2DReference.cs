@@ -20,13 +20,9 @@ namespace Buck
         }
 
         public Texture2D Value
-        {
-            get { return UseVariable ? Variable.Value : ConstantValue; }
-        }
+            => UseVariable ? Variable.Value : ConstantValue;
 
         public static implicit operator Texture2D(Texture2DReference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

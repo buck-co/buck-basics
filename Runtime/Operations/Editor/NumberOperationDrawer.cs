@@ -4,14 +4,11 @@ using UnityEngine;
 
 namespace Buck
 {
-    
     [CustomPropertyDrawer(typeof(NumberOperation))]
     public class NumberOperationDrawer : BaseOperationDrawer
     {
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
             GUIStyle style = base.CenteredLightLabel;
 
             position.height = EditorGUIUtility.singleLineHeight;
@@ -35,19 +32,16 @@ namespace Buck
             EditorGUI.PropertyField(position, rightHandArithmetic);
 
 
-
             SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
 
-            //Tint the A variable's background color light red if the variable is left null, to help clue the user into errors
+            // Tint the A variable's background color light red if the variable is left null, to help clue the user into errors
             if (numberA.objectReferenceValue == null)
                 GUI.backgroundColor = new Color(1f, .75f, .75f, 1f);
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, numberA);
             
-            GUI.backgroundColor = Color.white;//Clear tint if it got set
-
-            
+            GUI.backgroundColor = Color.white; // Clear tint if it got set
             
             NumberOperation.Operations numOperation = (NumberOperation.Operations)(operation.enumValueIndex);
 
@@ -80,15 +74,11 @@ namespace Buck
                     break;
 
             }
-
-
             
             SerializedProperty numberB = property.FindPropertyRelative("m_numberB");
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, numberB);
-
-            
 
             NumberOperation.RightHandArithmetic rHandArithmetic = (NumberOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
 
@@ -129,9 +119,9 @@ namespace Buck
 
             IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
 
-            if (intVarA != null)//This is an int variable
+            if (intVarA != null) // This is an int variable
             {
-                //Show rounding:
+                // Show rounding:
                 SerializedProperty rounding = property.FindPropertyRelative("m_rounding");
 
                 position.y += EditorGUIUtility.singleLineHeight;
@@ -142,7 +132,6 @@ namespace Buck
 
             position.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(position, raiseEvent);
-
             
             if (EditorGUI.EndChangeCheck())
                 property.serializedObject.ApplyModifiedProperties();
@@ -152,32 +141,23 @@ namespace Buck
         }
 
         
-        public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
-            
-
+        public override float GetPropertyHeight (SerializedProperty property, GUIContent label)
+        {
             int add = 0;
             SerializedProperty numberA = property.FindPropertyRelative("m_numberA");
             IntVariable intVarA = numberA.objectReferenceValue as IntVariable;
 
-            if (intVarA != null)//This is an int variable
-                add+=1;//Add an extra line for RoundToIntField
-
-
+            if (intVarA != null) // This is an int variable
+                add+=1; // Add an extra line for RoundToIntField
             
             SerializedProperty rightHandArithmetic = property.FindPropertyRelative("m_rightHandArithmetic");
             NumberOperation.RightHandArithmetic rHandArithmetic = (NumberOperation.RightHandArithmetic)(rightHandArithmetic.enumValueIndex);
             
             if (rHandArithmetic != NumberOperation.RightHandArithmetic.None)
-            {
-                add+=2;//Add two extra lines for number operations that feature a third field and an additional arithmetic
-            }
-            
-
+                add+=2; // Add two extra lines for number operations that feature a third field and an additional arithmetic
 
             return EditorGUIUtility.singleLineHeight * (7+add);
         }
-
     }
-    
 }
 #endif

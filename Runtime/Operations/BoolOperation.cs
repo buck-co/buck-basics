@@ -3,16 +3,14 @@ using UnityEngine;
 
 namespace Buck
 {
-
-
     [Serializable]
-    public class BoolOperation:BaseOperation
+    public class BoolOperation : BaseOperation
     {
-        
-        public enum Operations{
+        public enum Operations
+        {
             SetTo = 0,//bA=bB
             Toggle = 1//bA=!bA
-            };
+        };
             
         [Tooltip("The BoolVariable that this operation acts on.")]
         [SerializeField] BoolVariable m_boolA;
@@ -43,7 +41,6 @@ namespace Buck
         /// Returns the result of what BoolA would be set to if the operation happened. Does not actually execute the result. 
         /// Useful for writing code that will query what will happen if the event executes.
         /// </summary>
-        /// <returns></returns>
         public bool GetResult()
         {
             switch (m_operation)
@@ -70,6 +67,5 @@ namespace Buck
                 Serialized = true;
             }
         }
-
     }
 }

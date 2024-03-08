@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Buck
 {
-    
-    // All three of these CustomEditors behave identically and have the same names for their serialized variables so they can just inherit from BaseVariableEditor
+    // All of these CustomEditors behave identically and have the same names for their serialized variables so they can just inherit from BaseVariableEditor
     
     [CustomEditor(typeof(BoolVariable)), CanEditMultipleObjects]
     public class BoolVariableEditor:BaseVariableEditor{}
@@ -48,25 +47,23 @@ namespace Buck
     
     public class BaseVariableEditor : GameEventEditor
     {
-        private SerializedProperty m_debugChanges;
-        private SerializedProperty DefaultValue;
+        SerializedProperty m_debugChanges;
+        SerializedProperty DefaultValue;
 
         void OnEnable()
         {
-            //Cache serialized properties:
+            // Cache serialized properties:
             m_debugChanges = serializedObject.FindProperty("m_debugChanges");
             DefaultValue = serializedObject.FindProperty("DefaultValue");
-            
         }
 
         public override void OnInspectorGUI()
         {
-            //Script field
+            // Script field
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
             GUI.enabled = true;
             
-
             serializedObject.UpdateIfRequiredOrScript();
 
             EditorGUILayout.PropertyField(DefaultValue);
@@ -78,11 +75,7 @@ namespace Buck
             LogValueButtonGUI();
             base.RaiseGameEventButtonGUI();
 
-            
-            
             serializedObject.ApplyModifiedProperties();
-
-
         }
 
         protected void LogValueButtonGUI()
@@ -93,7 +86,6 @@ namespace Buck
             if (GUILayout.Button("Log Value"))
                 e.LogValue();
         }
-
     }
 }
 #endif

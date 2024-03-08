@@ -7,30 +7,26 @@ namespace Buck
     {
         public Quaternion DefaultValue = Quaternion.identity;
         
-        private Quaternion m_currentValue;
+        Quaternion m_currentValue;
         public Quaternion Value
         {
-            get { return m_currentValue; }
-            set { 
+            get => m_currentValue;
+            set
+            { 
                 m_currentValue = value;
                 LogValueChange();
-                }
+            }
         }
-        public override string ValueAsString => m_currentValue.ToString();
+        public override string ValueAsString
+            => m_currentValue.ToString();
 
         public void SetValue(Quaternion value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public void SetValue(QuaternionVariable value)
-        {
-            Value = value.Value;
-        }
+            => Value = value.Value;
 
-        private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-        }
+        void OnEnable()
+            => m_currentValue = DefaultValue;
     }
 }

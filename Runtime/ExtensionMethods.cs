@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Buck
 {
-    //Miscellaneous ExtensionMethods that didn't fit in any specific category.
-    //Note that ExtensionMethods is defined as a partial and is spread accross multiple scripts (see Runtime/ExtensionMethods_Vectors.cs, for example)
+    // Miscellaneous ExtensionMethods that didn't fit in any specific category.
+    // Note that ExtensionMethods is defined as a partial and is spread across multiple scripts (see Runtime/ExtensionMethods_Vectors.cs, for example)
     public static partial class ExtensionMethods
     {
         
@@ -70,7 +70,8 @@ namespace Buck
         /// <param name="effectAlpha">Whether the call will effect alpha. Alpha set to 1f when on is true and 0f when false</param>
         /// <param name="effectInteractable">Whether the call will effect whether the canvas group is interactable</param>
         /// <param name="effectBlocksRaycasts">Whether the call will effect whether the canvas group blocks raycasts</param>
-        public static void SetVisible(this CanvasGroup canvasGroup, bool on, bool effectAlpha = true, bool effectInteractable = true, bool effectBlocksRaycasts = true) {
+        public static void SetVisible(this CanvasGroup canvasGroup, bool on, bool effectAlpha = true, bool effectInteractable = true, bool effectBlocksRaycasts = true)
+        {
             if (effectAlpha)
                 canvasGroup.alpha = (on)? 1f: 0f;
             if (effectInteractable)
@@ -114,6 +115,5 @@ namespace Buck
             
             return guidBytes;
         }
-
     }
 }

@@ -1,12 +1,10 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Buck
 {
-    //Extension Methods involving UnityEngine.Color and UnityEngine.Gradient
+    // Extension Methods involving UnityEngine.Color and UnityEngine.Gradient
     public static partial class ExtensionMethods
     {
-        
         /// <summary>
         /// Adds a tint to a Color.
         /// </summary>
@@ -53,7 +51,5 @@ namespace Buck
                 return g;
             }
         }
-
-
     }
 }

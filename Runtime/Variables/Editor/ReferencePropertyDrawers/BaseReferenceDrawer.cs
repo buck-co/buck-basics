@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Buck
 {
-    //All of these VariableReference types use the BaseReferenceDrawer as their parent so that they can share the same base code.
-    //The only two variables that have their own custom editor are VectorReference and Vector4Reference since Vector4s don't GUI in a single line out of the box
+    // All of these VariableReference types use the BaseReferenceDrawer as their parent so that they can share the same base code.
+    // The only two variables that have their own custom editor are VectorReference and Vector4Reference since Vector4s don't GUI in a single line out of the box
     [CustomPropertyDrawer(typeof(BoolReference))]
     public class BoolReferenceDrawer:BaseReferenceDrawer{}
 
@@ -60,11 +60,10 @@ namespace Buck
         /// <summary>
         /// Options to display in the popup to select constant or variable.
         /// </summary>
-        private readonly string[] popupOptions = 
-            { "Use Constant", "Use Variable" };
+        readonly string[] popupOptions = { "Use Constant", "Use Variable" };
 
         /// <summary> Cached style to use to draw the popup button. </summary>
-        private GUIStyle popupStyle;
+        GUIStyle popupStyle;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -95,7 +94,6 @@ namespace Buck
             EditorGUI.indentLevel = 0;
 
             int result = EditorGUI.Popup(buttonRect, useVariable.boolValue ? 1 : 0, popupOptions, popupStyle);
-
 
             if (useVariable.boolValue != (result == 1) && result == 0)
             {

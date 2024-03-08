@@ -20,13 +20,9 @@ namespace Buck
         }
 
         public Sprite Value
-        {
-            get { return UseVariable ? Variable.Value : ConstantValue; }
-        }
+            => UseVariable ? Variable.Value : ConstantValue;
 
         public static implicit operator Sprite(SpriteReference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

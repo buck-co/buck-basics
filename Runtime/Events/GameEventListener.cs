@@ -11,13 +11,13 @@ namespace Buck
         [Tooltip("Response to invoke when Event is raised.")]
         public UnityEvent Response;
 
-        private void OnEnable()
+        void OnEnable()
         {
             if (Event != null)
                 Event.RegisterListener(this);
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             if (Event != null)
                 Event.UnregisterListener(this);

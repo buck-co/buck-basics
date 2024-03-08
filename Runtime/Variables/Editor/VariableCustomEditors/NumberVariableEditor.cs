@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Buck
 {
-    
-    // All three of these CustomEditors behave identically and have the same names for their variables so they can just inherit from NumberVariableEditor
+    // All of these CustomEditors behave identically and have the same names for their variables so they can just inherit from NumberVariableEditor
 
     [CustomEditor(typeof(IntVariable)), CanEditMultipleObjects]
     public class IntVariableEditor:NumberVariableEditor
@@ -25,7 +24,6 @@ namespace Buck
 
     }
 
-
     public class NumberVariableEditor : BaseVariableEditor
     {
         /*
@@ -33,18 +31,18 @@ namespace Buck
         However, this class is used as a base class for all specific NumberVariable property drawers, such as IntVariable, FloatVariable, and DoubleVariable
         */
     
-        private SerializedProperty m_clampToAMin;
-        private SerializedProperty m_clampMin;
-        private SerializedProperty m_clampToAMax;
-        private SerializedProperty m_clampMax;
+        SerializedProperty m_clampToAMin;
+        SerializedProperty m_clampMin;
+        SerializedProperty m_clampToAMax;
+        SerializedProperty m_clampMax;
 
-        //Values only created by children of NumberVariable, but since NumberVariable istelf is abstract this is fine
-        private SerializedProperty m_debugChanges;
-        private SerializedProperty DefaultValue;
+        // Values only created by children of NumberVariable, but since NumberVariable itself is abstract this is fine
+        SerializedProperty m_debugChanges;
+        SerializedProperty DefaultValue;
         
         void OnEnable()
         {
-            //Cache serialized properties:
+            // Cache serialized properties:
             m_clampToAMin = serializedObject.FindProperty("m_clampToAMin");
             m_clampMin = serializedObject.FindProperty("m_clampMin");
             m_clampToAMax = serializedObject.FindProperty("m_clampToAMax");
@@ -52,19 +50,16 @@ namespace Buck
 
             m_debugChanges = serializedObject.FindProperty("m_debugChanges");
             DefaultValue = serializedObject.FindProperty("DefaultValue");
-            
         }
 
         public override void OnInspectorGUI()
         {
-            //Script field
+            // Script field
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
             GUI.enabled = true;
 
-
             serializedObject.UpdateIfRequiredOrScript();
-
             
             EditorGUILayout.PropertyField(DefaultValue);
             
@@ -74,16 +69,12 @@ namespace Buck
             EditorGUILayout.PropertyField(m_clampToAMin);
 
             if (m_clampToAMin.boolValue)
-            {
                 EditorGUILayout.PropertyField(m_clampMin);
-            }
 
             EditorGUILayout.PropertyField(m_clampToAMax);
 
             if (m_clampToAMax.boolValue)
-            {
                 EditorGUILayout.PropertyField(m_clampMax);
-            }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
@@ -91,14 +82,9 @@ namespace Buck
             EditorGUILayout.PropertyField(m_debugChanges);
             base.RaiseGameEventButtonGUI();
             base.LogValueButtonGUI();
-
-            
             
             serializedObject.ApplyModifiedProperties();
-
-            
         }
-
     }
 }
 #endif

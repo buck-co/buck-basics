@@ -7,7 +7,7 @@ namespace Buck
     public abstract class BaseScriptableObject : ScriptableObject
     {
         [SerializeField, HideInInspector] byte[] m_guidByteArray;
-        public Guid Guid => new Guid(m_guidByteArray);
+        public Guid Guid => new(m_guidByteArray);
         public byte[] GuidByteArray => m_guidByteArray;
 
         public static List<T> FindAll<T>(string path) where T : BaseScriptableObject
@@ -17,7 +17,7 @@ namespace Buck
             UnityEngine.Object[] objectsFromDisk = Resources.LoadAll(path, typeof(T));
             foreach (T obj in objectsFromDisk)
                 if (obj.GetType() == typeof(T))
-                    objs.Add((T)obj);
+                    objs.Add(obj);
 
             return objs;
         }
@@ -33,16 +33,14 @@ namespace Buck
         }
 
         public static T FindByGuid<T>(byte[] m_guidByteArray, string path) where T : BaseScriptableObject
-        {
-            return FindByGuid<T>(new Guid(m_guidByteArray), path);
-        }
+            => FindByGuid<T>(new Guid(m_guidByteArray), path);
 
         public void OnValidate()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             var path = UnityEditor.AssetDatabase.GetAssetPath(this);
             m_guidByteArray = new Guid(UnityEditor.AssetDatabase.AssetPathToGUID(path)).ToByteArray();
-            #endif
+#endif
         }
     }
 }

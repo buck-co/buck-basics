@@ -7,18 +7,17 @@ namespace Buck
     [CustomEditor(typeof(GameEvent)), CanEditMultipleObjects]
     public class GameEventEditor : Editor
     {
-        private SerializedProperty m_debugChanges;
+        SerializedProperty m_debugChanges;
 
         void OnEnable()
         {
-            //Cache serialized properties:
+            // Cache serialized properties:
             m_debugChanges = serializedObject.FindProperty("m_debugChanges");
-            
         }
+        
         public override void OnInspectorGUI()
         {
-            
-            //Script field
+            // Script field
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
             GUI.enabled = true;

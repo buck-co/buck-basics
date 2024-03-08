@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Buck
 {
-    //Extension Methods involving Collections (arrays (including multidimensional), lists, etc)
+    // Extension Methods involving Collections (arrays (including multidimensional), lists, etc)
     public static partial class ExtensionMethods
     {
         /// <summary>
@@ -18,9 +17,7 @@ namespace Buck
             {
                 n--;
                 int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                (list[k], list[n]) = (list[n], list[k]);
             }
         }
 
@@ -28,19 +25,13 @@ namespace Buck
         /// Exchange the places of two given List indices.
         /// </summary>
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
-        {
-            T tmp = list[indexA];
-            list[indexA] = list[indexB];
-            list[indexB] = tmp;
-        }
+            => (list[indexA], list[indexB]) = (list[indexB], list[indexA]);
         
         /// <summary>
         /// Returns a random element from a List.
         /// </summary>
         public static T Random<T>(this IList<T> list)
-        {
-            return list[UnityEngine.Random.Range(0, list.Count)];
-        }
+            => list[UnityEngine.Random.Range(0, list.Count)];
 
         /// <summary>
         /// Returns a transposed 2D array (swaps rows and columns).
@@ -91,23 +82,18 @@ namespace Buck
         /// Returns a 2D array that has been rotated 90 degrees CW.
         /// </summary>
         public static T[,] Rotate90<T>(this T[,] arr)
-        {
-            return arr.Transpose().ReverseRows();
-        }
+            => arr.Transpose().ReverseRows();
+        
         /// <summary>
         /// Returns a 2D array that has been rotated 270 degrees CW (or 90 degrees CCW).
         /// </summary>
         public static T[,] Rotate270<T>(this T[,] arr)
-        {
-            return arr.Transpose().ReverseColumns();
-        }
+            => arr.Transpose().ReverseColumns();
+        
         /// <summary>
         /// Returns a 2D array that has been rotated 180 degrees.
         /// </summary>
         public static T[,] Rotate180<T>(this T[,] arr)
-        {
-            return arr.ReverseColumns().ReverseRows();
-        }
-
+            => arr.ReverseColumns().ReverseRows();
     }
 }

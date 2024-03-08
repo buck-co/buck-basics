@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Buck
 {
     public abstract class RuntimeSet<T> : GameEvent
     {
-        public List<T> Items = new List<T>();
+        public List<T> Items = new();
 
         public void Add(T thing)
         {

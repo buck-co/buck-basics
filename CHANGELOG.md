@@ -1,15 +1,16 @@
 # Changelog
 
-## [2.0.3] - TO BE PUBLISHED
-- Added GenericOperation Monobehaviour
+## [2.0.3] - 2024-03-07
+- Added GenericOperation MonoBehaviour
 - RuntimeSet now inherits from GameEvent and can be subscribed to or raised.
 - Added a couple more casting methods to the Vector ExtensionMethods: Vector3.ToVector2Int() and Vector2Int.ToVector3()
+- Cleaned up the code style formatting and comments in nearly every file.
 
 
 ## [2.0.2] - 2024-01-04
 
 - Added Angle360Positive method to extension methods
-- All NumberVariable classes now support ValueAsStringFormatted() methods which support returing the variable's value as a string using particular formatters.
+- All NumberVariable classes now support ValueAsStringFormatted() methods which support returning the variable's value as a string using particular formatters.
 
 ## [2.0.1] - 2023-12-11
 

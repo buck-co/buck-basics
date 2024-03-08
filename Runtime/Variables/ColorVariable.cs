@@ -7,31 +7,26 @@ namespace Buck
     {
         public Color DefaultValue = Color.white;
         
-        private Color m_currentValue;
+        Color m_currentValue;
         public Color Value
         {
-            get { return m_currentValue; }
-            set { 
+            get => m_currentValue;
+            set
+            { 
                 m_currentValue = value;
                 LogValueChange();
-                }
+            }
         }
         
         public override string ValueAsString => m_currentValue.ToString();
 
         public void SetValue(Color value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public void SetValue(ColorVariable value)
-        {
-            Value = value.Value;
-        }
+            => Value = value.Value;
 
-        private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-        }
+        void OnEnable()
+            => m_currentValue = DefaultValue;
     }
 }

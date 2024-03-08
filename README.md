@@ -1,6 +1,6 @@
 # BUCK Basics
 
-_BUCK Basics_ is BUCK's general Unity code package that includes broadly applicable extension methods, utility scripts, and a basic framework for architecting applications.
+_BUCK Basics_ is BUCK's general Unity code package that includes broadly applicable extension methods, utility scripts, and a basic framework for application architecture.
 
 ## Requirements
 
@@ -81,7 +81,7 @@ Then read or write the variables value as follows:
     if (m_intVariable.Value > 0)
     {
         m_intVariable.Value -= 10;
-        m_intVariable.Raise();//Notify any listeners to the IntVariable event that it has changed
+        m_intVariable.Raise(); // Notify any listeners to the IntVariable event that it has changed
     }
 ```
 
@@ -107,21 +107,21 @@ Operations are an extension of our Scriptable Object variable systems that allow
 
 Every Operation has a BoolReference RaiseEvent field that if true, will raise the GameEvent of the A variable in the operation and notify all of its listeners of the change. Typically this is the behaviour you want, but in special situations you may want to change this to false to "silently" edit a variable.
 
-To use an Operation, create a new field for a single Operation or a collection of muliple Operations with the following:
+To use an Operation, create a new field for a single Operation or a collection of multiple Operations with the following:
 ```cs
-[SerializeField] BoolOperation m_boolOperation;//Single operation
-[SerializeField] VectorOperation[] m_multipleVectorOperations;//A collection of multiple operations to execute all together
+[SerializeField] BoolOperation m_boolOperation; // Single operation
+[SerializeField] VectorOperation[] m_multipleVectorOperations; // A collection of multiple operations to execute all together
 ```
 
 Then edit them in the Inspector. Finally, execute them with the following:
 ```cs
-m_boolOperation.Execute();//Execute the one operation
-m_multipleVectorOperations.Execute();//Executes all operations within the collection in order
+m_boolOperation.Execute(); // Execute the one operation
+m_multipleVectorOperations.Execute(); // Executes all operations within the collection in order
 ```
 
 ### Conditions
 
-Similar to Operations, Conditions allow you to set up conditional boolean logic as if you are writing an if statemenmt but define it in editor without editing scripts. Unlike Operations, the Condition class is flexible and one class serves Bool, Number, and Vector comparisons. To switch between what type you are comparing use the VariableType enum dropdown. The supported comparisons and their symbol equivalent are as follows:
+Similar to Operations, Conditions allow you to set up conditional boolean logic as if you are writing an if statement but define it in editor without editing scripts. Unlike Operations, the Condition class is flexible and one class serves Bool, Number, and Vector comparisons. To switch between what type you are comparing use the VariableType enum dropdown. The supported comparisons and their symbol equivalent are as follows:
 
 * Equal To (==)
 * Not Equal To (!=)
@@ -130,24 +130,24 @@ Similar to Operations, Conditions allow you to set up conditional boolean logic 
 * Greater Than (>)
 * Greater Than or Equal To (>=)
 
-If using a Condition that imply a numeric value (Less Than or Greater Than for example), variables that are not inheritly numbers are treated as followsL: BoolReferences are cast to 0  (false) or 1 (true). VectorReferences calculate their magnitudes and use that to compare.
+If using a Condition that imply a numeric value (Less Than or Greater Than for example), variables that are not inherently numbers are treated as followsL: BoolReferences are cast to 0  (false) or 1 (true). VectorReferences calculate their magnitudes and use that to compare.
 
-To use a Condition, create a new field for a single Condition or a collection of multiple Operations with the following. Then edit them in the Inpsector.
+To use a Condition, create a new field for a single Condition or a collection of multiple Operations with the following. Then edit them in the Inspector.
 ```cs
-[SerializeField] NumberCondition m_numberCondition;//Single condition
-[SerializeField] BoolCondition[] m_multipleBoolConditions;//A collection of multiple conditions to execute all together
+[SerializeField] NumberCondition m_numberCondition; // Single condition
+[SerializeField] BoolCondition[] m_multipleBoolConditions; // A collection of multiple conditions to execute all together
 ```
 
-Then edit them in the Inpsector. Finally, evaluate them with the following code:
+Then edit them in the Inspector. Finally, evaluate them with the following code:
 ```cs
 if (m_numberCondition.PassCondition)
 {
-    //Do something if the number condition is true
+    // Do something if the number condition is true
 }
 
 if (m_multipleBoolConditions.PassConditions())
 {
-    //Do something if all of the BoolConditions in the collection are true (if any single condition  fails, PassConditions() return false)
+    // Do something if all of the BoolConditions in the collection are true (if any single condition  fails, PassConditions() return false)
 }
 ```
 

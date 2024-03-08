@@ -7,31 +7,26 @@ namespace Buck
     {
         public Material DefaultValue;
         
-        private Material m_currentValue;
+        Material m_currentValue;
         public Material Value
         {
-            get { return m_currentValue; }
-            set { 
+            get => m_currentValue;
+            set
+            { 
                 m_currentValue = value;
                 LogValueChange();
             }
         }
         
-        public override string ValueAsString => (m_currentValue != null)?m_currentValue.name:"null";
+        public override string ValueAsString => m_currentValue != null ? m_currentValue.name : "null";
 
         public void SetValue(Material value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public void SetValue(MaterialVariable value)
-        {
-            Value = value.Value;
-        }
+            => Value = value.Value;
 
-        private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-        }
+        void OnEnable()
+            => m_currentValue = DefaultValue;
     }
 }

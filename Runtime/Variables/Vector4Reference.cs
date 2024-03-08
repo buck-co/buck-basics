@@ -20,13 +20,9 @@ namespace Buck
         }
 
         public Vector4 Value
-        {
-            get { return UseVariable ? Variable.Value : ConstantValue; }
-        }
+            => UseVariable ? Variable.Value : ConstantValue;
 
         public static implicit operator Vector4(Vector4Reference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

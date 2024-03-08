@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Buck
 {
-    //Extension Methods relying on Cameras to convert objects like RectTransforms or Bounds in world space into positions on screen or vice versa
+    // Extension Methods relying on Cameras to convert objects like RectTransforms or Bounds in world space into positions on screen or vice versa
     public static partial class ExtensionMethods
     {
         /// <summary>
@@ -17,10 +17,8 @@ namespace Buck
         /// <summary>
         /// Returns true if a Renderer is visible from the provided camera.
         /// </summary>
-        public static bool IsVisibleFrom(this Renderer renderer, Camera camera)
-        {
-            return IsVisibleFrom(renderer.bounds, camera);
-        }
+        public static bool IsVisibleFrom(this Renderer renderer, Camera camera) 
+            => IsVisibleFrom(renderer.bounds, camera);
 
         //*****[Rects, Bounds, RectTransforms, and Screen Space]*****
         /// <summary>
@@ -63,6 +61,7 @@ namespace Buck
         /// </summary>
         public static Rect GetScreenRectangle(this Renderer renderer, Camera camera = null)
             => GetScreenRectangle(renderer.bounds, camera);
+        
         /// <summary>
         /// Returns a Rect that represents the screen space position of the bounding box around a world space object.
         /// Credit to YouTube user quill18creates in this video https://www.youtube.com/watch?v=2Tgqr1_ajqE

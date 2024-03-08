@@ -20,13 +20,9 @@ namespace Buck
         }
 
         public Vector3Int Value
-        {
-            get { return UseVariable ? Variable.Value : ConstantValue; }
-        }
+            => UseVariable ? Variable.Value : ConstantValue;
 
         public static implicit operator Vector3Int(Vector3IntReference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

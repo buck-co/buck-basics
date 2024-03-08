@@ -19,13 +19,9 @@ namespace Buck
         }
 
         public bool Value
-        {
-            get { return UseVariable ?  Variable.Value : ConstantValue; }
-        }
+            => UseVariable ?  Variable.Value : ConstantValue;
 
         public static implicit operator bool(BoolReference reference)
-        {
-            return reference.Value;
-        }
+            => reference.Value;
     }
 }

@@ -12,10 +12,10 @@ namespace Buck
 
     public class ObjectPooler : MonoBehaviour
     {
-        List<GameObject> m_freeList = new List<GameObject>();
-        public List<GameObject> FreeList { get => m_freeList;  }
-        List<GameObject> m_usedList = new List<GameObject>();
-        public List<GameObject> UsedList { get => m_usedList; }
+        List<GameObject> m_freeList = new();
+        public List<GameObject> FreeList => m_freeList;
+        List<GameObject> m_usedList = new();
+        public List<GameObject> UsedList => m_usedList;
 
         /// <summary>
         /// GenerateObjects() takes a list of PooledObject structs and instantiates GameObjects for use in the shared pool.
@@ -36,6 +36,7 @@ namespace Buck
                         go = Instantiate(pooledObjects[i].m_prefab, Vector3.zero, Quaternion.identity, transform);
                     else
                         go = Instantiate(pooledObjects[i].m_prefab, Vector3.zero, Quaternion.identity);
+                    
                     go.SetActive(false);
 
                     // Add a pooler identifier to the GameObject so that it can be referenced without a parent Pooler.
@@ -57,7 +58,7 @@ namespace Buck
         /// Retrieve() returns a GameObject from the shared pool at the desired position and rotation.
         /// If there's more than one type of GameObject in the shared pool, it will choose randomly.
         /// </summary>
-        public GameObject Retrieve(Vector3 position = default(Vector3), Quaternion rotation = default(Quaternion), bool setLocalRotation = false)
+        public GameObject Retrieve(Vector3 position = default, Quaternion rotation = default, bool setLocalRotation = false)
         {
             int numFree = m_freeList.Count;
             if (numFree == 0)
@@ -104,7 +105,9 @@ namespace Buck
         /// </summary>
         public void RecycleAll()
         {
-            if (m_usedList.Count == 0) return;
+            if (m_usedList.Count == 0)
+                return;
+            
             for(int i=m_usedList.Count-1; i >=0; i--)
                 Recycle(m_usedList[i]);
         }
@@ -113,11 +116,9 @@ namespace Buck
         /// Shuffle() will randomize the order of objects in the free list.
         /// </summary>
         public void Shuffle()
-        {
-            m_freeList.Shuffle();
-        }
+            => m_freeList.Shuffle();
 
-        private void ClearAll()
+        void ClearAll()
         {
             for(int i=m_usedList.Count-1; i >=0; i--)
             {
@@ -126,6 +127,7 @@ namespace Buck
                 else
                     DestroyImmediate(m_usedList[i]);
             }
+            
             m_usedList.Clear();
 
             for(int i=m_freeList.Count-1; i >=0; i--)
@@ -135,6 +137,7 @@ namespace Buck
                 else
                     DestroyImmediate(m_freeList[i]);
             }
+            
             m_freeList.Clear();
         }
     }

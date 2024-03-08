@@ -1,19 +1,20 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Buck
 {
-    //Extension Methods that can be used to create gizmos in the Unity Game View
+    // Extension Methods that can be used to create gizmos in the Unity Game View
     public static partial class ExtensionMethods
     {
-
         /// <summary>
         /// Draws a wireframe circle in Unity's Game View when the game is running and the gizmo drawing is enabled.
         /// </summary>
         public static void DrawCircle(Vector3 center, Vector3 normal, float radius, Color c, float duration = 0f)
         {   
             Vector3 up = Vector3.up;
-            if(normal == up) up = Vector3.right;
+            
+            if (normal == up)
+                up = Vector3.right;
+            
             int segments = 20;
             Vector3 p1 = Vector3.Cross(up, normal).normalized * radius;
 
@@ -46,11 +47,11 @@ namespace Buck
             DrawCircle(end, Vector3.up, radius, c, duration);
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Draws a text string in as a gizmo in world space. This only works in the Unity Editor.
         /// </summary>
-        static public void DrawGizmoString(this Component component, string text, Vector3 worldPos, Color? color = null)
+        public static void DrawGizmoString(this Component component, string text, Vector3 worldPos, Color? color = null)
         {
             var view = UnityEditor.SceneView.currentDrawingSceneView;
             if (view == null) return;
@@ -59,7 +60,8 @@ namespace Buck
 
             var previousColor = GUI.color;
 
-            if (color.HasValue) GUI.color = color.Value;
+            if (color.HasValue)
+                GUI.color = color.Value;
 
             Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
 
@@ -75,7 +77,7 @@ namespace Buck
             GUI.color = previousColor;
             UnityEditor.Handles.EndGUI();
         }
-        #endif
+#endif
 
     }
 }
