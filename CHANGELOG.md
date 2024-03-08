@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.0.4] - 2024-03-08
+- Added extension methods for operating on Color members contained in the types Graphic, SpriteRenderer, and Material
+
 ## [2.0.3] - 2024-03-07
 - Added GenericOperation MonoBehaviour
 - RuntimeSet now inherits from GameEvent and can be subscribed to or raised.
