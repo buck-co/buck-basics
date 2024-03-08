@@ -58,10 +58,10 @@ namespace Buck
         public static void SetAlpha(this Graphic graphic, float alpha)
             => graphic.color = graphic.color.SetAlpha(alpha);
         
-        public static void Multiply(this Graphic graphic, Color multiplier, bool ignoreAlpha = false)
+        public static void Multiply(this Graphic graphic, Color multiplier, bool ignoreAlpha = true)
             => graphic.color = graphic.color.Multiply(multiplier, ignoreAlpha);
         
-        public static void Add(this Graphic graphic, Color multiplier, bool ignoreAlpha = false)
+        public static void Add(this Graphic graphic, Color multiplier, bool ignoreAlpha = true)
             => graphic.color = graphic.color.Add(multiplier, ignoreAlpha);
         
         public static void Tint(this SpriteRenderer spriteRenderer, float tint)
@@ -70,10 +70,10 @@ namespace Buck
         public static void SetAlpha(this SpriteRenderer spriteRenderer, float alpha)
             => spriteRenderer.color = spriteRenderer.color.SetAlpha(alpha);
         
-        public static void Multiply(this SpriteRenderer spriteRenderer, Color multiplier, bool ignoreAlpha = false)
+        public static void Multiply(this SpriteRenderer spriteRenderer, Color multiplier, bool ignoreAlpha = true)
             => spriteRenderer.color = spriteRenderer.color.Multiply(multiplier, ignoreAlpha);
         
-        public static void Add(this SpriteRenderer spriteRenderer, Color multiplier, bool ignoreAlpha = false)
+        public static void Add(this SpriteRenderer spriteRenderer, Color multiplier, bool ignoreAlpha = true)
             => spriteRenderer.color = spriteRenderer.color.Add(multiplier, ignoreAlpha);
         
         public static void Tint(this Material material, float tint)
@@ -82,10 +82,10 @@ namespace Buck
         public static void SetAlpha(this Material material, float alpha)
             => material.color = material.color.SetAlpha(alpha);
         
-        public static void Multiply(this Material material, Color multiplier, bool ignoreAlpha = false)
+        public static void Multiply(this Material material, Color multiplier, bool ignoreAlpha = true)
             => material.color = material.color.Multiply(multiplier, ignoreAlpha);
         
-        public static void Add(this Material material, Color multiplier, bool ignoreAlpha = false)
+        public static void Add(this Material material, Color multiplier, bool ignoreAlpha = true)
             => material.color = material.color.Add(multiplier, ignoreAlpha);
     }
 }
