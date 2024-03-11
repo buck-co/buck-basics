@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.0.5] - ????-??-??
+-Added SoftSingleton class as alternate to Singleton, which allows destroying and refilling the Instance during runtime.
+
 ## [2.0.4] - 2024-03-08
 - Added extension methods for operating on Color members contained in the types Graphic, SpriteRenderer, and Material
 
