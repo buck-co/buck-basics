@@ -2,9 +2,31 @@
 
 namespace Buck
 {
-    public class BaseVariable : GameEvent
+    public abstract class BaseVariable<T> : GameEvent
     {
-        public virtual string ValueAsString => "ValueAsString unimplemented for this type of BaseVariable.";
+        [SerializeField] protected T DefaultValue;
+        
+        protected T m_currentValue;
+
+        public virtual T Value
+        {
+            get => m_currentValue;
+            set
+            {
+                m_currentValue = value;
+                LogValueChange();
+            }
+        }
+        
+        public virtual string ValueAsString
+            => m_currentValue.ToString();
+
+        // Should we remove this? It's functionally equivalent to the Value setter but without the logging.
+        public void SetValue(T value)
+            => Value = value;
+        
+        protected virtual void OnEnable()
+            => m_currentValue = DefaultValue;
 
         public void LogValueChange()
         {
@@ -16,9 +38,7 @@ namespace Buck
 
 #if UNITY_EDITOR
         public void LogValue()
-        {
-            Debug.Log("Value of " + name + " is: " + ValueAsString);
-        }
+            => Debug.Log("Value of " + name + " is: " + ValueAsString);
 #endif
     }
 }

@@ -4,33 +4,24 @@ using System;
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Int Variable", order = 3)]
-    public class IntVariable : NumberVariable
+    public class IntVariable : BaseVariable<int>, NumberVariable
     {
-        public int DefaultValue = 0;
+        [SerializeField] protected bool m_clampToAMin = false;
         
-        int m_currentValue;
-        public int Value
-        {
-            get => m_currentValue;
-            set
-            { 
-                m_currentValue = value;
-                Clamp();
-                LogValueChange();
-            }
-        }
+        [SerializeField] protected NumberReference m_clampMin;
+
+        [SerializeField] protected bool m_clampToAMax = false;
+        
+        [SerializeField] protected NumberReference m_clampMax;
         
         public override string ValueAsString
             => m_currentValue.ToString();
 
-        public override string ValueAsStringFormatted(string formatter)
+        public string ValueAsStringFormatted(string formatter)
             => m_currentValue.ToString(formatter);
         
-        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
+        public string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
             => m_currentValue.ToString(formatter, formatProvider);
-
-        public void SetValue(int value)
-            => Value = value;
 
         public void SetValue(IntVariable value)
             => Value = value.Value;
@@ -41,13 +32,10 @@ namespace Buck
         public void ApplyChange(IntVariable amount)
             => Value += amount.Value;
 
-        private void OnEnable()
-            => m_currentValue = DefaultValue;
+        public TypeCode TypeCode
+            => TypeCode.Int32;
 
-        public override System.TypeCode TypeCode
-            => System.TypeCode.Int32;
-
-        public override void Clamp()
+        public void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueInt > Value)
             {
@@ -69,13 +57,13 @@ namespace Buck
             }
         }
 
-        public override int ValueInt
+        public int ValueInt
             => Value;
 
-        public override float ValueFloat
+        public float ValueFloat
             => (float)(Value);
 
-        public override double ValueDouble
+        public double ValueDouble
             => (double)(Value);
     }
 }

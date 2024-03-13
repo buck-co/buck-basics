@@ -4,33 +4,21 @@ using System;
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Double Variable", order = 5)]
-    public class DoubleVariable : NumberVariable
+    public class DoubleVariable : BaseVariable<double>, NumberVariable
     {
-        public double DefaultValue;
+        [SerializeField] protected bool m_clampToAMin = false;
         
-        double m_currentValue;
-        public double Value
-        {
-            get => m_currentValue;
-            set
-            { 
-                m_currentValue = value;
-                Clamp();
-                LogValueChange();
-            }
-        }
+        [SerializeField] protected NumberReference m_clampMin;
+
+        [SerializeField] protected bool m_clampToAMax = false;
         
-        public override string ValueAsString
-            => m_currentValue.ToString();
+        [SerializeField] protected NumberReference m_clampMax;
         
-        public override string ValueAsStringFormatted(string formatter)
+        public string ValueAsStringFormatted(string formatter)
             => m_currentValue.ToString(formatter);
         
-        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
+        public string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
             => m_currentValue.ToString(formatter, formatProvider);
-
-        public void SetValue(double value)
-            => Value = value;
 
         public void SetValue(DoubleVariable value)
             => Value = value.Value;
@@ -41,28 +29,24 @@ namespace Buck
         public void ApplyChange(DoubleVariable amount)
             => Value += amount.Value;
 
-        void OnEnable()
-            => m_currentValue = DefaultValue;
-
-        public override TypeCode TypeCode
+        public TypeCode TypeCode
             => TypeCode.Double;
 
-        public override void Clamp()
+        public void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueDouble > Value)
                 m_currentValue = m_clampMin.ValueDouble;
-            else
-            if (m_clampToAMax && m_clampMax.ValueDouble < Value)
+            else if (m_clampToAMax && m_clampMax.ValueDouble < Value)
                 m_currentValue = m_clampMax.ValueDouble;
         }
 
-        public override int ValueInt
-            => (int)(Value);
+        public int ValueInt
+            => (int)Value;
 
-        public override float ValueFloat
-            => (float)(Value);
+        public float ValueFloat
+            => (float)Value;
 
-        public override double ValueDouble
+        public double ValueDouble
             => Value;
     }
 }

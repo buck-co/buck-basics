@@ -3,52 +3,30 @@
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Vector4 Variable", order = 8)]
-    public class Vector4Variable : VectorVariable
+    public class Vector4Variable : BaseVariable<Vector4>, VectorVariable
     {
-        public Vector4 DefaultValue = Vector4.zero;
-        
-        Vector4 m_currentValue;
-        public Vector4 Value
-        {
-            get => m_currentValue;
-            set
-            { 
-                m_currentValue = value;
-                LogValueChange();
-            }
-        }
-        
-        public override string ValueAsString => m_currentValue.ToString();
-
-        public void SetValue(Vector4 value)
-            => Value = value;
-
         public void SetValue(Vector4Variable value)
             => Value = value.Value;
-
-        private void OnEnable()
-            => m_currentValue = DefaultValue;
         
-
-        public override int VectorLength
+        public int VectorLength
             => 4;
         
-        public override bool IsAVectorInt
+        public bool IsAVectorInt
             => false;
         
-        public override Vector2 ValueVector2
-            => (Vector2)(Value);
+        public Vector2 ValueVector2
+            => (Vector2)Value;
 
-        public override Vector3 ValueVector3
-            => (Vector3)(Value);
+        public Vector3 ValueVector3
+            => (Vector3)Value;
 
-        public override Vector4 ValueVector4
+        public Vector4 ValueVector4
             => Value;
         
-        public override Vector2Int ValueVector2Int
+        public Vector2Int ValueVector2Int
             => ((Vector2)Value).ToVector2Int();
 
-        public override Vector3Int ValueVector3Int
+        public Vector3Int ValueVector3Int
             => ((Vector3)Value).ToVector3Int();
     }
 }

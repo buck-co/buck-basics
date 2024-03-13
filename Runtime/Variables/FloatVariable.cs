@@ -4,33 +4,21 @@ using System;
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Float Variable", order = 4)]
-    public class FloatVariable : NumberVariable
+    public class FloatVariable : BaseVariable<float>, NumberVariable
     {
-        public float DefaultValue;
+        [SerializeField] protected bool m_clampToAMin = false;
         
-        float m_currentValue;
-        public float Value
-        {
-            get => m_currentValue;
-            set
-            { 
-                m_currentValue = value; 
-                Clamp();
-                LogValueChange();
-            }
-        }
-        
-        public override string ValueAsString
-            => m_currentValue.ToString();
+        [SerializeField] protected NumberReference m_clampMin;
 
-        public override string ValueAsStringFormatted(string formatter)
+        [SerializeField] protected bool m_clampToAMax = false;
+        
+        [SerializeField] protected NumberReference m_clampMax;
+        
+        public string ValueAsStringFormatted(string formatter)
             => m_currentValue.ToString(formatter);
         
-        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
+        public string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
             => m_currentValue.ToString(formatter, formatProvider);
-
-        public void SetValue(float value)
-            => Value = value;
 
         public void SetValue(FloatVariable value)
             => Value = value.Value;
@@ -41,16 +29,16 @@ namespace Buck
         public void ApplyChange(FloatVariable amount)
             => Value += amount.Value;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             m_currentValue = DefaultValue;
             Clamp();
         }
 
-        public override TypeCode TypeCode
+        public TypeCode TypeCode
             => TypeCode.Single;
 
-        public override void Clamp()
+        public void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueFloat > Value)
             {
@@ -73,13 +61,13 @@ namespace Buck
             }
         }
 
-        public override int ValueInt
+        public int ValueInt
             => (int)(Value);
 
-        public override float ValueFloat
+        public float ValueFloat
             => Value;
 
-        public override double ValueDouble
+        public double ValueDouble
             => (double)(Value);
     }
 }

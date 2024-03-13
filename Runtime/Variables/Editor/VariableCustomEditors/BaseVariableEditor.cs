@@ -82,9 +82,9 @@ namespace Buck
         {
             GUI.enabled = Application.isPlaying;
 
-            BaseVariable e = target as BaseVariable;
+            /*BaseVariable e = target as BaseVariable;
             if (GUILayout.Button("Log Value"))
-                e.LogValue();
+                e.LogValue();*/
         }
     }
 }
