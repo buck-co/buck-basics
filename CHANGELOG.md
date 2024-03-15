@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.0.5] - TBD
+- Added extension method, TriangleNumber(), for calculating the triangle number of the nth term.
+
 ## [2.0.4] - 2024-03-08
 - Added extension methods for operating on Color members contained in the types Graphic, SpriteRenderer, and Material
 

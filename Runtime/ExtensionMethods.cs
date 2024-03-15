@@ -115,5 +115,20 @@ namespace Buck
             
             return guidBytes;
         }
+
+        /// <summary>
+        /// Returns the nth term of the triangle number sequence.
+        /// If you imagine an equilateral triangle formed by rows of dots stacked on each other, these are the total dots when there are n rows of dots.
+        /// The triangle numbers starting at n = 0 are: 0, 1, 3, 6, 10, 15, 21, 28, 36, 45, etc.
+        /// They are nice numbers for making a soft, exponential feeling curve that is chunky and integer friendly. 
+        /// The forumula is TriangleNumber(n) = (n+1)*(n/2f)
+        /// If a negative n is input, this method will return the triangle number of n, but flip it to be negative
+        /// </summary>
+        public static int TriangleNumber(int n)
+        {
+            int val = Mathf.Abs(n);
+            val = Mathf.RoundToInt((val+1)*(val/2f));
+            return val * ((n >= 0)?1:-1);
+        }
     }
 }
