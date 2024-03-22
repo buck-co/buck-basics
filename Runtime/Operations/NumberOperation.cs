@@ -75,14 +75,14 @@ namespace Buck
                 
                 case TypeCode.Single:
                     FloatVariable floatA = (FloatVariable)m_numberA;
-                    floatA.Value = GetFloatResult();
+                    floatA.Value = (decimal)GetFloatResult();
 
                     break;
 
                 
                 case TypeCode.Double:
                     DoubleVariable doubleA = (DoubleVariable)m_numberA;
-                    doubleA.Value = GetDoubleResult();
+                    doubleA.Value = (decimal)GetDoubleResult();
                     break;
             }
 

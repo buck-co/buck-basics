@@ -1,22 +1,29 @@
+using UnityEngine;
 using System;
 
 namespace Buck
 {
-    public interface NumberVariable
+    public abstract class NumberVariable : BaseVariable<decimal>
     {
-        public TypeCode TypeCode { get; }
-        public void Clamp();
+        [SerializeField] protected bool m_clampToAMin = false;
         
-        public int ValueInt { get; }
+        [SerializeField] protected NumberReference m_clampMin;
 
-        public float ValueFloat { get; }
-
-        public double ValueDouble { get; }
-
-        public string ValueAsStringFormatted(string formatter);
-
-        public string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider);
+        [SerializeField] protected bool m_clampToAMax = false;
         
-        public void Raise();
+        [SerializeField] protected NumberReference m_clampMax;
+
+        public abstract TypeCode TypeCode { get; }
+        public abstract void Clamp();
+        
+        public abstract int ValueInt { get; }
+
+        public abstract float ValueFloat { get; }
+
+        public abstract double ValueDouble { get; }
+
+        public abstract string ValueAsStringFormatted(string formatter);
+
+        public abstract string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider);
     }
 }

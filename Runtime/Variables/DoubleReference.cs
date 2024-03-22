@@ -19,7 +19,7 @@ namespace Buck
         }
 
         public double Value
-            => UseVariable ? Variable.Value : ConstantValue;
+            => UseVariable ? (double)Variable.Value : ConstantValue;
 
         public static implicit operator double(DoubleReference reference)
             => reference.Value;

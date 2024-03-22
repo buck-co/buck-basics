@@ -2,16 +2,24 @@ using UnityEngine;
 
 namespace Buck
 {
-    public interface VectorVariable
+    public abstract class VectorVariable : BaseVariable<Vector4>
     {
-        public int VectorLength { get; }
-        public bool IsAVectorInt { get; }
-        public Vector2 ValueVector2 { get; }
-        public Vector3 ValueVector3 { get; }
-        public Vector4 ValueVector4 { get; }
-        public Vector2Int ValueVector2Int { get; }
-        public Vector3Int ValueVector3Int { get; }
-
-        public void Raise();
+        public abstract int VectorLength { get; }
+        public abstract bool IsAVectorInt { get; }
+        
+        public Vector2 ValueVector2
+            => (Vector2)Value;
+        
+        public Vector3 ValueVector3
+            => (Vector3)Value;
+        
+        public Vector4 ValueVector4
+            => Value;
+        
+        public Vector2Int ValueVector2Int
+            => ((Vector2)Value).ToVector2Int();
+        
+        public Vector3Int ValueVector3Int
+            => ((Vector3)Value).ToVector3Int();
     }
 }

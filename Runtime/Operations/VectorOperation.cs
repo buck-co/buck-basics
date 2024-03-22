@@ -61,12 +61,12 @@ namespace Buck
                     {
                         case 2:
                             Vector2Variable vector2Variable = (Vector2Variable)(m_vectorA);
-                            vector2Variable.Value = (Vector2)(GetVector4Result());
+                            vector2Variable.Value = (Vector2)GetVector4Result();
                             break;
                         default:
                         case 3:
                             Vector3Variable vector3Variable = (Vector3Variable)(m_vectorA);
-                            vector3Variable.Value = (Vector3)(GetVector4Result());
+                            vector3Variable.Value = (Vector3)GetVector4Result();
                             break;
                         case 4:
                             Vector4Variable vector4Variable = (Vector4Variable)(m_vectorA);
@@ -80,12 +80,12 @@ namespace Buck
                     {
                         case 2:
                             Vector2IntVariable vector2IntVariable = (Vector2IntVariable)(m_vectorA);
-                            vector2IntVariable.Value = (Vector2Int)(GetVector3IntResult());
+                            vector2IntVariable.Value = GetVector3IntResult().ToVector3();
                             break;
                         default:
                         case 3:
                             Vector3IntVariable vector3IntVariable = (Vector3IntVariable)(m_vectorA);
-                            vector3IntVariable.Value = GetVector3IntResult();
+                            vector3IntVariable.Value = GetVector3IntResult().ToVector3();
                             break;
                     }
                     break;

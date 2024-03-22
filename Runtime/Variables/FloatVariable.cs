@@ -4,7 +4,7 @@ using System;
 namespace Buck
 {
     [CreateAssetMenu(menuName = "BUCK/Variables/Float Variable", order = 4)]
-    public class FloatVariable : BaseVariable<float>, NumberVariable
+    public class FloatVariable : NumberVariable
     {
         [SerializeField] protected bool m_clampToAMin = false;
         
@@ -14,17 +14,17 @@ namespace Buck
         
         [SerializeField] protected NumberReference m_clampMax;
         
-        public string ValueAsStringFormatted(string formatter)
-            => m_currentValue.ToString(formatter);
+        public override string ValueAsStringFormatted(string formatter)
+            => ((float)m_currentValue).ToString(formatter);
         
-        public string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
-            => m_currentValue.ToString(formatter, formatProvider);
+        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
+            => ((float)m_currentValue).ToString(formatter, formatProvider);
 
         public void SetValue(FloatVariable value)
             => Value = value.Value;
 
         public void ApplyChange(float amount)
-            => Value += amount;
+            => Value += (decimal)amount;
 
         public void ApplyChange(FloatVariable amount)
             => Value += amount.Value;
@@ -35,14 +35,14 @@ namespace Buck
             Clamp();
         }
 
-        public TypeCode TypeCode
+        public override TypeCode TypeCode
             => TypeCode.Single;
 
-        public void Clamp()
+        public override void Clamp()
         {
-            if (m_clampToAMin && m_clampMin.ValueFloat > Value)
+            if (m_clampToAMin && (decimal)m_clampMin.ValueFloat > Value)
             {
-                m_currentValue = m_clampMin.ValueFloat;
+                m_currentValue = (decimal)m_clampMin.ValueFloat;
                 
                 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     if (m_debugChanges)
@@ -50,9 +50,9 @@ namespace Buck
                 #endif
             }
             else
-            if (m_clampToAMax && m_clampMax.ValueFloat < Value)
+            if (m_clampToAMax && (decimal)m_clampMax.ValueFloat < Value)
             {
-                m_currentValue = m_clampMax.ValueFloat;
+                m_currentValue = (decimal)m_clampMax.ValueFloat;
                 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     if (m_debugChanges)
@@ -61,13 +61,13 @@ namespace Buck
             }
         }
 
-        public int ValueInt
+        public override int ValueInt
             => (int)(Value);
 
-        public float ValueFloat
-            => Value;
+        public override float ValueFloat
+            => (float)Value;
 
-        public double ValueDouble
+        public override double ValueDouble
             => (double)(Value);
     }
 }
