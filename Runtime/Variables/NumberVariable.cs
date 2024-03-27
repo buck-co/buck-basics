@@ -3,7 +3,7 @@ using System;
 
 namespace Buck
 {
-    public abstract class NumberVariable : BaseVariable<decimal>
+    public abstract class NumberVariable : BaseVariable<double>
     {
         [SerializeField] protected bool m_clampToAMin = false;
         
@@ -12,18 +12,30 @@ namespace Buck
         [SerializeField] protected bool m_clampToAMax = false;
         
         [SerializeField] protected NumberReference m_clampMax;
+        
+        public override string ToString()
+            => m_currentValue.ToString();
+        
+        public override string ToString(string format, IFormatProvider formatProvider)
+            => m_currentValue.ToString(format, formatProvider);
 
         public abstract TypeCode TypeCode { get; }
-        public abstract void Clamp();
         
-        public abstract int ValueInt { get; }
+        protected abstract void Clamp();
+        
+        protected override void OnEnable()
+        {
+            m_currentValue = DefaultValue;
+            Clamp();
+        }
+        
+        public int ValueInt
+            => (int)m_currentValue;
 
-        public abstract float ValueFloat { get; }
+        public float ValueFloat
+            => (float)m_currentValue;
 
-        public abstract double ValueDouble { get; }
-
-        public abstract string ValueAsStringFormatted(string formatter);
-
-        public abstract string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider);
+        public double ValueDouble
+            => m_currentValue;
     }
 }
