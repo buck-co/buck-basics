@@ -14,10 +14,10 @@ namespace Buck
         [SerializeField] protected NumberReference m_clampMax;
         
         public override string ToString()
-            => m_currentValue.ToString();
+            => Value.ToString();
         
         public override string ToString(string format, IFormatProvider formatProvider)
-            => m_currentValue.ToString(format, formatProvider);
+            => Value.ToString(format, formatProvider);
 
         public abstract TypeCode TypeCode { get; }
         
@@ -25,7 +25,7 @@ namespace Buck
         
         protected override void OnEnable()
         {
-            m_currentValue = DefaultValue;
+            base.OnEnable();
             Clamp();
         }
         

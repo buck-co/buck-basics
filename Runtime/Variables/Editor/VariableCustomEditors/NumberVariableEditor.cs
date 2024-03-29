@@ -24,7 +24,7 @@ namespace Buck
 
     }
 
-    public class NumberVariableEditor : BaseVariableEditor
+    public class NumberVariableEditor : BaseVariableEditor<double>
     {
         /*
         Since NumberVariables are abstract they don't have actual property drawers. 
@@ -38,7 +38,9 @@ namespace Buck
 
         // Values only created by children of NumberVariable, but since NumberVariable itself is abstract this is fine
         SerializedProperty m_debugChanges;
-        SerializedProperty DefaultValue;
+        SerializedProperty m_defaultValue;
+        SerializedProperty m_resetOnRestart;
+        SerializedProperty m_restartEvents;
         
         void OnEnable()
         {
@@ -49,7 +51,9 @@ namespace Buck
             m_clampMax = serializedObject.FindProperty("m_clampMax");
 
             m_debugChanges = serializedObject.FindProperty("m_debugChanges");
-            DefaultValue = serializedObject.FindProperty("DefaultValue");
+            m_defaultValue = serializedObject.FindProperty("m_defaultValue");
+            m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
+            m_restartEvents = serializedObject.FindProperty("m_restartEvents");
         }
 
         public override void OnInspectorGUI()
@@ -61,7 +65,10 @@ namespace Buck
 
             serializedObject.UpdateIfRequiredOrScript();
             
-            EditorGUILayout.PropertyField(DefaultValue);
+            EditorGUILayout.PropertyField(m_defaultValue);
+            EditorGUILayout.PropertyField(m_resetOnRestart);
+            if (m_resetOnRestart.boolValue)
+                EditorGUILayout.PropertyField(m_restartEvents);
             
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Clamps", EditorStyles.boldLabel);

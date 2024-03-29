@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Buck
 {
     public abstract class BaseVariable<T> : GameEvent, IFormattable
     {
-        [SerializeField] protected T DefaultValue;
-        
+        [FormerlySerializedAs("DefaultValue")] [SerializeField] protected T m_defaultValue;
+        [SerializeField] protected bool m_resetOnRestart = false;
+        [SerializeField] protected List<GameEvent> m_restartEvents = new List<GameEvent>();
+
         protected T m_currentValue;
+        protected List<GameEventListenerReference> m_restartEventListenerReferences = new List<GameEventListenerReference>();
         
         public virtual T Value
         {
@@ -20,13 +25,49 @@ namespace Buck
         }
         
         public override string ToString()
-            => m_currentValue.ToString();
+            => Value.ToString();
 
         public virtual string ToString(string format, IFormatProvider formatProvider)
-            => m_currentValue.ToString();
-        
+            => Value.ToString();
+
         protected virtual void OnEnable()
-            => m_currentValue = DefaultValue;
+        {
+            ResetValueToDefault();
+            m_restartEventListenerReferences.Clear();
+            
+            foreach (var restartEvent in m_restartEvents)
+            {
+                var restartEventListenerReference = new GameEventListenerReference
+                {
+                    EventListener = this,
+                    Event = restartEvent,
+                    OnEventRaisedDelegate = OnRestartEventRaised
+                };
+                
+                restartEvent.RegisterListener(restartEventListenerReference);
+                m_restartEventListenerReferences.Add(restartEventListenerReference);
+            }
+        }
+        
+        protected virtual void OnDisable()
+        {
+            foreach (var restartEventListenerReference in m_restartEventListenerReferences)
+                restartEventListenerReference.Event.UnregisterListener(restartEventListenerReference);
+            
+            m_restartEventListenerReferences.Clear();
+        }
+        
+        protected void ResetValueToDefault()
+            => Value = m_defaultValue;
+        
+        protected void OnRestartEventRaised()
+        {
+            if (m_resetOnRestart)
+            {
+                ResetValueToDefault();
+                Raise();
+            }
+        }
 
         protected void LogValueChange()
         {
@@ -40,5 +81,7 @@ namespace Buck
         public void LogValue()
             => Debug.Log("Value of " + name + " is: " + ToString());
 #endif
+        
+        
     }
 }

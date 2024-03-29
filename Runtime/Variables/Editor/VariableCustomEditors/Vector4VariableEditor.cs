@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿/*
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -7,12 +8,12 @@ namespace Buck
     // All of these CustomEditors behave identically and have the same names for their variables so they can just inherit from NumberVariableEditor
 
     [CustomEditor(typeof(Vector4Variable)), CanEditMultipleObjects]
-    public class VectorVariableEditor : BaseVariableEditor
+    public class VectorVariableEditor : BaseVariableEditor<VectorVariable>
     {
         /*
         Since NumberVariables are abstract they don't have actual property drawers. 
         However, this class is used as a base class for all specific NumberVariable property drawers, such as IntVariable, FloatVariable, and DoubleVariable
-        */
+        #1#
         SerializedProperty m_clampToAMin;
         SerializedProperty m_clampMin;
         SerializedProperty m_clampToAMax;
@@ -52,3 +53,4 @@ namespace Buck
     }
 }
 #endif
+*/

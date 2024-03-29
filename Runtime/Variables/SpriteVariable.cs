@@ -6,6 +6,6 @@ namespace Buck
     public class SpriteVariable : BaseVariable<Sprite>
     {
         public override string ToString()
-            => m_currentValue != null ? m_currentValue.name : "null";
+            => Value != null ? Value.name : "null";
     }
 }
