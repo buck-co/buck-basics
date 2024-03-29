@@ -1,6 +1,6 @@
 {
   "name": "co.buck.basics",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "displayName": "BUCK Basics",
   "description": "This is BUCK's general Unity code package. It includes extension methods, utility scripts, and debugging tools.",
   "unity": "2021.3",
@@ -24,11 +24,15 @@
     "name": "BUCK",
     "url": "https://buck.co/"
   },
+  "testables": [
+    "co.buck.basics"
+  ],
   "samples": [
     {
-        "displayName": "Sample Project",
-        "description": "A sample scene and some scripts that demonstrate some functionality of Scriptable Object variables, Conditions, and Operations.",
-        "path": "Samples~/SampleProject"
+      "displayName": "Sample Project",
+      "description": "A sample scene and some scripts that demonstrate some functionality of Scriptable Object variables, Conditions, and Operations.",
+      "path": "Samples~/SampleProject"
     }
-  ]
+  ],
+  "hideInEditor": false
 }
