@@ -9,7 +9,7 @@ public class DisplayNumberVariable : MonoBehaviour
 {
     TextMeshProUGUI m_textMeshProUGUI;
 
-    [SerializeField] BaseVariable m_baseVariable;
+    [SerializeField] NumberVariable m_numberVariable;
     
     void Awake()
     {
@@ -19,9 +19,9 @@ public class DisplayNumberVariable : MonoBehaviour
     
     void RefreshText()
     {
-        m_textMeshProUGUI.text = m_baseVariable.name + " = " + m_baseVariable.ValueAsString;
+        m_textMeshProUGUI.text = m_numberVariable.name + " = " + m_numberVariable;
     }
-    // Update is called once per frame
+    
     public void OnVariableRefreshed()
     {
         RefreshText();
