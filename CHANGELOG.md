@@ -2,6 +2,7 @@
 
 ## [3.0.0] - 2024-04-04
 - Extensive refactor of variable classes to use a generic base class, BaseVariable<T>, which reduces the amount of code needed in each child class.
+- Added SoftSingleton class as alternate to Singleton, which allows destroying and refilling the Instance during runtime.
 - Removed SetValue() methods from all variable classes, as it was redundant with the Value property.
 - Implemented the IFormattable interface on all variable classes, allowing for more standard string formatting.
 - Added the GameEventListenerReference class which allows non-MonoBehaviour classes to subscribe to GameEvents.
