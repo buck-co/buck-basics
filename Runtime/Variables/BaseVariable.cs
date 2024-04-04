@@ -57,10 +57,10 @@ namespace Buck
             m_restartEventListenerReferences.Clear();
         }
         
-        protected void ResetValueToDefault()
+        void ResetValueToDefault()
             => Value = m_defaultValue;
         
-        protected void OnRestartEventRaised()
+        void OnRestartEventRaised()
         {
             if (m_resetOnRestart)
             {

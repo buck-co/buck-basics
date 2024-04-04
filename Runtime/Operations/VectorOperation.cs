@@ -22,7 +22,7 @@ namespace Buck
             ScalarDivision = 4,// /
         }
 
-        [Tooltip("The VectgorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
+        [Tooltip("The VectorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
 
         [Tooltip("The type of assignment operation to execute. Scalar multiplication + division is not supported here, but instead done using the Right Hand Arithmetic setting.")]
@@ -195,5 +195,22 @@ namespace Buck
                 Serialized = true;
             }
         }
+        
+#if UNITY_INCLUDE_TESTS
+        public void SetValues(VectorVariable vectorA, VectorReference vectorB, VectorReference vectorC, NumberReference scalar, Operations operation, RightHandArithmetic rightHandArithmetic)
+        {
+            m_vectorA = vectorA;
+            m_vectorB = vectorB;
+            m_vectorC = vectorC;
+            m_operation = operation;
+            m_numberScalar = scalar;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_raiseEvent = new BoolReference(false);
+        }
+        
+        public VectorVariable VectorA => m_vectorA;
+        public VectorReference VectorB => m_vectorB;
+        public VectorReference VectorC => m_vectorC;
+#endif
     }
 }

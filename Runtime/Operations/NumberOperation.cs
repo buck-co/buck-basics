@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Buck
 {
     [Serializable]
-    public class NumberOperation:BaseOperation
+    public class NumberOperation : BaseOperation
     {
         public enum Operations
         {
@@ -26,7 +26,7 @@ namespace Buck
             Pow = 5,//^
         }
         
-        enum RoundingType
+        public enum RoundingType
         {
             RoundToInt = 0, 
             FloorToInt = 1, 
@@ -39,7 +39,7 @@ namespace Buck
         [Tooltip("The type of assignment operation to execute.")]
         [SerializeField] Operations m_operation;
 
-        [Tooltip("An additional modifier of the right side of the assignemtn using common arithmetic. Adds a third NumberReference variable if !None.")]
+        [Tooltip("An additional modifier of the right side of the assignment using common arithmetic. Adds a third NumberReference variable if !None.")]
         [SerializeField] RightHandArithmetic m_rightHandArithmetic;
 
         [Tooltip("First NumberReference used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
@@ -240,5 +240,21 @@ namespace Buck
                 Serialized = true;
             }
         }
+#if UNITY_INCLUDE_TESTS
+        public void SetValues(NumberVariable numberA, NumberReference numberB, NumberReference numberC, Operations operation, RightHandArithmetic rightHandArithmetic, RoundingType rounding)
+        {
+            m_numberA = numberA;
+            m_numberB = numberB;
+            m_numberC = numberC;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_rounding = rounding;
+            m_raiseEvent = new BoolReference(false);
+        }
+        
+        public NumberVariable NumberA => m_numberA;
+        public NumberReference NumberB => m_numberB;
+        public NumberReference NumberC => m_numberC;
+#endif
     }
 }

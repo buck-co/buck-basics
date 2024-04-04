@@ -1,11 +1,14 @@
 {
-    "name": "BUCK.BUCKBasics.Tests",
+    "name": "BUCK.BUCKBasics.Editor.Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "BUCK.BUCKBasics.Runtime"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
