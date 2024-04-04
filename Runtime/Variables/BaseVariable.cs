@@ -5,7 +5,12 @@ using UnityEngine.Serialization;
 
 namespace Buck
 {
-    public abstract class BaseVariable<T> : GameEvent, IFormattable
+    public abstract class BaseVariable : GameEvent
+    {
+        public abstract Type Type { get; }
+    }
+    
+    public abstract class BaseVariable<T> : BaseVariable, IFormattable
     {
         [FormerlySerializedAs("DefaultValue")] [SerializeField] protected T m_defaultValue;
         [SerializeField] protected bool m_resetOnRestart = false;
@@ -14,7 +19,10 @@ namespace Buck
         protected T m_currentValue;
         protected List<GameEventListenerReference> m_restartEventListenerReferences = new List<GameEventListenerReference>();
         
-        public virtual T Value
+        public override Type Type
+            => typeof(T);
+        
+        public T Value
         {
             get => m_currentValue;
             set
