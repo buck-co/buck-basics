@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.1] - 2024-05-09
+- Fixed an issue where Inspectors for VectorVariable types Vector3Variable, Vector2Variable, Vector3IntVariable, and Vector2IntVariable were displaying as the higher precision `Vector4` type.
+- Fixed an issue where Inspectors for NumberVariable types IntVariable and FloatVariable were displaying as the higher precision `double` type.
+- Simplified some of the inheritance for variable type custom Inspectors.
+
 ## [3.0.0] - 2024-04-04
 - Extensive refactor of variable classes to use a generic base class, BaseVariable<T>, which reduces the amount of code needed in each child class.
 - Added SoftSingleton class as alternate to Singleton, which allows destroying and refilling the Instance during runtime.

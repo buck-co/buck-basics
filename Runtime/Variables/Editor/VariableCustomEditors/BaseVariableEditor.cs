@@ -31,34 +31,50 @@ namespace Buck
     public class Texture2DVariableEditor:BaseVariableEditor<Texture2D>{}
 
     [CustomEditor(typeof(Vector2IntVariable)), CanEditMultipleObjects]
-    public class Vector2IntVariableEditor:BaseVariableEditor<Vector4>{}
+    public class Vector2IntVariableEditor:BaseVariableEditor<Vector4>
+    {
+        protected override void DefaultValueGUI()
+            => m_defaultValue.vector4Value = (Vector2)EditorGUILayout.Vector2IntField("Default Value", ((Vector2)m_defaultValue.vector4Value).ToVector2Int());
+    }
 
     [CustomEditor(typeof(Vector2Variable)), CanEditMultipleObjects]
-    public class Vector2VariableEditor:BaseVariableEditor<Vector4>{}
+    public class Vector2VariableEditor:BaseVariableEditor<Vector4>
+    {
+        protected override void DefaultValueGUI()
+            => m_defaultValue.vector4Value = EditorGUILayout.Vector2Field("Default Value", (Vector2)m_defaultValue.vector4Value);
+    }
 
     [CustomEditor(typeof(Vector3IntVariable)), CanEditMultipleObjects]
-    public class Vector3IntVariableEditor:BaseVariableEditor<Vector4>{}
+    public class Vector3IntVariableEditor : BaseVariableEditor<Vector4>
+    {
+        protected override void DefaultValueGUI()
+            => m_defaultValue.vector4Value = (Vector3)EditorGUILayout.Vector3IntField("Default Value", ((Vector3)m_defaultValue.vector4Value).ToVector3Int());
+    }
 
     [CustomEditor(typeof(Vector3Variable)), CanEditMultipleObjects]
-    public class Vector3VariableEditor:BaseVariableEditor<Vector4>{}
-    
+    public class Vector3VariableEditor : BaseVariableEditor<Vector4>
+    {
+        protected override void DefaultValueGUI()
+            => m_defaultValue.vector4Value = EditorGUILayout.Vector3Field("Default Value", (Vector3)m_defaultValue.vector4Value);
+    }
+
     [CustomEditor(typeof(Vector4Variable)), CanEditMultipleObjects]
-    public class Vector4VariableEditor:BaseVariableEditor<Vector4>{}
+    public class Vector4VariableEditor : BaseVariableEditor<Vector4>
+    {
+        protected override void DefaultValueGUI()
+            => m_defaultValue.vector4Value = EditorGUILayout.Vector4Field("Default Value", m_defaultValue.vector4Value);
+    }
 
-    //Vector4Variable has it's own separate editor, Vector4VariableEditor.cs
-
-    
     public class BaseVariableEditor<T> : GameEventEditor
     {
-        SerializedProperty m_debugChanges;
-        SerializedProperty m_defaultValue;
-        SerializedProperty m_resetOnRestart;
-        SerializedProperty m_restartEvents;
+        protected SerializedProperty m_defaultValue;
+        protected SerializedProperty m_resetOnRestart;
+        protected SerializedProperty m_restartEvents;
 
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             // Cache serialized properties:
-            m_debugChanges = serializedObject.FindProperty("m_debugChanges");
+            base.OnEnable();
             m_defaultValue = serializedObject.FindProperty("m_defaultValue");
             m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
             m_restartEvents = serializedObject.FindProperty("m_restartEvents");
@@ -66,14 +82,10 @@ namespace Buck
 
         public override void OnInspectorGUI()
         {
-            // Script field
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
-            GUI.enabled = true;
+            ScriptFieldGUI();
+            DebugChangesGUI();
+            DefaultValueGUI();
             
-            serializedObject.UpdateIfRequiredOrScript();
-
-            EditorGUILayout.PropertyField(m_defaultValue);
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)
                 EditorGUILayout.PropertyField(m_restartEvents);
@@ -83,7 +95,7 @@ namespace Buck
             EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(m_debugChanges);
             LogValueButtonGUI();
-            base.RaiseGameEventButtonGUI();
+            RaiseGameEventButtonGUI();
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -96,6 +108,9 @@ namespace Buck
             if (GUILayout.Button("Log Value"))
                 e.LogValue();
         }
+        
+        protected virtual void DefaultValueGUI()
+            => EditorGUILayout.PropertyField(m_defaultValue);
     }
 }
 #endif

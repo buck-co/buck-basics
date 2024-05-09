@@ -1,30 +1,32 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
 
 namespace Buck
 {
     // All of these CustomEditors behave identically and have the same names for their variables so they can just inherit from NumberVariableEditor
 
     [CustomEditor(typeof(IntVariable)), CanEditMultipleObjects]
-    public class IntVariableEditor:NumberVariableEditor
+    public class IntVariableEditor:NumberVariableEditor<int>
     {
-
+        protected override void DefaultValueGUI()
+            => m_defaultValue.doubleValue = EditorGUILayout.IntField("Default Value", (int)m_defaultValue.doubleValue);
     }
 
     [CustomEditor(typeof(FloatVariable)), CanEditMultipleObjects]
-    public class FloatVariableEditor:NumberVariableEditor
+    public class FloatVariableEditor:NumberVariableEditor<float>
     {
-
+        protected override void DefaultValueGUI()
+            => m_defaultValue.doubleValue = EditorGUILayout.FloatField("Default Value", (float)m_defaultValue.doubleValue);
     }
 
     [CustomEditor(typeof(DoubleVariable)), CanEditMultipleObjects]
-    public class DoubleVariableEditor:NumberVariableEditor
+    public class DoubleVariableEditor:NumberVariableEditor<double>
     {
-
+        protected override void DefaultValueGUI()
+            => m_defaultValue.doubleValue = EditorGUILayout.DoubleField("Default Value", m_defaultValue.doubleValue);
     }
 
-    public class NumberVariableEditor : BaseVariableEditor<double>
+    public class NumberVariableEditor<T> : BaseVariableEditor<T>
     {
         /*
         Since NumberVariables are abstract they don't have actual property drawers. 
@@ -35,37 +37,23 @@ namespace Buck
         SerializedProperty m_clampMin;
         SerializedProperty m_clampToAMax;
         SerializedProperty m_clampMax;
-
-        // Values only created by children of NumberVariable, but since NumberVariable itself is abstract this is fine
-        SerializedProperty m_debugChanges;
-        SerializedProperty m_defaultValue;
-        SerializedProperty m_resetOnRestart;
-        SerializedProperty m_restartEvents;
         
-        void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             // Cache serialized properties:
             m_clampToAMin = serializedObject.FindProperty("m_clampToAMin");
             m_clampMin = serializedObject.FindProperty("m_clampMin");
             m_clampToAMax = serializedObject.FindProperty("m_clampToAMax");
             m_clampMax = serializedObject.FindProperty("m_clampMax");
-
-            m_debugChanges = serializedObject.FindProperty("m_debugChanges");
-            m_defaultValue = serializedObject.FindProperty("m_defaultValue");
-            m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
-            m_restartEvents = serializedObject.FindProperty("m_restartEvents");
         }
 
         public override void OnInspectorGUI()
         {
-            // Script field
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
-            GUI.enabled = true;
-
-            serializedObject.UpdateIfRequiredOrScript();
+            ScriptFieldGUI();
             
-            EditorGUILayout.PropertyField(m_defaultValue);
+            DefaultValueGUI();
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)
                 EditorGUILayout.PropertyField(m_restartEvents);
@@ -84,11 +72,9 @@ namespace Buck
                 EditorGUILayout.PropertyField(m_clampMax);
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
-            
-            EditorGUILayout.PropertyField(m_debugChanges);
-            base.RaiseGameEventButtonGUI();
-            base.LogValueButtonGUI();
+            DebugChangesGUI();
+            RaiseGameEventButtonGUI();
+            LogValueButtonGUI();
             
             serializedObject.ApplyModifiedProperties();
         }
