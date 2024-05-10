@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.2] - 2024-05-10
+- Fixed an issue where variable ToString() methods would return a null reference exception if the Value property was null.
+
 ## [3.0.1] - 2024-05-09
 - Fixed an issue where Inspectors for VectorVariable types Vector3Variable, Vector2Variable, Vector3IntVariable, and Vector2IntVariable were displaying as the higher precision `Vector4` type.
 - Fixed an issue where Inspectors for NumberVariable types IntVariable and FloatVariable were displaying as the higher precision `double` type.

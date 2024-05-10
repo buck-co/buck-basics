@@ -6,6 +6,6 @@ namespace Buck
     public class Texture2DVariable : BaseVariable<Texture2D>
     {
         public override string ToString()
-            => Value != null ? Value.name : "null";
+            => Value != null ? Value.name : name + ".Value is null.";
     }
 }

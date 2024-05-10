@@ -33,10 +33,10 @@ namespace Buck
         }
         
         public override string ToString()
-            => Value.ToString();
+            => Value != null ? Value.ToString() : name + ".Value is null.";
 
         public virtual string ToString(string format, IFormatProvider formatProvider)
-            => Value.ToString();
+            => Value != null ? Value.ToString() : name + ".Value is null.";
 
         protected virtual void OnEnable()
         {
@@ -70,26 +70,33 @@ namespace Buck
         
         void OnRestartEventRaised()
         {
-            if (m_resetOnRestart)
-            {
-                ResetValueToDefault();
-                Raise();
-            }
+            if (!m_resetOnRestart) return;
+            ResetValueToDefault();
+            Raise();
         }
 
         protected void LogValueChange()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (m_debugChanges)
-                Debug.Log("Value of " + name + " set to: " + ToString());
+            if (!m_debugChanges) return;
+            
+            if (Value != null)
+                Debug.Log("Value of " + name + " set to " + ToString());
+            else
+                Debug.Log("Value of " + name + " set to null.");
 #endif
         }
 
 #if UNITY_EDITOR
         public void LogValue()
-            => Debug.Log("Value of " + name + " is: " + ToString());
+        {
+            if (Value != null)
+                Debug.Log("Value of " + name + " is " + ToString());
+            else
+                Debug.Log("Value of " + name + " is null.");
+        }
 #endif
-        
-        
+
+
     }
 }

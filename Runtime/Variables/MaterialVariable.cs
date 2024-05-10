@@ -6,6 +6,6 @@ namespace Buck
     public class MaterialVariable : BaseVariable<Material>
     {
         public override string ToString()
-            => Value != null ? Value.name : "null";
+            => Value != null ? Value.name : name + ".Value is null.";
     }
 }
