@@ -6,34 +6,16 @@ namespace Buck
     [CreateAssetMenu(menuName = "BUCK/Variables/Float Variable", order = 4)]
     public class FloatVariable : NumberVariable
     {
-        public float DefaultValue;
-        
-        float m_currentValue;
-        public float Value
+        public new float Value
         {
-            get => m_currentValue;
+            get => ValueFloat;
             set
-            { 
-                m_currentValue = value; 
+            {
+                m_currentValue = value;
                 Clamp();
                 LogValueChange();
             }
         }
-        
-        public override string ValueAsString
-            => m_currentValue.ToString();
-
-        public override string ValueAsStringFormatted(string formatter)
-            => m_currentValue.ToString(formatter);
-        
-        public override string ValueAsStringFormatted(string formatter, IFormatProvider formatProvider)
-            => m_currentValue.ToString(formatter, formatProvider);
-
-        public void SetValue(float value)
-            => Value = value;
-
-        public void SetValue(FloatVariable value)
-            => Value = value.Value;
 
         public void ApplyChange(float amount)
             => Value += amount;
@@ -41,45 +23,29 @@ namespace Buck
         public void ApplyChange(FloatVariable amount)
             => Value += amount.Value;
 
-        private void OnEnable()
-        {
-            m_currentValue = DefaultValue;
-            Clamp();
-        }
-
         public override TypeCode TypeCode
             => TypeCode.Single;
 
-        public override void Clamp()
+        protected override void Clamp()
         {
             if (m_clampToAMin && m_clampMin.ValueFloat > Value)
             {
                 m_currentValue = m_clampMin.ValueFloat;
                 
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    if (m_debugChanges)
-                        Debug.Log("Value of " + name + " min clamped to: " + m_currentValue.ToString());
-                #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (m_debugChanges)
+                    Debug.Log("Value of " + name + " min clamped to: " + ToString());
+#endif
             }
-            else
-            if (m_clampToAMax && m_clampMax.ValueFloat < Value)
+            else if (m_clampToAMax && m_clampMax.ValueFloat < Value)
             {
                 m_currentValue = m_clampMax.ValueFloat;
                 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    if (m_debugChanges)
-                        Debug.Log("Value of " + name + " max clamped to: " + m_currentValue.ToString());
+                if (m_debugChanges)
+                    Debug.Log("Value of " + name + " max clamped to: " + ToString());
 #endif
             }
         }
-
-        public override int ValueInt
-            => (int)(Value);
-
-        public override float ValueFloat
-            => Value;
-
-        public override double ValueDouble
-            => (double)(Value);
     }
 }

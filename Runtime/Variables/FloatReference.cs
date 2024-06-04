@@ -19,7 +19,7 @@ namespace Buck
         }
 
         public float Value
-            => UseVariable ? Variable.Value : ConstantValue;
+            => UseVariable ? (float)Variable.Value : ConstantValue;
 
         public static implicit operator float(FloatReference reference)
             => reference.Value;

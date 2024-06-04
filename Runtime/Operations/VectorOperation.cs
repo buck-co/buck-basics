@@ -22,7 +22,7 @@ namespace Buck
             ScalarDivision = 4,// /
         }
 
-        [Tooltip("The VectgorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
+        [Tooltip("The VectorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
 
         [Tooltip("The type of assignment operation to execute. Scalar multiplication + division is not supported here, but instead done using the Right Hand Arithmetic setting.")]
@@ -61,12 +61,12 @@ namespace Buck
                     {
                         case 2:
                             Vector2Variable vector2Variable = (Vector2Variable)(m_vectorA);
-                            vector2Variable.Value = (Vector2)(GetVector4Result());
+                            vector2Variable.Value = (Vector2)GetVector4Result();
                             break;
                         default:
                         case 3:
                             Vector3Variable vector3Variable = (Vector3Variable)(m_vectorA);
-                            vector3Variable.Value = (Vector3)(GetVector4Result());
+                            vector3Variable.Value = (Vector3)GetVector4Result();
                             break;
                         case 4:
                             Vector4Variable vector4Variable = (Vector4Variable)(m_vectorA);
@@ -80,7 +80,7 @@ namespace Buck
                     {
                         case 2:
                             Vector2IntVariable vector2IntVariable = (Vector2IntVariable)(m_vectorA);
-                            vector2IntVariable.Value = (Vector2Int)(GetVector3IntResult());
+                            vector2IntVariable.Value = (Vector2Int)GetVector3IntResult();
                             break;
                         default:
                         case 3:
@@ -195,5 +195,22 @@ namespace Buck
                 Serialized = true;
             }
         }
+        
+#if UNITY_INCLUDE_TESTS
+        public void SetValues(VectorVariable vectorA, VectorReference vectorB, VectorReference vectorC, NumberReference scalar, Operations operation, RightHandArithmetic rightHandArithmetic)
+        {
+            m_vectorA = vectorA;
+            m_vectorB = vectorB;
+            m_vectorC = vectorC;
+            m_operation = operation;
+            m_numberScalar = scalar;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_raiseEvent = new BoolReference(false);
+        }
+        
+        public VectorVariable VectorA => m_vectorA;
+        public VectorReference VectorB => m_vectorB;
+        public VectorReference VectorC => m_vectorC;
+#endif
     }
 }

@@ -401,5 +401,31 @@ namespace Buck
                 c.ValidateIntegrity();
             #endif
         }
+        
+#if UNITY_INCLUDE_TESTS
+        public void SetValues(BoolReference boolA, BoolReference boolB, BooleanComparisons comparison)
+        {
+            m_variableType = VariableType.Bool;
+            m_boolA = boolA;
+            m_boolB = boolB;
+            m_comparison = comparison;
+        }
+        
+        public void SetValues(NumberReference numberA, NumberReference numberB, BooleanComparisons comparison)
+        {
+            m_variableType = VariableType.Number;
+            m_numberA = numberA;
+            m_numberB = numberB;
+            m_comparison = comparison;
+        }
+        
+        public void SetValues(VectorReference vectorA, VectorReference vectorB, BooleanComparisons comparison)
+        {
+            m_variableType = VariableType.Vector;
+            m_vectorA = vectorA;
+            m_vectorB = vectorB;
+            m_comparison = comparison;
+        }
+#endif
     }
 }

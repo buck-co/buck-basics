@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Buck
@@ -11,7 +12,7 @@ namespace Buck
             SetTo = 0,//bA=bB
             Toggle = 1//bA=!bA
         };
-            
+        
         [Tooltip("The BoolVariable that this operation acts on.")]
         [SerializeField] BoolVariable m_boolA;
 
@@ -23,8 +24,13 @@ namespace Buck
 
         [Tooltip("If true, when Execute() is called BoolA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent = new BoolReference(true);
-        [SerializeField, HideInInspector]bool m_serialized = false;
-        public override bool Serialized {get=> m_serialized; set{m_serialized = value;}}
+        [SerializeField, HideInInspector] bool m_serialized = false;
+
+        public override bool Serialized
+        {
+            get => m_serialized;
+            set => m_serialized = value;
+        }
 
         /// <summary>
         /// Applies the operation and sets BoolA. Raises BoolA's event if RaiseEvent is true.
@@ -67,5 +73,16 @@ namespace Buck
                 Serialized = true;
             }
         }
+        
+#if UNITY_INCLUDE_TESTS
+        public BoolVariable BoolA => m_boolA;
+        public BoolReference BoolB => m_boolB;
+        public void SetValues(BoolVariable boolA, BoolReference boolB, Operations operation)
+        {
+            m_boolA = boolA;
+            m_boolB = boolB;
+            m_operation = operation;
+        }
+#endif
     }
 }

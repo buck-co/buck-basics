@@ -1,7 +1,22 @@
 # Changelog
 
-## [2.0.5] - TBD
-- Added extension method, TriangleNumber(), for calculating the triangle number of the nth term.
+## [3.0.2] - 2024-05-10
+- Fixed an issue where variable ToString() methods would return a null reference exception if the Value property was null.
+
+## [3.0.1] - 2024-05-09
+- Fixed an issue where Inspectors for VectorVariable types Vector3Variable, Vector2Variable, Vector3IntVariable, and Vector2IntVariable were displaying as the higher precision `Vector4` type.
+- Fixed an issue where Inspectors for NumberVariable types IntVariable and FloatVariable were displaying as the higher precision `double` type.
+- Simplified some of the inheritance for variable type custom Inspectors.
+
+## [3.0.0] - 2024-04-04
+- Extensive refactor of variable classes to use a generic base class, BaseVariable<T>, which reduces the amount of code needed in each child class.
+- Added SoftSingleton class as alternate to Singleton, which allows destroying and refilling the Instance during runtime.
+- Removed SetValue() methods from all variable classes, as it was redundant with the Value property.
+- Implemented the IFormattable interface on all variable classes, allowing for more standard string formatting.
+- Added the GameEventListenerReference class which allows non-MonoBehaviour classes to subscribe to GameEvents.
+- All types inheriting from BaseVariable<T> now have a list of "reset" events. If any of the events in the list are raised, the variable will reset to its initial value.
+- Added unit coverage using the Unity Test Framework package for Variable.Value properties, Conditions, and Operations.
+- Minor spelling fixes and code formatting cleanup.
 
 ## [2.0.4] - 2024-03-08
 - Added extension methods for operating on Color members contained in the types Graphic, SpriteRenderer, and Material
@@ -11,7 +26,6 @@
 - RuntimeSet now inherits from GameEvent and can be subscribed to or raised.
 - Added a couple more casting methods to the Vector ExtensionMethods: Vector3.ToVector2Int() and Vector2Int.ToVector3()
 - Cleaned up the code style formatting and comments in nearly every file.
-
 
 ## [2.0.2] - 2024-01-04
 
