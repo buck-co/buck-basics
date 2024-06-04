@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.3] - 2024-06-04
+- Updated GenericOperation.cs methods. Created ExecuteIfPassedAndReturn() which returns a bool if conditions are passed, also added ExecuteIfPassed() which is void and can be used with UnityEvents
+- Added TriangleNumber() to ExtensionMethods
+
 ## [3.0.2] - 2024-05-10
 - Fixed an issue where variable ToString() methods would return a null reference exception if the Value property was null.
 

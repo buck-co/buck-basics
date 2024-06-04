@@ -32,9 +32,11 @@ namespace Buck
         [SerializeField] UnityEvent m_unityEvent;
 
         /// <summary>
-        /// If the defined Conditions are passed each defined Operation will execute, GameEvents will raise, and the UnityEvent will invoke.
+        /// If the defined Conditions are passed each defined Operation will execute, GameEvents will raise, and the UnityEvent will invoke. 
+        /// This  returns a bool based on whether the conditions were passed and execution happens. 
+        /// If the boolean return can't be supported (such as calling from a UnityEvent), use AttemptExecute() instead.
         /// </summary>
-        public virtual bool ExecuteIfConditionsPassed()
+        public virtual bool ExecuteIfPassedAndReturn()
         {
             if (m_conditions.PassConditions())
             {
@@ -50,6 +52,16 @@ namespace Buck
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// If the defined Conditions are passed each defined Operation will execute, GameEvents will raise, and the UnityEvent will invoke. 
+        /// This executes and returns void so that it may be called from UnityEvents. Consider using AttemptExecuteAndReturnIfPassed() in other cases.
+        /// </summary>
+        public virtual void ExecuteIfPassed()
+        {
+            ExecuteIfPassedAndReturn();
+            return;
         }
     }
 }
