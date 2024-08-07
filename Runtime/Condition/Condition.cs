@@ -122,21 +122,35 @@ namespace Buck
 
         [Tooltip("Use the dropdown to pick which type of Variable you wish to compare.")]
         [SerializeField] VariableType m_variableType = VariableType.Bool;
+        public VariableType VariableTypeProperty => m_variableType;
+        
         [Tooltip("The left side Bool in condition boolean logic.")]
         [SerializeField] BoolReference m_boolA;
+        public BoolReference BoolA => m_boolA;
+        
         [Tooltip("The left side NumberReference in condition boolean logic. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberA;
+        public NumberReference NumberA => m_numberA;
+        
         [Tooltip("The left side VectorReference in condition boolean logic. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorA;
+        public VectorReference VectorA => m_vectorA;
 
         [Tooltip("Use the dropdown to pick what kind of boolean comparison you want to use to compare the two reference objects. For size comparisons, Booleans will cast to 0 (false) or 1 (true). Vectors will use each of their magnitudes.")]
         [SerializeField] BooleanComparisons m_comparison = BooleanComparisons.EqualTo;
+        public BooleanComparisons Comparison => m_comparison;
+        
         [Tooltip("The right side Bool in condition boolean logic.")]
         [SerializeField] BoolReference m_boolB;
+        public BoolReference BoolB => m_boolB;
+
         [Tooltip("The right side NumberReference in condition boolean logic. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberB;
+        public NumberReference NumberB => m_numberB;
+        
         [Tooltip("The right side VectorReference in condition boolean logic. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
+        public VectorReference VectorB => m_vectorB;
     
         /// <value>Checks if the defined condition results in true or false.</value>
         public bool PassCondition

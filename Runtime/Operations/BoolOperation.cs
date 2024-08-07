@@ -28,15 +28,20 @@ namespace Buck
         
         [Tooltip("The BoolVariable that this operation acts on.")]
         [SerializeField] BoolVariable m_boolA;
+        public BoolVariable BoolA => m_boolA;
 
         [Tooltip("The type of operation to execute. SetTo sets BoolA to BoolReference. Toggle will flip the value of BoolA (BoolA = !BoolA)")]
         [SerializeField] Operations m_operation;
+        public Operations Operation => m_operation;
 
         [Tooltip("The value BoolA will be set to when the operation executes.")]
         [SerializeField] BoolReference m_boolB;
+        public BoolReference BoolB => m_boolB;
 
         [Tooltip("If true, when Execute() is called BoolA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent = new BoolReference(true);
+        public BoolReference RaiseEvent => m_raiseEvent;
+        
         [SerializeField, HideInInspector] bool m_serialized = false;
 
         public override bool Serialized
@@ -88,8 +93,6 @@ namespace Buck
         }
         
 #if UNITY_INCLUDE_TESTS
-        public BoolVariable BoolA => m_boolA;
-        public BoolReference BoolB => m_boolB;
         public void SetValues(BoolVariable boolA, BoolReference boolB, Operations operation)
         {
             m_boolA = boolA;

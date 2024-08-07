@@ -79,26 +79,33 @@ namespace Buck
 
         [Tooltip("The VectorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
+        public VectorVariable VectorA => m_vectorA;
 
         [Tooltip("The type of assignment operation to execute. Scalar multiplication + division is not supported here, but instead done using the Right Hand Arithmetic setting.")]
         [SerializeField] Operations m_operation;
+        public Operations Operation => m_operation;
 
         [Tooltip("An additional modifier of the right side of the assignment using common arithmetic. Adds a third variable if !None.")]
         [SerializeField] RightHandArithmetic m_rightHandArithmetic;
+        public RightHandArithmetic RightHandArithmeticProperty => m_rightHandArithmetic;
 
         [Tooltip("First VectorReference used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorB;
+        public VectorReference VectorB => m_vectorB;
 
         [Tooltip("Second VectorReference possibly used in the operation. Supports a constant Vector4, Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorReference m_vectorC;
+        public VectorReference VectorC => m_vectorC;
         
         [Tooltip("A NumberReference used in a few of the operations as a scalar. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberScalar; // Used for scalar operations
+        public NumberReference NumberScalar => m_numberScalar;
         
-
         [Tooltip("If true, when Execute() is called VectorA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent;
-        [SerializeField, HideInInspector]bool m_serialized = false;
+        public BoolReference RaiseEvent => m_raiseEvent;
+        
+        [SerializeField, HideInInspector] bool m_serialized = false;
 
         public override bool Serialized
         {
@@ -262,10 +269,6 @@ namespace Buck
             m_rightHandArithmetic = rightHandArithmetic;
             m_raiseEvent = new BoolReference(false);
         }
-        
-        public VectorVariable VectorA => m_vectorA;
-        public VectorReference VectorB => m_vectorB;
-        public VectorReference VectorC => m_vectorC;
 #endif
     }
 }

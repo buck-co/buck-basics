@@ -3,6 +3,7 @@
 ## [3.0.4] - 2024-08-07
 - Added constructors for Operations and Conditions so that they can be created and added from C# scripts.
 - Added constructors to all variable reference types that accept their ScriptableObject Variable type.
+- Added get property accessors to Conditions and Operations.
 
 ## [3.0.3] - 2024-06-04
 - Updated GenericOperation.cs methods. Created ExecuteIfPassedAndReturn() which returns a bool if conditions are passed, also added ExecuteIfPassed() which is void and can be used with UnityEvents

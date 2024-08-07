@@ -91,24 +91,31 @@ namespace Buck
 
         [Tooltip("The NumberVariable that this operation acts on. Supports IntVariables, FloatVariables, or DoubleVariables")]
         [SerializeField] NumberVariable m_numberA;
+        public NumberVariable NumberA => m_numberA;
 
         [Tooltip("The type of assignment operation to execute.")]
         [SerializeField] Operations m_operation;
+        public Operations Operation => m_operation;
 
         [Tooltip("An additional modifier of the right side of the assignment using common arithmetic. Adds a third NumberReference variable if !None.")]
         [SerializeField] RightHandArithmetic m_rightHandArithmetic;
+        public RightHandArithmetic RightHandArithmeticProperty => m_rightHandArithmetic;
 
         [Tooltip("First NumberReference used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberB;
+        public NumberReference NumberB => m_numberB;
 
         [Tooltip("Second NumberReference possibly used in the operation. Supports a constant Float, IntVariables, FloatVariables, or DoubleVariables.")]
         [SerializeField] NumberReference m_numberC;
+        public NumberReference NumberC => m_numberC;
         
         [Tooltip("These rounding operations are only available if NumberA is an IntVariable. They match Unity.Mathf operations of the same name. They are applied as the final step after the operation is calculated as floats.")]
         [SerializeField] RoundingType m_rounding = RoundingType.RoundToInt;
+        public RoundingType Rounding => m_rounding;
 
         [Tooltip("If true, when Execute() is called NumberA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent;
+        public BoolReference RaiseEvent => m_raiseEvent;
 
         [SerializeField, HideInInspector] bool m_serialized = false;
 
@@ -307,10 +314,6 @@ namespace Buck
             m_rounding = rounding;
             m_raiseEvent = new BoolReference(false);
         }
-        
-        public NumberVariable NumberA => m_numberA;
-        public NumberReference NumberB => m_numberB;
-        public NumberReference NumberC => m_numberC;
 #endif
     }
 }
