@@ -51,8 +51,6 @@ namespace Buck
 
         public override void OnInspectorGUI()
         {
-            ScriptFieldGUI();
-            
             DefaultValueGUI();
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)

@@ -67,6 +67,9 @@ namespace Buck
 
     public class BaseVariableEditor<T> : GameEventEditor
     {
+#if SAVE_ASYNC
+        protected SerializedProperty m_saveValue;
+#endif
         protected SerializedProperty m_defaultValue;
         protected SerializedProperty m_resetOnRestart;
         protected SerializedProperty m_restartEvents;
@@ -75,6 +78,9 @@ namespace Buck
         {
             // Cache serialized properties:
             base.OnEnable();
+#if SAVE_ASYNC
+            m_saveValue = serializedObject.FindProperty("m_saveValue");
+#endif
             m_defaultValue = serializedObject.FindProperty("m_defaultValue");
             m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
             m_restartEvents = serializedObject.FindProperty("m_restartEvents");
@@ -82,18 +88,21 @@ namespace Buck
 
         public override void OnInspectorGUI()
         {
-            ScriptFieldGUI();
+            
+#if SAVE_ASYNC
+            EditorGUILayout.LabelField("Save Async", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(m_saveValue);
+            EditorGUILayout.Space();
+#endif
+            
             DebugChangesGUI();
             DefaultValueGUI();
-            
+
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)
                 EditorGUILayout.PropertyField(m_restartEvents);
             
             EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(m_debugChanges);
             LogValueButtonGUI();
             RaiseGameEventButtonGUI();
 

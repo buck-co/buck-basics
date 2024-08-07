@@ -9,6 +9,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "co.buck.saveasync",
+            "expression": "0.4.0",
+            "define": "SAVE_ASYNC"
+        }
+    ],
     "noEngineReferences": false
 }

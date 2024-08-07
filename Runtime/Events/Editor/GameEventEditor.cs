@@ -17,23 +17,11 @@ namespace Buck
         
         public override void OnInspectorGUI()
         {
-            ScriptFieldGUI();
-            
             DebugChangesGUI();
             
             RaiseGameEventButtonGUI();
 
             serializedObject.ApplyModifiedProperties();
-        }
-
-        protected void ScriptFieldGUI()
-        {
-            // Script field
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(ScriptableObject), false);
-            GUI.enabled = true;
-            
-            serializedObject.UpdateIfRequiredOrScript();
         }
 
         protected void DebugChangesGUI()

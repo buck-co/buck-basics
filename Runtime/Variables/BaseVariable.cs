@@ -12,6 +12,9 @@ namespace Buck
     
     public abstract class BaseVariable<T> : BaseVariable, IFormattable
     {
+#if SAVE_ASYNC
+        [SerializeField] protected bool m_saveValue = false;
+#endif
         [FormerlySerializedAs("DefaultValue")] [SerializeField] protected T m_defaultValue;
         [SerializeField] protected bool m_resetOnRestart = false;
         [SerializeField] protected List<GameEvent> m_restartEvents = new List<GameEvent>();
