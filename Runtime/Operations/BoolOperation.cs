@@ -13,6 +13,19 @@ namespace Buck
             Toggle = 1//bA=!bA
         };
         
+        // Constructor
+        public BoolOperation(BoolVariable boolA, BoolReference boolB, Operations operation, BoolReference raiseEvent)
+        {
+            m_boolA = boolA;
+            m_boolB = boolB;
+            m_operation = operation;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        // Parameterless constructor
+        public BoolOperation()
+        { }
+        
         [Tooltip("The BoolVariable that this operation acts on.")]
         [SerializeField] BoolVariable m_boolA;
 

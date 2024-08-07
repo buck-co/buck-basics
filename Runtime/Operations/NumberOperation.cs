@@ -32,6 +32,62 @@ namespace Buck
             FloorToInt = 1, 
             CeilToInt = 2
         };
+        
+        /// <summary>
+        /// Constructor without RightHandArithmetic
+        /// </summary>
+        public NumberOperation(NumberVariable numberA, Operations operation, NumberReference numberB, BoolReference raiseEvent)
+        {
+            m_numberA = numberA;
+            m_operation = operation;
+            m_numberB = numberB;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor with RightHandArithmetic
+        /// </summary>
+        public NumberOperation(NumberVariable numberA, Operations operation, RightHandArithmetic rightHandArithmetic, NumberReference numberB, NumberReference numberC, BoolReference raiseEvent)
+        {
+            m_numberA = numberA;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_numberB = numberB;
+            m_numberC = numberC;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor without RightHandArithmetic and with RoundingType
+        /// </summary>
+        public NumberOperation(IntVariable numberA, Operations operation, NumberReference numberB, RoundingType rounding, BoolReference raiseEvent)
+        {
+            m_numberA = numberA;
+            m_operation = operation;
+            m_numberB = numberB;
+            m_rounding = rounding;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor with RightHandArithmetic and with RoundingType
+        /// </summary>
+        public NumberOperation(IntVariable numberA, Operations operation, RightHandArithmetic rightHandArithmetic, NumberReference numberB, NumberReference numberC, RoundingType rounding, BoolReference raiseEvent)
+        {
+            m_numberA = numberA;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_numberB = numberB;
+            m_numberC = numberC;
+            m_rounding = rounding;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Parameterless constructor
+        /// </summary>
+        public NumberOperation()
+        { }
 
         [Tooltip("The NumberVariable that this operation acts on. Supports IntVariables, FloatVariables, or DoubleVariables")]
         [SerializeField] NumberVariable m_numberA;
@@ -54,7 +110,7 @@ namespace Buck
         [Tooltip("If true, when Execute() is called NumberA's event will be raised.")]
         [SerializeField] BoolReference m_raiseEvent;
 
-        [SerializeField, HideInInspector]bool m_serialized = false;
+        [SerializeField, HideInInspector] bool m_serialized = false;
 
         public override bool Serialized
         {

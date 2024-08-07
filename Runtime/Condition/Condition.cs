@@ -80,6 +80,45 @@ namespace Buck
             Number = 1, 
             Vector = 2
         };
+        
+        /// <summary>
+        /// Constructor for Booleans
+        /// </summary>
+        public Condition(BoolReference boolA, BooleanComparisons comparison, BoolReference boolB)
+        {
+            m_variableType = VariableType.Bool;
+            m_boolA = boolA;
+            m_comparison = comparison;
+            m_boolB = boolB;
+        }
+        
+        /// <summary>
+        /// Constructor for Numbers
+        /// </summary>
+        public Condition(NumberReference numberA, BooleanComparisons comparison, NumberReference numberB)
+        {
+            m_variableType = VariableType.Number;
+            m_numberA = numberA;
+            m_comparison = comparison;
+            m_numberB = numberB;
+        }
+        
+        /// <summary>
+        /// Constructor for Vectors
+        /// </summary>
+        public Condition(VectorReference vectorA, BooleanComparisons comparison, VectorReference vectorB)
+        {
+            m_variableType = VariableType.Vector;
+            m_vectorA = vectorA;
+            m_comparison = comparison;
+            m_vectorB = vectorB;
+        }
+        
+        /// <summary>
+        /// Parameterless constructor
+        /// </summary>
+        public Condition()
+        { }
 
         [Tooltip("Use the dropdown to pick which type of Variable you wish to compare.")]
         [SerializeField] VariableType m_variableType = VariableType.Bool;

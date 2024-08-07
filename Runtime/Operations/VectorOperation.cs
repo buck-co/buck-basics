@@ -21,6 +21,61 @@ namespace Buck
             ScalarMultiplication = 3,//*
             ScalarDivision = 4,// /
         }
+        
+        /// <summary>
+        /// Constructor without RightHandArithmetic
+        /// </summary>
+        public VectorOperation(VectorVariable vectorA, Operations operation, VectorReference vectorB, BoolReference raiseEvent)
+        {
+            m_vectorA = vectorA;
+            m_operation = operation;
+            m_vectorB = vectorB;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor with RightHandArithmetic
+        /// </summary>
+        public VectorOperation(VectorVariable vectorA, Operations operation, RightHandArithmetic rightHandArithmetic, VectorReference vectorB, BoolReference raiseEvent)
+        {
+            m_vectorA = vectorA;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_vectorB = vectorB;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor with RightHandArithmetic and a second VectorReference
+        /// </summary>
+        public VectorOperation(VectorVariable vectorA, Operations operation, RightHandArithmetic rightHandArithmetic, VectorReference vectorB, VectorReference vectorC, BoolReference raiseEvent)
+        {
+            m_vectorA = vectorA;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_vectorB = vectorB;
+            m_vectorC = vectorC;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Constructor with a scalar NumberReference
+        /// </summary>
+        public VectorOperation(VectorVariable vectorA, Operations operation, RightHandArithmetic rightHandArithmetic, VectorReference vectorB, NumberReference numberScalar, BoolReference raiseEvent)
+        {
+            m_vectorA = vectorA;
+            m_operation = operation;
+            m_rightHandArithmetic = rightHandArithmetic;
+            m_vectorB = vectorB;
+            m_numberScalar = numberScalar;
+            m_raiseEvent = raiseEvent;
+        }
+        
+        /// <summary>
+        /// Parameterless constructor
+        /// </summary>
+        public VectorOperation()
+        { }
 
         [Tooltip("The VectorVariable that this operation acts on. Supports Vector2Variables, Vector3Variables, Vector4Variables, Vector2IntVariables, or Vector3IntVariables.")]
         [SerializeField] VectorVariable m_vectorA;
