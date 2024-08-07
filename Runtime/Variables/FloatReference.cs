@@ -17,6 +17,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public FloatReference(FloatVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public float Value
             => UseVariable ? (float)Variable.Value : ConstantValue;

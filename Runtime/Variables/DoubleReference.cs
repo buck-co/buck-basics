@@ -17,6 +17,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public DoubleReference(DoubleVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public double Value
             => UseVariable ? (double)Variable.Value : ConstantValue;

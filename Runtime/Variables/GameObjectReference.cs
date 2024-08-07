@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public GameObjectReference(GameObjectVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public GameObject Value
             => UseVariable ? Variable.Value : ConstantValue;

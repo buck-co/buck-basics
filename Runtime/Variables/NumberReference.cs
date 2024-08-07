@@ -17,6 +17,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public NumberReference(NumberVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public int ValueInt => UseVariable ? Variable.ValueInt : (int)ConstantValue;
 

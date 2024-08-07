@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public SpriteReference(SpriteVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Sprite Value
             => UseVariable ? Variable.Value : ConstantValue;

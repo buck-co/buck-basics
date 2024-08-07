@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public Texture2DReference(Texture2DVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Texture2D Value
             => UseVariable ? Variable.Value : ConstantValue;

@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public ColorReference(ColorVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Color Value
             => UseVariable ? Variable.Value : ConstantValue;

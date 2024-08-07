@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public QuaternionReference(QuaternionVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Quaternion Value
             => UseVariable ? Variable.Value : ConstantValue;

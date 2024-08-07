@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public Vector3IntReference(Vector3IntVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Vector3Int Value
             => UseVariable ? ((Vector3)Variable.Value).ToVector3Int() : ConstantValue;

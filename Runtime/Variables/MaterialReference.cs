@@ -18,6 +18,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public MaterialReference(MaterialVariable value)
+        {
+            UseVariable = true;
+            Variable = value;
+        }
 
         public Material Value
             => UseVariable ? Variable.Value : ConstantValue;

@@ -17,6 +17,12 @@ namespace Buck
             UseVariable = false;
             ConstantValue = value;
         }
+        
+        public BoolReference(BoolVariable variable)
+        {
+            UseVariable = true;
+            Variable = variable;
+        }
 
         public bool Value
             => UseVariable ?  Variable.Value : ConstantValue;
