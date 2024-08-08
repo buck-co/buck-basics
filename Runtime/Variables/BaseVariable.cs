@@ -65,7 +65,7 @@ namespace Buck
             m_restartEventListenerReferences.Clear();
         }
         
-        void ResetValueToDefault()
+        public void ResetValueToDefault()
             => Value = m_defaultValue;
         
         void OnRestartEventRaised()
