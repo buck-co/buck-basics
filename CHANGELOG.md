@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.6] - 2024-08-14
+- Fixed an issue where the Log Value button would throw an error on IntVariables and FloatVariables.
+- Fixed some formatting inconsistencies when inspecting variables.
+
 ## [3.0.5] - 2024-08-08
 - BaseVariable.ResetValueToDefault() is now a public method.
 

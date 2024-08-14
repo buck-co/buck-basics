@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
 
 namespace Buck
 {
@@ -71,12 +72,21 @@ namespace Buck
             if (m_clampToAMax.boolValue)
                 EditorGUILayout.PropertyField(m_clampMax);
 
-            EditorGUILayout.Space();
             DebugChangesGUI();
-            RaiseGameEventButtonGUI();
+            
             LogValueButtonGUI();
+            RaiseGameEventButtonGUI();
             
             serializedObject.ApplyModifiedProperties();
+        }
+        
+        protected override void LogValueButtonGUI()
+        {
+            GUI.enabled = Application.isPlaying;
+
+            NumberVariable e = target as NumberVariable;
+            if (GUILayout.Button("Log Value"))
+                e.LogValue();
         }
     }
 }

@@ -71,10 +71,11 @@ namespace Buck
         protected SerializedProperty m_resetOnRestart;
         protected SerializedProperty m_restartEvents;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
-            // Cache serialized properties:
             base.OnEnable();
+            
+            // Cache serialized properties:
             m_defaultValue = serializedObject.FindProperty("m_defaultValue");
             m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
             m_restartEvents = serializedObject.FindProperty("m_restartEvents");
@@ -83,24 +84,21 @@ namespace Buck
         public override void OnInspectorGUI()
         {
             ScriptFieldGUI();
-            DebugChangesGUI();
             DefaultValueGUI();
             
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)
                 EditorGUILayout.PropertyField(m_restartEvents);
             
-            EditorGUILayout.Space();
+            DebugChangesGUI();
 
-            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(m_debugChanges);
             LogValueButtonGUI();
             RaiseGameEventButtonGUI();
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        protected void LogValueButtonGUI()
+        protected virtual void LogValueButtonGUI()
         {
             GUI.enabled = Application.isPlaying;
 

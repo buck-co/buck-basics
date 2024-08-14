@@ -38,8 +38,10 @@ namespace Buck
 
         protected void DebugChangesGUI()
         {
+            EditorGUILayout.Space();
             EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(m_debugChanges);
+            EditorGUILayout.Space();
         }
 
         protected void RaiseGameEventButtonGUI()
