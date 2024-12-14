@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.7] - 2024-12-13
+- Fixed an issue in GameEvent.Raise() where ArgumentOutOfRange exceptions could be thrown while iterating over a GameEvent's listeners if the collection is modified while iterating.
+- Added some exception handling in GameEvent.Raise() to allow event listeners to continue gracefully even if some items in the collection are null.
+
 ## [3.0.6] - 2024-08-14
 - Fixed an issue where the Log Value button would throw an error on IntVariables and FloatVariables.
 - Fixed some formatting inconsistencies when inspecting variables.

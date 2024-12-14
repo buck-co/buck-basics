@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Buck
@@ -42,8 +43,38 @@ namespace Buck
                 }
             }
 #endif
-            for(int i = m_eventListenerReferences.Count -1; i >= 0; i--)
-                m_eventListenerReferences[i].OnEventRaisedDelegate();
+            var listeners = new List<GameEventListenerReference>(m_eventListenerReferences);
+            for (int i = listeners.Count - 1; i >= 0; i--)
+            {
+                if (listeners[i] is null)
+                {
+                    // Log that we found a null listener at this index
+                    Debug.Log($"{name} GameEvent - Null event listener found at index {i}");
+                    continue;
+                }
+
+                if (listeners[i].OnEventRaisedDelegate is null)
+                {
+                    // Log that we found a listener with a null delegate
+                    Debug.Log($"{name} GameEvent - Null delegate found for listener at index {i}");
+                    continue;
+                }
+
+                try
+                {
+                    listeners[i].OnEventRaisedDelegate();
+                }
+                catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
+                {
+                    // Handle specific exceptions we might expect
+                    Debug.LogError($"{name} GameEvent - Error invoking event handler at index {i}: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    // Catch all other unexpected exceptions
+                    Debug.LogError($"{name} GameEvent - Unexpected error in event handler at index {i}: {ex.Message}");
+                }
+            }
         }
 
         public void RegisterListener(GameEventListenerReference listenerReference)
