@@ -67,12 +67,7 @@ namespace Buck
                 catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
                 {
                     // Handle specific exceptions we might expect
-                    Debug.LogError($"{name} GameEvent - Error invoking event handler at index {i}: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    // Catch all other unexpected exceptions
-                    Debug.LogError($"{name} GameEvent - Unexpected error in event handler at index {i}: {ex.Message}");
+                    Debug.LogError($"{name} GameEvent - Error invoking event handler at index {i}.\n{ex}");
                 }
             }
         }

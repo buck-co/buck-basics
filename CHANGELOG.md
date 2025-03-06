@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.8] - 2025-03-06
+- Removed final catch block of exception handling in GameEvent.Raise() to allow event listeners to display Unity's normal stack trace and exception information.
+
 ## [3.0.7] - 2024-12-13
 - Fixed an issue in GameEvent.Raise() where ArgumentOutOfRange exceptions could be thrown while iterating over a GameEvent's listeners if the collection is modified while iterating.
 - Added some exception handling in GameEvent.Raise() to allow event listeners to continue gracefully even if some items in the collection are null.
