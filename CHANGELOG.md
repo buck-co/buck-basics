@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0] - 2025-04-14
+New Feature: The ObjectPooler component now has a "Pooler Behavior" option that determines what happens when the pooler is out of objects. Previously, the ObjectPooler would just give a warning. Now, it includes the following options:
+- Recycle Oldest: Recycle the oldest object in the pool and use it immediately. This is the new default behavior.
+- Double Size: Double the size of the pool and then use newly created objects (which is generally not ideal because calling Instantiate can cause GC spikes)
+- Warn: Log a warning that the pooler is out of objects and do nothing.
+
+Additionally, the ObjectPooler will now call ClearAll() and destroy all of its pooled objects when its OnDestroy method is called. This is to prevent any generated objects from continuing to exist when their parent pooler has been destroyed.
+
 ## [3.0.8] - 2025-03-06
 - Removed final catch block of exception handling in GameEvent.Raise() to allow event listeners to display Unity's normal stack trace and exception information.
 
@@ -51,18 +59,15 @@
 - Cleaned up the code style formatting and comments in nearly every file.
 
 ## [2.0.2] - 2024-01-04
-
 - Added Angle360Positive method to extension methods
 - All NumberVariable classes now support ValueAsStringFormatted() methods which support returning the variable's value as a string using particular formatters.
 
 ## [2.0.1] - 2023-12-11
-
 - Updated the Singleton class to use the more modern Object.FindAnyObjectByType method, since Object.FindObjectOfType is becoming obsolete.
 - Required Unity version has been bumped to 2021.3 to support Object.FindAnyObjectByType.
 - Added this keyword to some extension method arguments in order to support implicit calls.
 
 ## [2.0.0] - 2023-11-16
-
 - Added Condition class that can be used to create boolean logic comparisons of a subset of BUCK Basics Reference variable types defined in the inspector
 - Added many new extension methods: 
     CanvasGroup.SetVisible() 
@@ -78,33 +83,25 @@
 - Fixed potential errors with GameEvents constructed at runtime by adding null checks
 
 ## [1.0.7] - 2022-09-05
-
 - Added FindByGuid() methods to the BaseScriptableObject class.
 
 ## [1.0.6] - 2022-07-23
-
 - Added serialized GUIDs to SO variables via a new BaseScriptableObject class.
 
 ## [1.0.5] - 2022-07-18
-
 - Fixed an issue in the Remap() methods that could cause them to return NaN.
 
 ## [1.0.4] - 2022-02-08
-
 - Added Singleton class and object pooler classes.
 
 ## [1.0.3] - 2022-02-08
-
 - Added Runtime Sets.
 
 ## [1.0.2] - 2022-02-08
-
 - Fixed compilation errors resulting from the UnityEditor namespace not being wrapped in pragma definitions.
 
 ## [1.0.1] - 2022-01-20
-
 - Added scriptable object variables and game events.
 
 ## [1.0.0] - 2022-01-19
-
 - Initial commit.

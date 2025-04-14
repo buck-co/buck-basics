@@ -164,7 +164,10 @@ Many of our Scriptable Object types inherit from our [`BaseScriptableObject`](ht
   
 ### Object Pooling
   
-We cultivated our own [`ObjectPooler`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs) class over several projects, following as many Unity best practices as we could find for [object pooling](https://en.wikipedia.org/wiki/Object_pool_pattern), and put them into one place. This class also has a companion class, [`PoolerIdentifier`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs), which is a MonoBehaviour component that gets attached to any object created by the object pooler. This way, if another script needs to grab a pooled object and potentially recycle it back to its original object pooler, it can identify the pooler from which the object was generated. This allows pooled objects to be instantiated anywhere in the Unity hierarchy without relying on their parent GameObject for identification.
+We cultivated our own [`ObjectPooler`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs) class over several projects, following as many Unity best practices as we could find for [object pooling](https://en.wikipedia.org/wiki/Object_pool_pattern), and put them into one place. This class also has a companion class, [`PoolerIdentifier`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs), which is a MonoBehaviour component that gets attached to any object created by the object pooler. This way, if another script needs to grab a pooled object and potentially recycle it back to its original object pooler, it can identify the pooler from which the object was generated. This allows pooled objects to be instantiated anywhere in the Unity hierarchy without relying on their parent GameObject for identification. If the Object Pooler runs out of objects, there are several behaviors to choose from:
+- Recycle Oldest: Recycle the oldest object in the pool and use it immediately. This is the new default behavior.
+- Double Size: Double the size of the pool and then use newly created objects (which is generally not ideal because calling Instantiate can cause GC spikes)
+- Warn: Log a warning that the pooler is out of objects and do nothing.
   
 ### Sample Project
 

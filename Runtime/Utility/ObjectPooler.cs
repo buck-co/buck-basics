@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Buck
 {
-    [System.Serializable]
+    [Serializable]
     public struct PooledObject
     {
         [SerializeField] public GameObject m_prefab;
@@ -12,10 +13,25 @@ namespace Buck
 
     public class ObjectPooler : MonoBehaviour
     {
+        enum PoolerBehavior
+        {
+            RecycleOldest,
+            DoubleSize,
+            Warn
+        }
+        
+        [Tooltip("The behavior of the pooler when it runs out of objects. " +
+                 "Recycle Oldest will recycle the oldest object in the pool, " +
+                 "Double Size will double the size of the pool (which is generally not ideal since it can cause GC spikes), " +
+                 "Warn will log a warning that the pooler is out of objects and do nothing.")]
+        [SerializeField] PoolerBehavior m_poolerBehavior = PoolerBehavior.RecycleOldest;
+        
         List<GameObject> m_freeList = new();
         public List<GameObject> FreeList => m_freeList;
         List<GameObject> m_usedList = new();
         public List<GameObject> UsedList => m_usedList;
+        
+        int NumFree => m_freeList.Count;
 
         /// <summary>
         /// GenerateObjects() takes a list of PooledObject structs and instantiates GameObjects for use in the shared pool.
@@ -23,7 +39,7 @@ namespace Buck
         /// </summary>
         public void GenerateObjects(List<PooledObject> pooledObjects, bool setParent = true)
         {
-			// Destroy all of the old GameObjects
+			// Destroy all the old GameObjects
             ClearAll();
 
             // Create the new GameObjects
@@ -49,8 +65,7 @@ namespace Buck
 
         public void GenerateObjects(PooledObject pooledObject, bool setParent = true)
         {
-            List<PooledObject> pooledObjects = new List<PooledObject>();
-            pooledObjects.Add(pooledObject);
+            var pooledObjects = new List<PooledObject> { pooledObject };
             GenerateObjects(pooledObjects, setParent);
         }
 
@@ -60,16 +75,36 @@ namespace Buck
         /// </summary>
         public GameObject Retrieve(Vector3 position = default, Quaternion rotation = default, bool setLocalRotation = false)
         {
-            int numFree = m_freeList.Count;
-            if (numFree == 0)
+            if (NumFree == 0)
             {
-                Debug.LogWarning("Object pool is out of objects!");
-                return null;
+                switch (m_poolerBehavior)
+                {
+                    case PoolerBehavior.RecycleOldest:
+                        Recycle(m_usedList[0]);
+                        break;
+                    case PoolerBehavior.DoubleSize:
+                        Debug.LogWarning($"Object pooler attached to the GameObject \"{gameObject.name}\" is out of objects. Doubling the size of the pool. " +
+                                  $"Note: This is generally not ideal behavior because it instantiates objects at runtime which can cause GC spikes.", gameObject);
+                        foreach (var t in m_usedList)
+                        {
+                            GameObject go = Instantiate(t, Vector3.zero, Quaternion.identity, transform);
+                            go.name = t.name; // Remove the repeating "(Clone)" suffix
+                            go.SetActive(false);
+                            go.AddComponent<PoolerIdentifier>().m_pooler = this;
+                            m_freeList.Add(go);
+                        }
+                        break;
+                    case PoolerBehavior.Warn:
+                        Debug.LogWarning($"Object pooler attached to the GameObject \"{gameObject.name}\" is out of objects!", gameObject);
+                        return null;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             // Pull a GameObject from the end of the free list
-            GameObject pooledObject = m_freeList[numFree - 1];
-            m_freeList.RemoveAt(numFree - 1);
+            GameObject pooledObject = m_freeList[NumFree - 1];
+            m_freeList.RemoveAt(NumFree - 1);
             m_usedList.Add(pooledObject);
 
             // Set the position and rotation
@@ -101,7 +136,7 @@ namespace Buck
         }
 
         /// <summary>
-        /// RecycleAll() puts all of the used objects back into the shared pool.
+        /// RecycleAll() puts all the used objects back into the shared pool.
         /// </summary>
         public void RecycleAll()
         {
@@ -117,6 +152,9 @@ namespace Buck
         /// </summary>
         public void Shuffle()
             => m_freeList.Shuffle();
+
+        void OnDestroy()
+            => ClearAll();
 
         void ClearAll()
         {
