@@ -1,174 +1,323 @@
 # BUCK Basics
+_BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundation for scalable game architecture using ScriptableObject-based systems, comprehensive extension methods, and essential utility classes. It helps developers build cleaner, more maintainable Unity projects by reducing hard-coded dependencies and providing battle-tested tools refined across multiple productions.
 
-_BUCK Basics_ is BUCK's general Unity code package that includes broadly applicable extension methods, utility scripts, and a basic framework for application architecture.
+### Features
+- ⚡ **ScriptableObject Architecture**: Variables and Events as assets that enable decoupled communication between game systems
+- 🔗 **150+ Extension Methods**: Time-saving utilities for vectors, colors, collections, geometry, and more
+- 🔢 **Conditions & Operations**: Visual scripting-like functionality for logic and math operations without writing code
+- ♻️ **Object Pooling**: High-performance pooling system with multiple overflow behaviors
+- 📚 **Runtime Sets**: Dynamic collections that automatically track active game objects
+- 🎲 **Battle-Tested**: Used in production on multiple shipped games including [_Let's! Revolution!_](https://store.steampowered.com/app/2111090/Lets_Revolution/) and [_The Electric State: Kid Cosmo_](https://apps.apple.com/us/app/the-electric-state-kid-cosmo/id6475495298)
 
-## Requirements
+# Getting Started
+> [!NOTE]
+> This package works with **Unity 2021.3 and above**.
 
-This package works with Unity 2021.3 and above.
+### Install the _BUCK Basics_ Package
 
-## Installation
-
-1. Copy the git URL of this repository.
+1. Copy the git URL of this repository: `https://github.com/buck-co/unity-pkg-buck-basics.git`
 2. In Unity, open the Package Manager from the menu by going to `Window > Package Manager`
 3. Click the plus icon in the upper left and choose `Add package from git URL...`
 4. Paste the git URL into the text field and click the `Add` button.
 
-## What's Included
+### Basic Workflow
+The BUCK Basics package provides several independent systems that can be used together or separately:
 
-### Extension Methods
+1. **For ScriptableObject Variables**: Create variables via `Assets > Create > BUCK > Variables`, reference them in your scripts, and use GameEventListeners to react to changes
+2. **For Extension Methods**: Simply add `using Buck;` to access 150+ extension methods on Unity types
+3. **For Object Pooling**: Add an `ObjectPooler` component and configure your pooled prefabs
+4. **For Conditions & Operations**: Define logic in the Inspector without code using the provided classes
 
-Over several projects, BUCK has collected many useful extension methods that are applicable to a wide variety of scenarios. These are available in the `Buck` namespace in the [`ExtensionMethods`](Runtime/ExtensionMethods.cs) class. Here are some highlights:
+### Included Samples
 
-- [`void Shuffle(IList<T> list)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L11) - Effectively randomizes the order of elements in a C# List using the [Fisher–Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) algorithm.
-- [`T[,] Rotate90<T>(T[,] arr)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L174) - Returns a 2D array that has been rotated 90 degrees CW. There are numerous other array manipulation methods like this one that can transpose rows, columns, and more.
-- [`bool IsVisibleFrom(Renderer renderer, Camera camera)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L112) - Returns true if a Renderer is visible from the provided Camera.
-- [`Vector2 RandomPointOnUnitCircle()`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L328) - Returns a random point on a unit circle.
-- [`Color Tint(Color value, float tint)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L306) - Adds a tint to a Color.
-- [`Transform NearestTransform(Transform origin, List<Transform> positions)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L346) - Given a list of Transforms, return the one that is nearest to an origin Transform.
-- [`float Smootherstep(float from, float to, float x)`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/ExtensionMethods.cs#L397) - [Ken Perlin's better smooth step](https://en.wikipedia.org/wiki/Smoothstep#Variations) with 1st and 2nd order derivatives at x = 0 and 1.
+This package includes a comprehensive sample project demonstrating RPG-like mechanics using Variables, Events, Conditions, and Operations. Install it from the Unity Package Manager by selecting the package and clicking `Import` in the `Samples` tab.
 
-Extension methods can be used in two ways. You can use the methods directly from the class.
+# Core Systems
 
-```cs
-// Remap a value from a min and max to the 0-1 range
-float myValue = Buck.ExtensionMethods.Remap01(originalVar, minValue, maxValue);
-```
+## ScriptableObject Variables & Events
 
-Alternatively, you can call extension methods on existing types. For example, there are several methods that extend Unity's Color class.
+BUCK Basics provides a powerful architecture pattern where variables and events exist as ScriptableObject assets. This approach, pioneered by Ryan Hipple at Schell Games, enables truly decoupled game systems.
 
-```cs
-// Set the alpha value of a color.
-Color myTransparentColor = myColor.SetAlpha(0.5f);
-```
+> [!TIP]
+> 📺 Watch [Ryan Hipple's Unite Austin 2017 talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) to understand the philosophy behind this architecture.
 
-### Scriptable Objects for Variables, Events, and Runtime Sets
+### Creating Variables
+Right-click in the Project window and navigate to `Create > BUCK > Variables` to create any supported type:
+- **Primitives**: Bool, Int, Float, Double, String
+- **Unity Types**: Vector2/3/4, Vector2Int/3Int, Quaternion, Color
+- **References**: GameObject, Material, Sprite, Texture2D
 
-Several Unity projects at BUCK make heavy use of variables and events that are built on Unity's [`ScriptableObject`](https://docs.unity3d.com/Manual/class-ScriptableObject.html) class. In other words, the variables and events have associated Scriptable Object assets that then store their values at runtime. There are numerous benefits to this approach, but generally speaking, it allows for data to be shared between MonoBehaviour components without hard coded object references. This tends to help avoid a tangled mess of component dependencies and numerous static singleton classes.
+### Using Variables in Code
+```csharp
+using Buck;
 
-This is a fairly involved subject, but fortunately it's already well documented in several places, [most notably in this Unite Austin 2017 talk from its creator, Ryan Hipple of Schell Games](https://www.youtube.com/watch?v=raQ3iHhE_Kk). We strongly recommend you watch this video before attempting to use SO Variables and Events in a production project.
-
-Our unique approach collapses Scriptable Object Variables and Events together. Every Variable type inherits from a GameEvent base, allowing you to subscribe GameEventListeners to whenever that variable changes. In addition, each variable type is paired with a Reference object class that can be added to the inspector. This 
-
-We also support a wide variety of Variable types. There is also a base class for NumberVariables and VectorVariables that more specific types inherit from.
-* BoolVariable
-* NumberVariable base class
-  * IntVariable
-  * FloatVariable
-  * DoubleVariable
-* VectorVariable base class
-  * Vector2Variable
-  * Vector3Variable
-  * Vector4Variable
-  * Vector2IntVariable
-  * Vector3IntVariable
-* QuaternionVariable
-* StringVariable
-* GameObjectVariable
-* ColorVariable
-* Texture2DVariable
-* SpriteVariable
-* MaterialVariable
-
-All variables can be created by right clicking in the `Project> Create > BUCK > Variables`. Once created a Default Value can be assigned. This is the value the variable will begin with each time you enter the play mode.
-
-You can reference a Variable in a script with:
-```cs
-[SerializeField] IntVariable m_intVariable;//Fill reference in editor
-```
-
-Then read or write the variables value as follows:
-```cs
-    if (m_intVariable.Value > 0)
+public class PlayerHealth : MonoBehaviour
+{
+    [SerializeField] IntVariable m_health;
+    [SerializeField] IntVariable m_maxHealth;
+    
+    void TakeDamage(int damage)
     {
-        m_intVariable.Value -= 10;
-        m_intVariable.Raise(); // Notify any listeners to the IntVariable event that it has changed
+        m_health.Value -= damage;
+        m_health.Raise(); // Notify listeners
+        
+        if (m_health.Value <= 0)
+            HandleDeath();
     }
+}
 ```
 
 ### Variable References
+Use Reference types for maximum flexibility - they can be either a constant value or a ScriptableObject variable:
 
-Each supported Scriptable Object variable is also paired with an equivalent (NAMEOFVARIABLE)Reference class. These classes can be used to create Inspector fields in the editor that can either reference a Scriptable Object or a constant equivalent variable. This is usually the best way to reference variables while writing code since it offers more flexibility than directly referencing a Scriptable Object variable. References are heavily used  for the Condition and Operator classes. References for base types also exist (NumberReference and VectorReference) and offer even more flexibility, although each assumes a particular type when used as a constant. NumberReferences use floats as their constant and VectorReferences use Vector4s.
+```csharp
+[SerializeField] FloatReference m_moveSpeed; // Can be constant OR variable
 
-To create a reference simply create a new field for it then edit it in the editor:
-```cs
-[SerializeField] NumberReference m_numberReference;
+void Update()
+{
+    transform.position += Vector3.forward * m_moveSpeed.Value * Time.deltaTime;
+}
 ```
 
-### Operations
+### GameEvents & Listeners
+Every Variable inherits from GameEvent, allowing you to listen for changes:
 
-Operations are an extension of our Scriptable Object variable systems that allow you to execute some common operations upon a subset of our Variable types. It approximates writing a single line of code while being entirely editor facing and requiring no actual scripting. The three supported operations are as follows:
-* BoolOperation
-  * Set To and Toggle
-* NumberOperation
-  * Set To, Addition, Subtraction, Multiplication, Division, Pow
-  * If acting on an IntVariable supports rounding: RoundToInt, FloorToInt, and CeilToInt
-* VectorOperation
-  * Set To, Addition, Subtraction, Scalar Multiplication, Scalar Division
-
-Every Operation has a BoolReference RaiseEvent field that if true, will raise the GameEvent of the A variable in the operation and notify all of its listeners of the change. Typically this is the behaviour you want, but in special situations you may want to change this to false to "silently" edit a variable.
-
-To use an Operation, create a new field for a single Operation or a collection of multiple Operations with the following:
-```cs
-[SerializeField] BoolOperation m_boolOperation; // Single operation
-[SerializeField] VectorOperation[] m_multipleVectorOperations; // A collection of multiple operations to execute all together
+```csharp
+public class HealthBar : MonoBehaviour
+{
+    [SerializeField] IntVariable m_playerHealth;
+    [SerializeField] Image m_fillImage;
+    
+    void OnEnable()
+    {
+        // Listen for health changes
+        var listener = gameObject.AddComponent<GameEventListener>();
+        listener.Event = m_playerHealth;
+        listener.Response.AddListener(UpdateHealthBar);
+    }
+    
+    void UpdateHealthBar()
+    {
+        m_fillImage.fillAmount = m_playerHealth.Value / 100f;
+    }
+}
 ```
 
-Then edit them in the Inspector. Finally, execute them with the following:
-```cs
-m_boolOperation.Execute(); // Execute the one operation
-m_multipleVectorOperations.Execute(); // Executes all operations within the collection in order
-```
+## Conditions & Operations
+
+Define game logic visually in the Inspector without writing code.
 
 ### Conditions
+Create boolean logic that can be evaluated at runtime:
 
-Similar to Operations, Conditions allow you to set up conditional boolean logic as if you are writing an if statement but define it in editor without editing scripts. Unlike Operations, the Condition class is flexible and one class serves Bool, Number, and Vector comparisons. To switch between what type you are comparing use the VariableType enum dropdown. The supported comparisons and their symbol equivalent are as follows:
+```csharp
+[SerializeField] Condition m_canAttack; // Configure in Inspector
+[SerializeField] Condition[] m_winConditions;
 
-* Equal To (==)
-* Not Equal To (!=)
-* Less Than (<)
-* Less Than or Equal To (<=)
-* Greater Than (>)
-* Greater Than or Equal To (>=)
-
-If using a Condition that imply a numeric value (Less Than or Greater Than for example), variables that are not inherently numbers are treated as followsL: BoolReferences are cast to 0  (false) or 1 (true). VectorReferences calculate their magnitudes and use that to compare.
-
-To use a Condition, create a new field for a single Condition or a collection of multiple Operations with the following. Then edit them in the Inspector.
-```cs
-[SerializeField] NumberCondition m_numberCondition; // Single condition
-[SerializeField] BoolCondition[] m_multipleBoolConditions; // A collection of multiple conditions to execute all together
-```
-
-Then edit them in the Inspector. Finally, evaluate them with the following code:
-```cs
-if (m_numberCondition.PassCondition)
+void Update()
 {
-    // Do something if the number condition is true
-}
-
-if (m_multipleBoolConditions.PassConditions())
-{
-    // Do something if all of the BoolConditions in the collection are true (if any single condition  fails, PassConditions() return false)
+    if (m_canAttack.PassCondition)
+        PerformAttack();
+        
+    if (m_winConditions.PassConditions()) // All must be true
+        TriggerVictory();
 }
 ```
 
+Supported comparisons: `==`, `!=`, `<`, `<=`, `>`, `>=`
 
-### Singleton Class
+### Operations
+Execute mathematical operations on variables without code:
 
-While the Scriptable Object based architecture mentioned above can help avoid Singletons and some of the bad practices that can stem from them (single instances of a class, strong connections between classes, dependency spaghetti, and more), sometimes the [singleton pattern](https://en.wikipedia.org/wiki/Singleton_pattern) is still too convenient to ignore, especially during any rapid prototyping phases of a project. We've reviewed many different singleton implementations in C# around the web, and [this one](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/Singleton.cs) seems to be the de facto standard. We've used it on several projects and it seems to work very well. While this exact implementation can be found in many places, we're unsure of its origins, so if you know whom to credit for this, please let us know!
-  
-  
-### BaseScriptableObject Class
-  
-Many of our Scriptable Object types inherit from our [`BaseScriptableObject`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/BaseScriptableObject.cs) class. The primary reason for this is so that we can attach a [GUID](https://learn.microsoft.com/en-us/dotnet/api/system.guid?view=net-7.0) (globally unique identifier) to any of our Scriptable Objects (SO). The GUID attached to an SO will not change, which makes them useful for comparisons and for finding duplicate items in a list, for example. The `BaseScriptableObject` class also has associated methods like [FindByGuid<T>()](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/BaseScriptableObject.cs#L25) that make it easier to find a subset of a given SO type on disk.
-  
-  
-### Object Pooling
-  
-We cultivated our own [`ObjectPooler`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs) class over several projects, following as many Unity best practices as we could find for [object pooling](https://en.wikipedia.org/wiki/Object_pool_pattern), and put them into one place. This class also has a companion class, [`PoolerIdentifier`](https://github.com/buck-co/unity-pkg-buck-basics/blob/main/Runtime/Utility/ObjectPooler.cs), which is a MonoBehaviour component that gets attached to any object created by the object pooler. This way, if another script needs to grab a pooled object and potentially recycle it back to its original object pooler, it can identify the pooler from which the object was generated. This allows pooled objects to be instantiated anywhere in the Unity hierarchy without relying on their parent GameObject for identification. If the Object Pooler runs out of objects, there are several behaviors to choose from:
-- Recycle Oldest: Recycle the oldest object in the pool and use it immediately. This is the new default behavior.
-- Double Size: Double the size of the pool and then use newly created objects (which is generally not ideal because calling Instantiate can cause GC spikes)
-- Warn: Log a warning that the pooler is out of objects and do nothing.
-  
-### Sample Project
+```csharp
+[SerializeField] IntOperation m_scoreOperation; // Configured to add 10 points
+[SerializeField] BoolOperation m_togglePause;
 
-A Sample Project is available and can optionally be imported using the Package manager. It demonstrates the use of Variables, Events, Conditions, and Operations to simulate some RPG like mechanics. The sample scene file is called `_BuckBasicsSampleScene`.
+void OnEnemyDefeated()
+{
+    m_scoreOperation.Execute(); // Adds to score and raises event
+}
+
+void OnPausePressed()
+{
+    m_togglePause.Execute(); // Toggles pause state
+}
+```
+
+Supported operations vary by type:
+- **Bool**: Set To, Toggle
+- **Number**: Set To, Add, Subtract, Multiply, Divide, Power (with optional rounding for integers)
+- **Vector**: Set To, Add, Subtract, Scalar Multiply/Divide
+
+## Extension Methods
+
+Over 150 extension methods to make Unity development faster and cleaner:
+
+```csharp
+using Buck;
+
+// Collections
+myList.Shuffle(); // Fisher-Yates shuffle
+var random = myList.Random(); // Get random element
+
+// Vectors
+float distance = ExtensionMethods.ManhattanDistance(posA, posB);
+Vector2Int gridPos = worldPosition.ToVector2Int();
+
+// Colors
+Color tinted = myColor.Tint(0.2f);
+spriteRenderer.SetAlpha(0.5f);
+
+// Geometry
+bool visible = myRenderer.IsVisibleFrom(mainCamera);
+Rect screenRect = myTransform.GetScreenRectangle();
+
+// Math
+float smooth = ExtensionMethods.Smootherstep(0, 1, t);
+float angle = rotation.Angle360Positive(); // -10° becomes 350°
+
+// Arrays
+int[,] rotated = my2DArray.Rotate90();
+my2DArray.Transpose();
+```
+
+## Object Pooling
+
+High-performance pooling with automatic overflow handling:
+
+> [!TIP]
+> **What is Object Pooling?** Instead of constantly creating and destroying objects (which causes memory allocation and garbage collection), object pooling pre-creates objects and reuses them. This dramatically improves performance for frequently spawned objects like bullets, particles, or enemies.
+
+```csharp
+public class BulletSpawner : MonoBehaviour
+{
+    ObjectPooler m_pooler;
+    
+    [SerializeField] PooledObject m_bulletPool = new PooledObject
+    {
+        m_prefab = bulletPrefab,
+        m_numberOfObjects = 50
+    };
+    
+    void Start()
+    {
+        m_pooler = GetComponent<ObjectPooler>();
+        m_pooler.GenerateObjects(m_bulletPool);
+    }
+    
+    void FireBullet()
+    {
+        GameObject bullet = m_pooler.Retrieve(firePoint.position, firePoint.rotation);
+        // Bullet is automatically activated and positioned
+    }
+}
+
+// In the bullet script
+void OnCollisionEnter(Collision collision)
+{
+    GetComponent<PoolerIdentifier>().m_pooler.Recycle(gameObject);
+}
+```
+
+### PoolerIdentifier
+Every pooled object automatically receives a `PoolerIdentifier` component that tracks its originating pool. This allows objects to be recycled from anywhere without needing direct references:
+
+```csharp
+// Any script can recycle a pooled object
+void OnTriggerEnter(Collider other)
+{
+    var identifier = other.GetComponent<PoolerIdentifier>();
+    if (identifier != null)
+        identifier.m_pooler.Recycle(other.gameObject);
+}
+```
+
+### Overflow Behaviors
+When the pool runs out of objects:
+- **Recycle Oldest**: Reuse the oldest active object (default)
+- **Double Size**: Expand the pool (may cause GC spikes)
+- **Warn**: Log a warning and return null
+
+## Additional Utilities
+
+### Singleton Pattern
+```csharp
+public class GameManager : Singleton<GameManager>
+{
+    // Automatically creates a persistent instance
+    public void RestartLevel() { }
+}
+
+// Access from anywhere
+GameManager.Instance.RestartLevel();
+```
+
+### Soft Singleton
+For singletons that should only exist for the duration of a currently loaded scene:
+```csharp
+public class EnemyManager : SoftSingleton<EnemyManager>
+{
+    // Can be destroyed and recreated
+}
+```
+
+### Runtime Sets
+Automatically track collections of objects:
+```csharp
+[CreateAssetMenu(menuName = "BUCK/Runtime Sets/Enemy Set")]
+public class EnemyRuntimeSet : RuntimeSet<Enemy> { }
+
+// Enemies register themselves
+void OnEnable() => m_enemySet.Add(this);
+void OnDisable() => m_enemySet.Remove(this);
+
+// Query active enemies from anywhere
+int enemyCount = m_enemySet.Items.Count;
+```
+
+### BaseScriptableObject & GUIDs
+All BUCK Basics ScriptableObjects inherit from `BaseScriptableObject`, which provides persistent GUIDs (globally unique identifiers) for each asset:
+
+```csharp
+// Find specific ScriptableObjects by their GUID
+var myVariable = BaseScriptableObject.FindByGuid<IntVariable>(guid, "Assets/Variables");
+
+// GUIDs persist across renames and moves
+bool isSameAsset = variableA.Guid == variableB.Guid;
+
+// Useful for save systems or detecting duplicates
+List<Guid> collectedItems = new List<Guid>();
+if (!collectedItems.Contains(item.Guid))
+    collectedItems.Add(item.Guid);
+```
+
+This GUID system ensures your references remain stable even when assets are renamed or reorganized, making it invaluable for save systems, inventory management, and asset tracking.
+
+
+# Contributing
+
+Found a bug or have a feature request? We'd love to hear from you!
+
+- [Open an issue](https://github.com/buck-co/unity-pkg-buck-basics/issues) for problems or suggestions
+- [Create a pull request](https://github.com/buck-co/unity-pkg-buck-basics/pulls) if you'd like to contribute code
+- Check our [contribution guidelines](CONTRIBUTING.md) before submitting
+
+# Authors
+
+* **Nick Pettit** - [nickpettit](https://github.com/nickpettit)
+* **Ian Sundstrom** - [iwsundstrom](https://github.com/iwsundstrom)
+
+See the full list of [contributors](https://github.com/buck-co/unity-pkg-buck-basics/contributors).
+
+# Acknowledgments
+
+* [Ryan Hipple's Unite Austin 2017 talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) for the foundational architecture patterns
+* All the BUCK projects that battle-tested these systems
+
+# License
+
+MIT License - Copyright (c) 2025 BUCK Design LLC [buck-co](https://github.com/buck-co)
+
+---
+
+_[BUCK](https://buck.co) is a global creative company that brings brands, stories, and experiences to life through art, design, and technology. If you're a Game Developer or Creative Technologist or want to get involved with our work, reach out and say hi via [Github](https://github.com/buck-co), [Instagram](https://www.instagram.com/buck_design/?hl=en) or our [Careers page](https://buck.co/careers). 👋_
