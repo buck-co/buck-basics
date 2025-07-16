@@ -1,4 +1,4 @@
-![Unity](https://img.shields.io/badge/Unity-2023.1%2B-blue)
+![Unity](https://img.shields.io/badge/Unity-2021.3%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Version](https://img.shields.io/github/v/release/buck-co/unity-pkg-buck-basics)
 

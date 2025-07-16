@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.1.1] - 2025-07-16
+- First public release! Added a code of conduct, MIT license, and license information to all files.
+
 ## [3.1.0] - 2025-04-14
 New Feature: The ObjectPooler component now has a "Pooler Behavior" option that determines what happens when the pooler is out of objects. Previously, the ObjectPooler would just give a warning. Now, it includes the following options:
 - Recycle Oldest: Recycle the oldest object in the pool and use it immediately. This is the new default behavior.
