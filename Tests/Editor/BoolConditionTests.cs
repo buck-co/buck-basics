@@ -1,3 +1,5 @@
+// MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
+
 using Buck;
 using NUnit.Framework;
 using UnityEngine;

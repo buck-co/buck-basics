@@ -1,4 +1,6 @@
-﻿#if UNITY_EDITOR
+﻿// MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
+
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 

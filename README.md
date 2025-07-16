@@ -1,3 +1,7 @@
+![Unity](https://img.shields.io/badge/Unity-2023.1%2B-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Version](https://img.shields.io/github/v/release/buck-co/unity-pkg-buck-basics)
+
 # BUCK Basics
 _BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundation for scalable game architecture using ScriptableObject-based systems, comprehensive extension methods, and essential utility classes. It helps developers build cleaner, more maintainable Unity projects by reducing hard-coded dependencies and providing battle-tested tools refined across multiple productions.
 
@@ -7,7 +11,7 @@ _BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundat
 - 🔢 **Conditions & Operations**: Visual scripting-like functionality for logic and math operations without writing code
 - ♻️ **Object Pooling**: High-performance pooling system with multiple overflow behaviors
 - 📚 **Runtime Sets**: Dynamic collections that automatically track active game objects
-- 🎲 **Battle-Tested**: Used in production on multiple shipped games including [_Let's! Revolution!_](https://store.steampowered.com/app/2111090/Lets_Revolution/) and [_The Electric State: Kid Cosmo_](https://apps.apple.com/us/app/the-electric-state-kid-cosmo/id6475495298)
+- 🎲 **Battle-Tested**: Used in production on multiple shipped games including [_Let's! Revolution!_](https://www.letsrevolution.com/) and [_The Electric State: Kid Cosmo_](https://www.netflix.com/games/81746201)
 
 # Getting Started
 > [!NOTE]
@@ -39,7 +43,7 @@ This package includes a comprehensive sample project demonstrating RPG-like mech
 BUCK Basics provides a powerful architecture pattern where variables and events exist as ScriptableObject assets. This approach, pioneered by Ryan Hipple at Schell Games, enables truly decoupled game systems.
 
 > [!TIP]
-> 📺 Watch [Ryan Hipple's Unite Austin 2017 talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) to understand the philosophy behind this architecture.
+> 📺 Watch [Ryan Hipple's Unite Austin 2017 talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) to understand the inspiration and philosophy behind this architecture.
 
 ### Creating Variables
 Right-click in the Project window and navigate to `Create > BUCK > Variables` to create any supported type:
@@ -312,7 +316,6 @@ See the full list of [contributors](https://github.com/buck-co/unity-pkg-buck-ba
 # Acknowledgments
 
 * [Ryan Hipple's Unite Austin 2017 talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) for the foundational architecture patterns
-* All the BUCK projects that battle-tested these systems
 
 # License
 

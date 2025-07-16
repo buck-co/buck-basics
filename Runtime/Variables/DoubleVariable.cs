@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
+
+using UnityEngine;
 using System;
 
 namespace Buck

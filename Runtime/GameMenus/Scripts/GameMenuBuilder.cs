@@ -1,8 +1,8 @@
-using System;
+// MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Buck
 {
