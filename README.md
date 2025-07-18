@@ -1,6 +1,6 @@
 ![Unity](https://img.shields.io/badge/Unity-2021.3%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Version](https://img.shields.io/github/v/release/buck-co/unity-pkg-buck-basics)
+![Version](https://img.shields.io/github/v/release/buck-co/buck-basics)
 
 # BUCK Basics
 _BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundation for scalable game architecture using ScriptableObject-based systems, comprehensive extension methods, and essential utility classes. It helps developers build cleaner, more maintainable Unity projects by reducing hard-coded dependencies and providing battle-tested tools refined across multiple productions.
