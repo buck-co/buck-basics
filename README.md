@@ -19,7 +19,7 @@ _BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundat
 
 ### Install the _BUCK Basics_ Package
 
-1. Copy the git URL of this repository: `https://github.com/buck-co/unity-pkg-buck-basics.git`
+1. Copy the git URL of this repository: `https://github.com/buck-co/buck-basics.git`
 2. In Unity, open the Package Manager from the menu by going to `Window > Package Manager`
 3. Click the plus icon in the upper left and choose `Add package from git URL...`
 4. Paste the git URL into the text field and click the `Add` button.
@@ -302,8 +302,8 @@ This GUID system ensures your references remain stable even when assets are rena
 
 Found a bug or have a feature request? We'd love to hear from you!
 
-- [Open an issue](https://github.com/buck-co/unity-pkg-buck-basics/issues) for problems or suggestions
-- [Create a pull request](https://github.com/buck-co/unity-pkg-buck-basics/pulls) if you'd like to contribute code
+- [Open an issue](https://github.com/buck-co/buck-basics/issues) for problems or suggestions
+- [Create a pull request](https://github.com/buck-co/buck-basics/pulls) if you'd like to contribute code
 - Check our [contribution guidelines](CONTRIBUTING.md) before submitting
 
 # Authors
@@ -311,7 +311,7 @@ Found a bug or have a feature request? We'd love to hear from you!
 * **Nick Pettit** - [nickpettit](https://github.com/nickpettit)
 * **Ian Sundstrom** - [iwsundstrom](https://github.com/iwsundstrom)
 
-See the full list of [contributors](https://github.com/buck-co/unity-pkg-buck-basics/contributors).
+See the full list of [contributors](https://github.com/buck-co/buck-basics/contributors).
 
 # Acknowledgments
 
