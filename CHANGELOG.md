@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.1.2] - 2025-07-30
+- Added .meta files back for GitHub files since their absence was causing errors in Unity due to package folders being immutable.
+
 ## [3.1.1] - 2025-07-16
 - First public release! Added a code of conduct, MIT license, and license information to all files.
 
