@@ -9,7 +9,8 @@ namespace Buck
     [CreateAssetMenu(menuName = "BUCK/Game Event")]
     public class GameEvent : BaseScriptableObject
     {
-        [Tooltip("Will log all runtime interactions with this object if true and running in Editor or a Development Build.")]
+        [Tooltip("When enabled, all runtime interactions with this object will be logged to the Unity " +
+                 "Console while the application is running in the Unity Editor or a Development Build.")]
         [SerializeField] protected bool m_debugChanges;
         
         /// <summary>

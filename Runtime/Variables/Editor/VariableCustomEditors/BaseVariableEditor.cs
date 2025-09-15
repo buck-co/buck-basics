@@ -70,6 +70,11 @@ namespace Buck
     public class BaseVariableEditor<T> : GameEventEditor
     {
         protected SerializedProperty m_defaultValue;
+        protected SerializedProperty m_labelText;
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+        protected SerializedProperty m_localizeLabelText;
+        protected SerializedProperty m_localizedLabelText;
+#endif
         protected SerializedProperty m_resetOnRestart;
         protected SerializedProperty m_restartEvents;
 
@@ -79,6 +84,11 @@ namespace Buck
             
             // Cache serialized properties:
             m_defaultValue = serializedObject.FindProperty("m_defaultValue");
+            m_labelText = serializedObject.FindProperty("m_labelText");
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+            m_localizeLabelText = serializedObject.FindProperty("m_localizeLabelText");
+            m_localizedLabelText = serializedObject.FindProperty("m_localizedLabelText");
+#endif
             m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
             m_restartEvents = serializedObject.FindProperty("m_restartEvents");
         }
@@ -87,6 +97,7 @@ namespace Buck
         {
             ScriptFieldGUI();
             DefaultValueGUI();
+            LabelGUI();
             
             EditorGUILayout.PropertyField(m_resetOnRestart);
             if (m_resetOnRestart.boolValue)
@@ -98,6 +109,20 @@ namespace Buck
             RaiseGameEventButtonGUI();
 
             serializedObject.ApplyModifiedProperties();
+        }
+        
+        protected virtual void LabelGUI()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("UI Label Text", EditorStyles.boldLabel);
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+            EditorGUILayout.PropertyField(m_localizeLabelText);
+
+            EditorGUILayout.PropertyField(m_localizeLabelText.boolValue ? m_localizedLabelText : m_labelText);
+#else
+            EditorGUILayout.PropertyField(m_labelText);
+#endif
+            EditorGUILayout.Space();
         }
 
         protected virtual void LogValueButtonGUI()
