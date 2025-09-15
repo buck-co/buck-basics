@@ -12,6 +12,7 @@ namespace Buck
     public abstract class BaseVariable : GameEvent
     {
         public abstract Type Type { get; }
+        public abstract string LabelText { get; }
     }
     
     public abstract class BaseVariable<T> : BaseVariable, IFormattable
@@ -28,7 +29,7 @@ namespace Buck
         /// <summary>
         /// The label text to use when displaying this variable in user-facing UI. Can be localized if localization is enabled.
         /// </summary>
-        public string LabelText
+        public override string LabelText
         {
             get
             {
