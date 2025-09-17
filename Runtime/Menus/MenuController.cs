@@ -66,7 +66,7 @@ namespace Buck
             if (candidate)
             {
                 // This will re-call Show() on the screen, which is safe and ensures selection reticle logic runs.
-                OpenMenu(candidate);
+                MenuNav_OpenMenu(candidate);
             }
             else
             {
@@ -111,7 +111,7 @@ namespace Buck
         /// <summary>
         /// Open a new menu on top of the stack (push).
         /// </summary>
-        public void OpenMenu(MenuScreen screen)
+        public void MenuNav_OpenMenu(MenuScreen screen)
         {
             if (!screen) return;
             
@@ -142,7 +142,7 @@ namespace Buck
         /// Open a sibling menu at the same depth (replace top of stack). Back goes to the parent.
         /// This is useful for switching between tabs or modes within a single conceptual menu.
         /// </summary>
-        public void OpenSiblingMenu(MenuScreen screen)
+        public void MenuNav_OpenSiblingMenu(MenuScreen screen)
         {
             if (!screen) return;
             
@@ -176,7 +176,7 @@ namespace Buck
         /// <summary>
         /// Go back one level (pop).
         /// </summary>
-        public void Back()
+        public void MenuNav_BackOneMenu()
         {
             if (m_stack.Count == 0) return;
             
@@ -204,7 +204,7 @@ namespace Buck
         /// <summary>
         /// Close all menus (clear stack).
         /// </summary>
-        public void CloseAll()
+        public void MenuNav_CloseAllMenus()
         {
             if (m_stack.Count == 0) return;
             

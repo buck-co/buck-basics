@@ -41,6 +41,31 @@ namespace Buck
                 Hide();
         }
 
+        /// <summary>Convenience method to find the nearest MenuController and open this menu.</summary>
+        public virtual void MenuNav_OpenThisMenu()
+            => MenuController.FindFor(transform)?.MenuNav_OpenMenu(this);
+        
+        /// <summary>Convenience method to find the nearest MenuController and open the specified menu.</summary>
+        public virtual void MenuNav_OpenMenu(MenuScreen screen)
+            => MenuController.FindFor(transform)?.MenuNav_OpenMenu(screen);
+        
+        /// <summary>Convenience method to find the nearest MenuController and open this menu as a sibling of the current menu.</summary>
+        public virtual void MenuNav_OpenThisMenuAsSiblingMenu()
+            => MenuController.FindFor(transform)?.MenuNav_OpenSiblingMenu(this);
+        
+        /// <summary>Convenience method to find the nearest MenuController and open the specified menu as a sibling of the current menu.</summary>
+        public virtual void MenuNav_OpenSiblingMenu(MenuScreen screen)
+            => MenuController.FindFor(transform)?.MenuNav_OpenSiblingMenu(screen);
+        
+        /// <summary>Convenience method to find the nearest MenuController and go back one menu.</summary>
+        public virtual void MenuNav_BackOneMenu()
+            => MenuController.FindFor(transform)?.MenuNav_BackOneMenu();
+        
+        /// <summary>Convenience method to find the nearest MenuController and close all menus.</summary>
+        public virtual void MenuNav_CloseAllMenus()
+            => MenuController.FindFor(transform)?.MenuNav_CloseAllMenus();
+        
+
         /// <summary>
         /// Show this screen and focus the first Selectable child.
         /// </summary>
