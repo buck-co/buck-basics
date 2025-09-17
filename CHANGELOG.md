@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0] - 2025-09-17
+New Feature: Menus! Use new components like MenuScreen, MenuController, and VariableBinding to easily create menus that make BUCK variables work with Unity's UI and Input System.
+- Added the MenuController component, which manages a stack of MenuScreen components. This makes it easy to create complex menu systems with multiple levels, including levels with sibling menus.
+- Use the MenuScreen component to create a CanvasGroup that can contain Unity UI Selectibles in its children.
+- Add the VariableBinding component to a GameObject with a Selectable to tie a BUCK Variable to a Unity UI component. Currently, Toggle and Slider types are supported. Use BoolVariable types with a Toggle, and FloatVariable types with Sliders. When the UI components update their value, the value of the variable is also updated (and its GameEvent can optionally be raised as well).
+- Added a LabelText property to the BaseVariable class which can be used when displaying a variable in user-facing UI. Variables used with a VariableBinding component will automatically set their associated UI component to their label text (if the Variable has label text set and a TextMeshPro component is found). Label text can also be set to a LocalizedString if the Unity Localization package is installed.
+- Added tooltips to several BaseVariable fields for better usability.
+
 ## [3.1.2] - 2025-07-30
 - Added .meta files back for GitHub files since their absence was causing errors in Unity due to package folders being immutable.
 
