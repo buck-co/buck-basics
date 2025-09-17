@@ -24,9 +24,15 @@ namespace Buck
         public bool RaiseGameEventOnChange => m_raiseGameEventOnChange;
 
         Selectable m_selectable;
-        public Selectable Selectable => m_selectable;
 
-        void OnEnable()
-            => m_selectable = GetComponent<Selectable>();
+        public Selectable Selectable
+        {
+            get
+            {
+                if (!m_selectable)
+                    m_selectable = GetComponent<Selectable>();
+                return m_selectable;
+            }
+        }
     }
 }
