@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.1] - 2025-09-17
+- Renamed all menu navigation methods so that they're grouped together when assigning them to UnityEvents in the Inspector.
+- Added convenience methods to MenuScreen that can access parent MenuController methods for menu navigation. This means that, in the Inspector on UnityEvents, you could instead assign a MenuScreen to which you want to navigate, rather than having to find the MenuController and then associate a MenuScreen with it.
+
 ## [3.2.0] - 2025-09-17
 New Feature: Menus! Use new components like MenuScreen, MenuController, and VariableBinding to easily create menus that make BUCK variables work with Unity's UI and Input System.
 - Added the MenuController component, which manages a stack of MenuScreen components. This makes it easy to create complex menu systems with multiple levels, including levels with sibling menus.
