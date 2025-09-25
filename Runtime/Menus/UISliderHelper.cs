@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace Buck
 {
-    [RequireComponent(typeof(Slider))]
     public class UISliderHelper : UIValueBinder<float, FloatVariable, Slider>
     {
         protected override void SubscribeControlEvents()

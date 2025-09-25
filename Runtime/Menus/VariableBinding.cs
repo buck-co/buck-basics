@@ -9,7 +9,6 @@ namespace Buck
     /// Attach to a UI element to a variable.
     /// </summary>
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(Selectable))]
     [AddComponentMenu("BUCK/UI/Variable Binding")]
     public class VariableBinding : MonoBehaviour
     {

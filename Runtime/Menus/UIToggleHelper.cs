@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace Buck
 {
-    [RequireComponent(typeof(Toggle))]
     public class UIToggleHelper : UIValueBinder<bool, BoolVariable, Toggle>
     {
         protected override void SubscribeControlEvents()

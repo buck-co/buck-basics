@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+using UnityEngine.Localization;
+#endif
 
 namespace Buck
 {
@@ -11,10 +14,34 @@ namespace Buck
     /// Common behavior for a UI "screen": show/hide and auto-binding via VariableBinding components.
     /// The selection indicator is handled by MenuController.
     /// </summary>
-    [RequireComponent(typeof(CanvasGroup))]
     [AddComponentMenu("BUCK/UI/Menu Screen")]
     public class MenuScreen : MonoBehaviour
     {
+        [Header("Metadata")]
+        [SerializeField, Tooltip("Title shown in headers/pagers for this screen.")]
+        string m_titleText = "";
+
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+        [SerializeField, Tooltip("Use LocalizedString for TitleText if enabled.")]
+        bool m_localizeTitleText = false;
+        [SerializeField] LocalizedString m_localizedTitleText;
+#endif
+
+        /// <summary>
+        /// The title text to display for this screen (supports localization if enabled).
+        /// </summary>
+        public virtual string TitleText
+        {
+            get
+            {
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+                if (m_localizeTitleText && m_localizedTitleText != null)
+                    return m_localizedTitleText.GetLocalizedString();
+#endif
+                return m_titleText;
+            }
+        }
+
         [Tooltip("Should this screen be visible when enabled?")]
         [SerializeField] protected bool m_startVisible = false;
 
