@@ -4,63 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-using UnityEngine.Localization;
-#endif
 
 namespace Buck
 {
     /// <summary>
-    /// Common behavior for a UI "screen": show/hide and auto-binding via VariableBinding components.
-    /// The selection indicator is handled by MenuController.
+    /// A UI "screen": show/hide, auto-binding via VariableBinding components,
+    /// and focus management. The selection indicator is handled by MenuController.
     /// </summary>
     [AddComponentMenu("BUCK/UI/Menu Screen")]
-    public class MenuScreen : MonoBehaviour
+    public class MenuScreen : MenuView
     {
-        [Header("Metadata")]
-        [SerializeField, Tooltip("Title shown in headers/pagers for this screen.")]
-        string m_titleText = "";
-
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-        [SerializeField, Tooltip("Use LocalizedString for TitleText if enabled.")]
-        bool m_localizeTitleText = false;
-        [SerializeField] LocalizedString m_localizedTitleText;
-#endif
-
-        /// <summary>
-        /// The title text to display for this screen (supports localization if enabled).
-        /// </summary>
-        public virtual string TitleText
+        protected override void Awake()
         {
-            get
-            {
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-                if (m_localizeTitleText && m_localizedTitleText != null)
-                    return m_localizedTitleText.GetLocalizedString();
-#endif
-                return m_titleText;
-            }
-        }
-
-        [Tooltip("Should this screen be visible when enabled?")]
-        [SerializeField] protected bool m_startVisible = false;
-
-        CanvasGroup m_canvasGroup;
-
-        protected virtual void Reset()
-        {
-            if (!m_canvasGroup)
-                m_canvasGroup = GetComponent<CanvasGroup>();
-        }
-
-        protected virtual void Awake()
-        {
-            if (!m_canvasGroup)
-                m_canvasGroup = GetComponent<CanvasGroup>();
+            base.Awake();
             AutoBindFromChildren();
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             if (m_startVisible)
                 Show(focusFirst: true);
@@ -71,34 +31,33 @@ namespace Buck
         /// <summary>Convenience method to find the nearest MenuController and open this menu.</summary>
         public virtual void MenuNav_OpenThisMenu()
             => MenuController.FindFor(transform)?.MenuNav_OpenMenu(this);
-        
+
         /// <summary>Convenience method to find the nearest MenuController and open the specified menu.</summary>
         public virtual void MenuNav_OpenMenu(MenuScreen screen)
             => MenuController.FindFor(transform)?.MenuNav_OpenMenu(screen);
-        
+
         /// <summary>Convenience method to find the nearest MenuController and open this menu as a sibling of the current menu.</summary>
         public virtual void MenuNav_OpenThisMenuAsSiblingMenu()
             => MenuController.FindFor(transform)?.MenuNav_OpenSiblingMenu(this);
-        
+
         /// <summary>Convenience method to find the nearest MenuController and open the specified menu as a sibling of the current menu.</summary>
         public virtual void MenuNav_OpenSiblingMenu(MenuScreen screen)
             => MenuController.FindFor(transform)?.MenuNav_OpenSiblingMenu(screen);
-        
+
         /// <summary>Convenience method to find the nearest MenuController and go back one menu.</summary>
         public virtual void MenuNav_BackOneMenu()
             => MenuController.FindFor(transform)?.MenuNav_BackOneMenu();
-        
+
         /// <summary>Convenience method to find the nearest MenuController and close all menus.</summary>
         public virtual void MenuNav_CloseAllMenus()
             => MenuController.FindFor(transform)?.MenuNav_CloseAllMenus();
-        
 
         /// <summary>
         /// Show this screen and focus the first Selectable child.
         /// </summary>
-        public virtual void Show(bool focusFirst = true)
+        public override void Show(bool focusFirst = true)
         {
-            m_canvasGroup.SetVisible(true);
+            base.Show(focusFirst: false);
 
             // Always pull fresh values from variables when a screen is shown.
             RefreshBindingsInChildren();
@@ -111,28 +70,7 @@ namespace Buck
             }
         }
 
-        /// <summary>
-        /// Hide this screen.
-        /// </summary>
-        public virtual void Hide()
-            => m_canvasGroup.SetVisible(false);
-
-        /// <summary>
-        /// Set visibility.
-        /// </summary>
-        public void Toggle(bool visible)
-        {
-            if (visible)
-                Show();
-            else
-                Hide();
-        }
-
-        /// <summary>
-        /// True if this screen is interactable and visible.
-        /// </summary>
-        protected bool IsVisible()
-            => m_canvasGroup && m_canvasGroup.interactable && m_canvasGroup.blocksRaycasts && m_canvasGroup.alpha > 0.0f;
+        public override void Hide() => base.Hide();
 
         void AutoBindFromChildren()
         {
@@ -150,10 +88,7 @@ namespace Buck
                 AttachHelper(selectable, variable, raiseEvent);
             }
         }
-        
-        /// <summary>
-        /// Attach the correct UI helper given a Selectable + BaseVariable pair.
-        /// </summary>
+
         static void AttachHelper(Selectable selectable, BaseVariable variable, bool raiseEvent)
         {
             if (!selectable || !variable)
@@ -181,9 +116,6 @@ namespace Buck
             }
         }
 
-        /// <summary>
-        /// Pulls the latest values from all bound variables into their UI controls (no notifications).
-        /// </summary>
         protected void RefreshBindingsInChildren()
         {
             var binders = GetComponentsInChildren<IUIValueBinder>(true);
@@ -191,12 +123,9 @@ namespace Buck
                 b.RefreshFromVariable();
         }
 
-        /// <summary>
-        /// Find the first active & interactable Selectable under this screen in hierarchy order.
-        /// </summary>
+        /// <summary>Find the first active & interactable Selectable under this screen in hierarchy order.</summary>
         public Selectable FindFirstSelectable()
         {
-            // Breadth-first traversal for predictable hierarchy order.
             var queue = new Queue<Transform>();
             queue.Enqueue(transform);
 
@@ -214,7 +143,6 @@ namespace Buck
                     queue.Enqueue(t.GetChild(i));
             }
 
-            // Fallback to any child (even inactive), just to avoid dead-ends in misconfigured UIs
             return GetComponentInChildren<Selectable>(true);
         }
     }

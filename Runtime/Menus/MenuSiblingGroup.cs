@@ -7,30 +7,75 @@ namespace Buck
 {
     /// <summary>
     /// Declares an ordered set of MenuScreens that are siblings/pages of one conceptual menu.
-    /// Used by MenuPager to page left/right and to know when to show itself.
+    /// Manages its own visibility via CanvasGroup based on the current page in the bound MenuController.
     /// </summary>
     [AddComponentMenu("BUCK/UI/Menu Sibling Group")]
-    public class MenuSiblingGroup : MonoBehaviour
+    public class MenuSiblingGroup : MenuView
     {
         [Tooltip("If true, paging past the last goes to the first (and vice versa).")]
         [SerializeField] bool m_wrap = true;
-        
+
         [Tooltip("Ordered list of sibling pages. The first entry is the default first page.")]
         [SerializeField] List<MenuScreen> m_pages = new();
 
+        [Header("Wiring (optional)")]
+        [SerializeField] MenuController m_controller;
+
         static readonly Dictionary<MenuScreen, MenuSiblingGroup> s_lookup = new();
 
-#region Public Properties
-        
         public IReadOnlyList<MenuScreen> Pages => m_pages;
         public bool Wrap => m_wrap;
-        
-#endregion
-        
-#region Unity Lifecycle
 
-        void OnEnable()  => Register();
-        void OnDisable() => Unregister();
+        protected override void Awake()
+        {
+            base.Awake();
+            if (!m_controller)
+                m_controller = MenuController.FindFor(transform);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Register();
+
+            if (m_controller)
+            {
+                m_controller.OnOpenMenu          += HandleScreenChanged;
+                m_controller.OnOpenSiblingMenu   += HandleScreenChanged;
+                m_controller.OnBack              += HandleScreenChanged;
+                m_controller.OnStackEmptyChanged += HandleStackEmptyChanged;
+            }
+
+            UpdateVisibilityForCurrent();
+        }
+
+        protected void OnDisable()
+        {
+            if (m_controller)
+            {
+                m_controller.OnOpenMenu          -= HandleScreenChanged;
+                m_controller.OnOpenSiblingMenu   -= HandleScreenChanged;
+                m_controller.OnBack              -= HandleScreenChanged;
+                m_controller.OnStackEmptyChanged -= HandleStackEmptyChanged;
+            }
+
+            Unregister();
+        }
+
+        void HandleScreenChanged(MenuScreen _)
+            => UpdateVisibilityForCurrent();
+
+        void HandleStackEmptyChanged(bool isEmpty)
+            => Toggle(false);
+
+        void UpdateVisibilityForCurrent()
+        {
+            var cur = m_controller ? m_controller.Current : null;
+            Toggle(ShouldShowFor(cur));
+        }
+
+        bool ShouldShowFor(MenuScreen screen)
+            => screen && s_lookup.TryGetValue(screen, out var g) && g == this;
 
         void Register()
         {
@@ -50,10 +95,6 @@ namespace Buck
                     s_lookup.Remove(page);
             }
         }
-
-#endregion
-
-#region Public Methods
 
         public static MenuSiblingGroup FindFor(MenuScreen screen)
         {
@@ -80,8 +121,5 @@ namespace Buck
             if (prev < 0) prev = m_wrap ? m_pages.Count - 1 : 0;
             return m_pages[prev];
         }
-
-#endregion
-
     }
 }
