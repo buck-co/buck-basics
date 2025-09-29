@@ -22,6 +22,7 @@ namespace Buck
     /// Also drives a shared selection indicator for all screens under this controller.
     /// </summary>
     [AddComponentMenu("BUCK/UI/Menu Controller")]
+    [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
         [Header("Behavior")]
@@ -40,6 +41,8 @@ namespace Buck
 
         [Tooltip("Padding used by LeftOf/RightOf modes (in pixels).")]
         [SerializeField] float m_indicatorXPadding = 24f;
+        
+        protected CanvasGroup m_canvasGroup;
 
         readonly Stack<MenuScreen> m_stack = new();
         float m_prevTimeScale = 1f;
@@ -56,6 +59,17 @@ namespace Buck
         public event Action<MenuScreen> OnOpenSiblingMenu;
         public event Action<bool> OnStackEmptyChanged;
 
+        void Awake()
+        {
+            if (!m_canvasGroup)
+            {
+                m_canvasGroup = GetComponent<CanvasGroup>();
+                
+                // Start hidden. If a child screen is visible at Start(), it will be shown.
+                m_canvasGroup.SetVisible(false);
+            }
+        }
+        
         void Start()
         {
             // If something else already opened a menu before Start(), don't override it.
@@ -230,6 +244,9 @@ namespace Buck
             bool wasEmpty = oldCount == 0;
             bool isEmpty  = m_stack.Count == 0;
             
+            // Set the CanvasGroup visibility of this MenuController
+            m_canvasGroup.SetVisible(!isEmpty);
+            
             if (wasEmpty != isEmpty)
                 OnStackEmptyChanged?.Invoke(isEmpty);
         }
@@ -331,7 +348,7 @@ namespace Buck
 
             var selectedRT = EventSystem.current?.currentSelectedGameObject?.GetComponent<RectTransform>();
             if (!selectedRT) return;
-
+            
             // Compute world-space center/edges of the selected item
             var corners = new Vector3[4];
             selectedRT.GetWorldCorners(corners);

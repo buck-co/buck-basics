@@ -1,5 +1,4 @@
 // MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
-
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,6 +11,7 @@ namespace Buck
     /// Pager that renders a horizontal list of sibling page titles and underlines the selected one.
     /// Contains no Selectables so it doesn't affect input focus.
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     [AddComponentMenu("BUCK/UI/Menu Pager (Bumper Bar)")]
     public class MenuPager : MonoBehaviour
     {
@@ -49,11 +49,13 @@ namespace Buck
         readonly List<Item> m_items = new();
         MenuSiblingGroup m_builtGroup;
         Item m_selectedItem;
+        CanvasGroup m_canvasGroup;
 
         void Awake()
         {
             if (!m_controller)
                 m_controller = MenuController.FindFor(transform);
+            m_canvasGroup = GetComponent<CanvasGroup>();
         }
 
         void OnEnable()
@@ -79,7 +81,12 @@ namespace Buck
         }
 
         void HandleScreenChanged(MenuScreen _) => Refresh();
-        void HandleStackEmptyChanged(bool isEmpty) => gameObject.SetActive(!isEmpty && ShouldShowFor(m_controller?.Current));
+
+        void HandleStackEmptyChanged(bool isEmpty)
+        {
+            var show = !isEmpty && ShouldShowFor(m_controller?.Current);
+            if (m_canvasGroup) m_canvasGroup.SetVisible(show);
+        }
 
         bool ShouldShowFor(MenuScreen screen)
         {
@@ -106,13 +113,14 @@ namespace Buck
 
         void Refresh()
         {
-            var cur = m_controller ? m_controller.Current : null;
+            var cur   = m_controller ? m_controller.Current : null;
             var group = MenuSiblingGroup.FindFor(cur);
 
             bool show = group != null && group.Pages.Count > 1;
-            gameObject.SetActive(show);
-            if (!show || !m_itemsRoot || !m_underlineRect)
-                return;
+            if (m_canvasGroup) m_canvasGroup.SetVisible(show);
+            if (!show) return;
+
+            if (!m_itemsRoot || !m_underlineRect) return;
 
             if (m_builtGroup != group || m_items.Count != group.Pages.Count)
                 RebuildItems(group);
@@ -219,7 +227,6 @@ namespace Buck
                 float width = sel.Label.preferredWidth + (m_underlineHorizontalPadding * 2f);
                 m_underlineRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
-                // Keep height as authored on the underline rect
                 m_underlineRect.SetAsLastSibling();
 
                 var title = current?.TitleText;

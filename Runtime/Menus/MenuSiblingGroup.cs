@@ -103,6 +103,13 @@ namespace Buck
         }
 
         public int IndexOf(MenuScreen screen) => m_pages.IndexOf(screen);
+        
+        public void OpenFirstPage()
+        {
+            if (m_pages == null || m_pages.Count == 0) return;
+            if (!m_controller) m_controller = MenuController.FindFor(transform);
+            if (m_controller) m_controller.MenuNav_OpenMenu(m_pages[0]);
+        }
 
         public MenuScreen Next(MenuScreen current)
         {
