@@ -12,6 +12,7 @@ namespace Buck
     {
         // Check to see if we're about to be destroyed.
         static bool m_ShuttingDown = false;
+        static bool m_AppIsQuitting = false;
         static object m_Lock = new object();
         static T m_Instance;
 
@@ -55,9 +56,28 @@ namespace Buck
         }
 
         void OnApplicationQuit()
-            => m_ShuttingDown = true;
+        {
+            m_AppIsQuitting = true;
+            m_ShuttingDown = true;
+        }
 
         void OnDestroy()
-            => m_ShuttingDown = true;
+        {
+            if (ReferenceEquals(m_Instance, this))
+            {
+                if (m_AppIsQuitting)
+                {
+                    // If the application is quitting, don't allow recreation.
+                    m_ShuttingDown = true;
+                }
+                else
+                {
+                    // If the instance is destroyed because of scene reload / swap, allow recreation.
+                    m_Instance = null;
+                    m_ShuttingDown = false;
+                }
+            }
+            // If this wasn't the active instance (duplicate), don't do anything.
+        }
     }
 }
