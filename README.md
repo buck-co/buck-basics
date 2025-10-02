@@ -11,6 +11,7 @@ _BUCK Basics_ is [BUCK](https://buck.co)'s Unity package that provides a foundat
 - 🔢 **Conditions & Operations**: Visual scripting-like functionality for logic and math operations without writing code
 - ♻️ **Object Pooling**: High-performance pooling system with multiple overflow behaviors
 - 📚 **Runtime Sets**: Dynamic collections that automatically track active game objects
+- 📜 **Menus**: Helper components for quickly creating menus using Unity's UI
 - 🎲 **Battle-Tested**: Used in production on multiple shipped games including [_Let's! Revolution!_](https://www.letsrevolution.com/) and [_The Electric State: Kid Cosmo_](https://www.netflix.com/games/81746201)
 
 # Getting Started
@@ -241,6 +242,57 @@ When the pool runs out of objects:
 - **Recycle Oldest**: Reuse the oldest active object (default)
 - **Double Size**: Expand the pool (may cause GC spikes)
 - **Warn**: Log a warning and return null
+
+## Menus
+
+BUCK Basics includes a lightweight menu framework built on Unity UI that couples with ScriptableObject variables and supports stack-based navigation, sibling “pages,” and automatic value binding for standard controls.
+
+### Core pieces
+- **MenuController** — Manages a stack of menus (push, back, sibling-replace).
+- **MenuScreen** — A single screen of UI (show/hide, focus first `Selectable`, variable bindings).
+- **MenuSiblingGroup** — Declares an ordered set of sibling `MenuScreen` pages (e.g., Settings tabs). Shows/hides automatically whenever one of its pages is on top of the stack.
+- **MenuPager** — A non-interactive “bumper bar” UI: renders a horizontal list of page titles using TextMeshProUGUI and an underline that tracks the selected page.
+
+> `MenuScreen` and `MenuSiblingGroup` both inherit from `MenuView`, which provides a localizable `TitleText` and CanvasGroup-based visibility.
+
+### Quick start (single screen)
+1. Add a **MenuController** under your Canvas.
+2. Create a **MenuScreen** (add your UI and any `VariableBinding` components).
+3. Open it via button OnClick → `MenuScreen.MenuNav_OpenThisMenu()` or in code:
+```csharp
+menuController.MenuNav_OpenMenu(myScreen);
+```
+
+### Paged settings (sibling menus)
+1. Create an empty GameObject (e.g., `OptionsGroup`) and add **MenuSiblingGroup** (+ `CanvasGroup`).
+   - Optionally set the group `TitleText`.
+   - Add your pages (e.g., `Options – General`, `Options – Audio`, `Options – Video`) to the **Pages** list in order.
+2. Under `OptionsGroup`, add a child for the **MenuPager**.
+   - Assign an Items Root (recommend a `HorizontalLayoutGroup`) and an Underline `RectTransform`.
+   - Optionally assign a TextMeshProUGUI prototype to style labels.
+3. Create one **MenuScreen** per page and design their UI normally. Pages may be siblings of the group or children—membership is defined by the group’s **Pages** list.
+4. From your Pause/Options button, open the first page:
+   - OnClick → `OptionsGroup.OpenFirstPage()` (or open a specific page).
+5. Hook your input to call **`MenuPager.NextPage()`** / **`PrevPage()`** to flip pages.
+
+### Behavior notes
+- **Stack semantics**: Opening a page pushes it on the stack; sibling navigation replaces the top entry, so **Back** still returns to the parent (e.g., Pause).
+- **Auto visibility**: `MenuSiblingGroup` and `MenuPager` show only when the current top-of-stack `MenuScreen` belongs to that group.
+- **Focus**: `MenuPager` has no `Selectable`s; the selection indicator continues to track the focused control on the active page.
+- **Localization**: `TitleText` on screens and groups supports `LocalizedString` when `BUCK_BASICS_ENABLE_LOCALIZATION` is defined.
+
+### Example hierarchy
+```
+Canvas
+└── MenuController
+    ├── MenuScreen - Pause
+    ├── MenuSiblingGroup - Options (CanvasGroup, TitleText)
+    │   └── MenuPager (Items Root + Underline)
+    ├── MenuScreen - Options - General
+    ├── MenuScreen - Options - Audio
+    └── MenuScreen - Options - Video
+```
+
 
 ## Additional Utilities
 

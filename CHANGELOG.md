@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.3] - 2025-10-02
+- `MenuView`: shared base with `TitleText` (localizable) and CanvasGroup show/hide.
+- `MenuSiblingGroup`: ordered sibling pages with optional wrap, its own `TitleText`, auto-visibility, and `OpenFirstPage()` helper. Great for "bumper / shoulder" button navigation on gamepads.
+- `MenuPager`: generates a horizontal row of TextMeshProUGUI labels, underlines the selected item (matched width), and offsets the selected label slightly; exposes `NextPage()`/`PrevPage()`.
+- `MenuScreen` now inherits `MenuView` (existing binding/focus APIs unchanged).
+- Added a new **Menus** section to the README.
+
 ## [3.2.1] - 2025-09-17
 - Renamed all menu navigation methods so that they're grouped together when assigning them to UnityEvents in the Inspector.
 - Added convenience methods to MenuScreen that can access parent MenuController methods for menu navigation. This means that, in the Inspector on UnityEvents, you could instead assign a MenuScreen to which you want to navigate, rather than having to find the MenuController and then associate a MenuScreen with it.
