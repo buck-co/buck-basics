@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Buck
@@ -296,6 +297,39 @@ namespace Buck
             // Snap the indicator immediately (no waiting for LateUpdate/input).
             SnapIndicatorTo(sel, instant: true);
         }
+        
+        // If the user is trying to navigate the UI but there is no valid selection under the
+        // current screen, select the first item and snap the indicator immediately.
+        void EnsureSelectionOnNavigationIntent()
+        {
+            if (!Current) return;
+
+            var eventSystem = EventSystem.current;
+            var ui = eventSystem ? eventSystem.currentInputModule as InputSystemUIInputModule : null;
+            if (!ui) return;
+
+            // Consider "navigation intent" any of these UI actions firing this frame.
+            bool navIntent =
+                (ui.move.action   != null && ui.move.action.triggered)   ||
+                (ui.submit.action != null && ui.submit.action.triggered) ||
+                (ui.cancel.action != null && ui.cancel.action.triggered);
+
+            if (!navIntent) return;
+
+            var selGO = eventSystem.currentSelectedGameObject;
+            bool selectionInvalid = selGO == null || !selGO.transform.IsChildOf(Current.transform);
+            if (!selectionInvalid) return;
+            
+            var first = Current.FindFirstSelectable();
+            if (!first)return;
+            
+            eventSystem.SetSelectedGameObject(first.gameObject);
+            
+            // Snap so the indicator appears right away.
+            SnapIndicatorTo(first, instant: true);
+            UpdateIndicatorActiveState();
+        }
+
 
         // Compute the indicator target from a Selectable's RectTransform in world space,
         // apply X-mode and padding, and set the position (instant or smoothed).
@@ -343,6 +377,10 @@ namespace Buck
 
             // Keep visibility correct even if nobody called Open/Back this frame
             UpdateIndicatorActiveState();
+            
+            // Restore selection if user is navigating but selection was cleared by the mouse
+            EnsureSelectionOnNavigationIntent();
+            
             if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
 
