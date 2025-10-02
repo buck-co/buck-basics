@@ -1,6 +1,10 @@
 # Changelog
 
 ## [3.2.3] - 2025-10-02
+
+- Fixed an issue where when using a keyboard and mouse, then switching to a Gamepad, menu selection would not be restored properly.
+
+## [3.2.2] - 2025-10-02
 - `MenuView`: shared base with `TitleText` (localizable) and CanvasGroup show/hide.
 - `MenuSiblingGroup`: ordered sibling pages with optional wrap, its own `TitleText`, auto-visibility, and `OpenFirstPage()` helper. Great for "bumper / shoulder" button navigation on gamepads.
 - `MenuPager`: generates a horizontal row of TextMeshProUGUI labels, underlines the selected item (matched width), and offsets the selected label slightly; exposes `NextPage()`/`PrevPage()`.
