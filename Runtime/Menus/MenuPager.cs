@@ -1,9 +1,12 @@
 // MIT License - Copyright (c) 2025 BUCK Design LLC - https://github.com/buck-co
+
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Buck
 {
@@ -21,6 +24,10 @@ namespace Buck
         RectTransform m_itemsRoot;
         [SerializeField, Tooltip("Underline bar RectTransform that will be reparented to the selected item.")]
         RectTransform m_underlineRect;
+        [SerializeField, Tooltip("Optional: action that triggers PrevPage (e.g., keyboard [ or Shift+Tab).")]
+        InputActionReference m_prevPageAction;
+        [SerializeField, Tooltip("Optional: action that triggers NextPage (e.g., keyboard ] or Tab).")]
+        InputActionReference m_nextPageAction;
 
         [Header("Item Template (optional)")]
         [SerializeField, Tooltip("If assigned, this TextMeshProUGUI will be cloned for each page; otherwise a default will be created.")]
@@ -38,7 +45,8 @@ namespace Buck
 
         [Header("Events (optional)")]
         [SerializeField] UnityEvent<string> m_onTitleChanged;
-
+        
+        
         class Item
         {
             public MenuScreen Screen;
@@ -67,6 +75,14 @@ namespace Buck
                 m_controller.OnBack              += HandleScreenChanged;
                 m_controller.OnStackEmptyChanged += HandleStackEmptyChanged;
             }
+            
+            // Bind input actions
+            if (m_prevPageAction && m_prevPageAction.action != null)
+                m_prevPageAction.action.performed += OnPrevAction;
+
+            if (m_nextPageAction && m_nextPageAction.action != null)
+                m_nextPageAction.action.performed += OnNextAction;
+            
             Refresh();
         }
 
@@ -78,8 +94,15 @@ namespace Buck
             m_controller.OnOpenSiblingMenu   -= HandleScreenChanged;
             m_controller.OnBack              -= HandleScreenChanged;
             m_controller.OnStackEmptyChanged -= HandleStackEmptyChanged;
-        }
+            
+            // Unbind input actions
+            if (m_prevPageAction && m_prevPageAction.action != null)
+                m_prevPageAction.action.performed -= OnPrevAction;
 
+            if (m_nextPageAction && m_nextPageAction.action != null)
+                m_nextPageAction.action.performed -= OnNextAction;
+        }
+        
         void HandleScreenChanged(MenuScreen _) => Refresh();
 
         void HandleStackEmptyChanged(bool isEmpty)
@@ -94,20 +117,23 @@ namespace Buck
             var group = MenuSiblingGroup.FindFor(screen);
             return group != null && group.Pages.Count > 1;
         }
+        
+        void OnPrevAction(InputAction.CallbackContext ctx) { if (ctx.performed) PrevPage(); }
+        void OnNextAction(InputAction.CallbackContext ctx) { if (ctx.performed) NextPage(); }
 
         public void NextPage()
         {
-            var cur   = m_controller ? m_controller.Current : null;
+            var cur = m_controller ? m_controller.Current : null;
             var group = MenuSiblingGroup.FindFor(cur);
-            var next  = group?.Next(cur);
+            var next = group?.Next(cur);
             if (next) m_controller.MenuNav_OpenSiblingMenu(next); // replace top, keep parent
         }
 
         public void PrevPage()
         {
-            var cur   = m_controller ? m_controller.Current : null;
+            var cur = m_controller ? m_controller.Current : null;
             var group = MenuSiblingGroup.FindFor(cur);
-            var prev  = group?.Prev(cur);
+            var prev = group?.Prev(cur);
             if (prev) m_controller.MenuNav_OpenSiblingMenu(prev);
         }
 
@@ -167,6 +193,8 @@ namespace Buck
                 {
                     le.minWidth = le.preferredWidth = pw;
                 }
+                
+                AddPointerHitTarget(containerGO, page);
 
                 m_items.Add(new Item
                 {
@@ -180,6 +208,52 @@ namespace Buck
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_itemsRoot);
 
             m_builtGroup = group;
+        }
+        
+        void AddPointerHitTarget(GameObject containerGO, MenuScreen page)
+        {
+            // Ensure a raycast target exists (transparent Image is fine).
+            var graphic = containerGO.GetComponent<Graphic>();
+            if (!graphic)
+            {
+                var img = containerGO.AddComponent<Image>();
+                img.color = new Color(0, 0, 0, 0); // fully transparent
+                img.raycastTarget = true;
+                graphic = img;
+            }
+            else
+            {
+                graphic.raycastTarget = true;
+            }
+
+            var trigger = containerGO.GetComponent<EventTrigger>() ?? containerGO.AddComponent<EventTrigger>();
+
+            // Click = open that page as a sibling
+            AddTrigger(trigger, EventTriggerType.PointerClick, (BaseEventData data) =>
+            {
+                var ped = (PointerEventData)data;
+                if (ped.button != PointerEventData.InputButton.Left) return;
+
+                if (m_controller && page)
+                    m_controller.MenuNav_OpenSiblingMenu(page); // sibling switch, parent preserved
+
+                EventSystem.current?.SetSelectedGameObject(null); // keep selection indicator off the pager
+            });
+
+            // Optional: mouse wheel cycles while hovering
+            AddTrigger(trigger, EventTriggerType.Scroll, (BaseEventData data) =>
+            {
+                var ped = (PointerEventData)data;
+                if (ped.scrollDelta.y > 0f) PrevPage();
+                else if (ped.scrollDelta.y < 0f) NextPage();
+            });
+        }
+
+        static void AddTrigger(EventTrigger trigger, EventTriggerType type, UnityAction<BaseEventData> cb)
+        {
+            var entry = new EventTrigger.Entry { eventID = type };
+            entry.callback.AddListener(cb);
+            trigger.triggers.Add(entry);
         }
 
         TextMeshProUGUI CreateDefaultLabel(RectTransform parent)
@@ -227,6 +301,10 @@ namespace Buck
                 float width = sel.Label.preferredWidth + (m_underlineHorizontalPadding * 2f);
                 m_underlineRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
+                // Make underline non-blocking so hit targets receive the click.
+                var g = m_underlineRect.GetComponent<Graphic>();
+                if (g) g.raycastTarget = false;
+                
                 m_underlineRect.SetAsLastSibling();
 
                 var title = current?.TitleText;
