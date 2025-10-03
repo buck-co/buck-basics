@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
@@ -26,6 +27,13 @@ namespace Buck
     [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
+        [Header("Navigation (Cancel / Back)")]
+        [Tooltip("If assigned, this action will be used for Cancel/Back. If not, this will fall back to the UI Input Module's Cancel action.")]
+        [SerializeField] InputActionReference m_cancelActionOverride;
+
+        [Tooltip("If false, pressing Cancel at the bottom of the stack does nothing (e.g., a Main Menu). If true, the last screen can be closed (e.g., a Pause menu).")]
+        [SerializeField] bool m_allowClosingLastMenu = true;
+        
         [Header("Behavior")]
         [Tooltip("Automatically set Time.timeScale = 0 when the first menu opens, and restores when all menus close.")]
         [SerializeField] bool m_pauseTimeScale = true;
@@ -44,6 +52,8 @@ namespace Buck
         [SerializeField] float m_indicatorXPadding = 24f;
         
         protected CanvasGroup m_canvasGroup;
+        
+        InputAction m_boundCancelAction;
 
         readonly Stack<MenuScreen> m_stack = new();
         float m_prevTimeScale = 1f;
@@ -60,6 +70,8 @@ namespace Buck
         public event Action<MenuScreen> OnOpenSiblingMenu;
         public event Action<bool> OnStackEmptyChanged;
 
+#region MonoBehaviour Messages
+        
         void Awake()
         {
             if (!m_canvasGroup)
@@ -69,6 +81,23 @@ namespace Buck
                 // Start hidden. If a child screen is visible at Start(), it will be shown.
                 m_canvasGroup.SetVisible(false);
             }
+        }
+        
+        void OnEnable()
+        {
+            var action = ResolveCancelAction();
+            if (action == null) return;
+
+            m_boundCancelAction = action;
+            m_boundCancelAction.performed += OnCancelAction;
+            // We do not force-enable here; UI Input Module already manages its actions.
+        }
+
+        void OnDisable()
+        {
+            if (m_boundCancelAction != null)
+                m_boundCancelAction.performed -= OnCancelAction;
+            m_boundCancelAction = null;
         }
         
         void Start()
@@ -89,24 +118,75 @@ namespace Buck
                 UpdateIndicatorActiveState();
             }
         }
-
-        /// <summary>
-        /// Find the first MenuScreen under this controller that is currently visible
-        /// (CanvasGroup alpha>0, interactable, blocksRaycasts, and active in hierarchy).
-        /// </summary>
-        MenuScreen FindFirstVisibleChildScreen()
+        
+        void LateUpdate()
         {
-            var screens = GetComponentsInChildren<MenuScreen>(includeInactive: true);
-            foreach (var s in screens)
+            if (!m_selectionIndicatorRect) return;
+
+            // Keep visibility correct even if nobody called Open/Back this frame
+            UpdateIndicatorActiveState();
+            
+            // Restore selection if user is navigating but selection was cleared by the mouse
+            EnsureSelectionOnNavigationIntent();
+            
+            if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
+            if (!Current) return;
+
+            var selectedRT = EventSystem.current?.currentSelectedGameObject?.GetComponent<RectTransform>();
+            if (!selectedRT) return;
+            
+            // Compute world-space center/edges of the selected item
+            var corners = new Vector3[4];
+            selectedRT.GetWorldCorners(corners);
+            var left  = corners[0];
+            var right = corners[2];
+            var center = 0.5f * (left + right);
+
+            // Choose target X in world space based on mode
+            float targetX = m_selectionIndicatorRect.position.x;
+            switch (m_indicatorXMode)
             {
-                if (!s.isActiveAndEnabled) continue; // component enabled and hierarchy-active
-                var canvasGroup = s.GetComponent<CanvasGroup>();
-                if (canvasGroup != null && canvasGroup.alpha > 0f && canvasGroup.interactable && canvasGroup.blocksRaycasts)
-                    return s;
+                case IndicatorXMode.MatchItemCenterX:
+                    targetX = center.x;
+                    break;
+                case IndicatorXMode.LeftOfItemWithPadding:
+                    targetX = left.x - m_indicatorXPadding;
+                    break;
+                case IndicatorXMode.RightOfItemWithPadding:
+                    targetX = right.x + m_indicatorXPadding;
+                    break;
+                case IndicatorXMode.KeepCurrentX:
+                default:
+                    // do nothing
+                    break;
             }
-            return null;
+
+            // Target world position: keep current Z
+            var target = new Vector3(targetX, center.y, m_selectionIndicatorRect.position.z);
+
+            if (m_forceIndicatorInstant)
+            {
+                m_indicatorWorldVelocity = Vector3.zero;
+                m_selectionIndicatorRect.position = target;
+                m_forceIndicatorInstant = false;
+                return;
+            }
+
+            // Smooth in unscaled time (works while paused)
+            m_selectionIndicatorRect.position = Vector3.SmoothDamp(
+                m_selectionIndicatorRect.position,
+                target,
+                ref m_indicatorWorldVelocity,
+                m_indicatorSmoothTime,
+                Mathf.Infinity,
+                Time.unscaledDeltaTime
+            );
         }
         
+#endregion
+
+#region Public Methods
+
         /// <summary>
         /// Find the nearest MenuController parent for a given Transform (fallbacks to scene search).
         /// </summary>
@@ -239,7 +319,70 @@ namespace Buck
             UpdateIndicatorActiveState();
             NotifyCountChange(oldCount);
         }
+        
+#endregion
 
+#region Helper Methods
+
+        InputAction ResolveCancelAction()
+        {
+            if (m_cancelActionOverride && m_cancelActionOverride.action != null)
+                return m_cancelActionOverride.action;
+
+            var es = EventSystem.current;
+            var ui = es ? es.currentInputModule as InputSystemUIInputModule : null;
+            return ui ? ui.cancel.action : null; // same action you already observe for navigation intent
+        }
+
+        void OnCancelAction(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed) return;
+            if (Current == null) return;
+
+            // Give the current screen the first chance to handle/consume Cancel.
+            if (Current.OnCancelPressed())
+                return;
+
+            // Otherwise, check with the higher level MenuController rules.
+            BackOneWithLastMenuGuard();
+        }
+
+        void BackOneWithLastMenuGuard()
+        {
+            if (m_stack.Count == 0)
+                return;
+
+            // If there is more than one screen, always pop.
+            if (m_stack.Count > 1)
+            {
+                MenuNav_BackOneMenu();
+                return;
+            }
+
+            // If we're here, we are at the root. Only pop if allowed.
+            if (m_allowClosingLastMenu)
+                MenuNav_BackOneMenu();
+            
+            // Otherwise, do nothing (such as if we're on a Main Menu and shouldn't back out further)
+        }
+
+        /// <summary>
+        /// Find the first MenuScreen under this controller that is currently visible
+        /// (CanvasGroup alpha>0, interactable, blocksRaycasts, and active in hierarchy).
+        /// </summary>
+        MenuScreen FindFirstVisibleChildScreen()
+        {
+            var screens = GetComponentsInChildren<MenuScreen>(includeInactive: true);
+            foreach (var s in screens)
+            {
+                if (!s.isActiveAndEnabled) continue; // component enabled and hierarchy-active
+                var canvasGroup = s.GetComponent<CanvasGroup>();
+                if (canvasGroup != null && canvasGroup.alpha > 0f && canvasGroup.interactable && canvasGroup.blocksRaycasts)
+                    return s;
+            }
+            return null;
+        }
+        
         void NotifyCountChange(int oldCount)
         {
             bool wasEmpty = oldCount == 0;
@@ -370,69 +513,8 @@ namespace Buck
                 m_forceIndicatorInstant = true;
             }
         }
+        
+#endregion
 
-        void LateUpdate()
-        {
-            if (!m_selectionIndicatorRect) return;
-
-            // Keep visibility correct even if nobody called Open/Back this frame
-            UpdateIndicatorActiveState();
-            
-            // Restore selection if user is navigating but selection was cleared by the mouse
-            EnsureSelectionOnNavigationIntent();
-            
-            if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
-            if (!Current) return;
-
-            var selectedRT = EventSystem.current?.currentSelectedGameObject?.GetComponent<RectTransform>();
-            if (!selectedRT) return;
-            
-            // Compute world-space center/edges of the selected item
-            var corners = new Vector3[4];
-            selectedRT.GetWorldCorners(corners);
-            var left  = corners[0];
-            var right = corners[2];
-            var center = 0.5f * (left + right);
-
-            // Choose target X in world space based on mode
-            float targetX = m_selectionIndicatorRect.position.x;
-            switch (m_indicatorXMode)
-            {
-                case IndicatorXMode.MatchItemCenterX:
-                    targetX = center.x;
-                    break;
-                case IndicatorXMode.LeftOfItemWithPadding:
-                    targetX = left.x - m_indicatorXPadding;
-                    break;
-                case IndicatorXMode.RightOfItemWithPadding:
-                    targetX = right.x + m_indicatorXPadding;
-                    break;
-                case IndicatorXMode.KeepCurrentX:
-                default:
-                    // do nothing
-                    break;
-            }
-
-            // Target world position: keep current Z
-            var target = new Vector3(targetX, center.y, m_selectionIndicatorRect.position.z);
-
-            if (m_forceIndicatorInstant)
-            {
-                m_indicatorWorldVelocity = Vector3.zero;
-                m_selectionIndicatorRect.position = target;
-                m_forceIndicatorInstant = false;
-                return;
-            }
-
-            // Smooth in unscaled time (works while paused)
-            m_selectionIndicatorRect.position = Vector3.SmoothDamp(
-                m_selectionIndicatorRect.position,
-                target,
-                ref m_indicatorWorldVelocity,
-                m_indicatorSmoothTime,
-                Mathf.Infinity,
-                Time.unscaledDeltaTime
-            );
-        }
     }
 }

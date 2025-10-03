@@ -14,6 +14,11 @@ namespace Buck
     [AddComponentMenu("BUCK/UI/Menu Screen")]
     public class MenuScreen : MenuView
     {
+        [Header("Cancel / Back")]
+        [SerializeField, Tooltip("If true, Cancel on this screen is consumed and the controller will not auto-back. " +
+                                 "Use this for things like a Main Menu where the user should not back out any further.")]
+        bool m_blockCancelOnThisScreen = false;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -72,6 +77,13 @@ namespace Buck
 
         public override void Hide() => base.Hide();
 
+        /// <summary>
+        /// Called by MenuController when UI/Cancel is pressed while this screen is current.
+        /// Return true to consume the input (no auto-back). Return false to allow default back behavior.
+        /// </summary>
+        public virtual bool OnCancelPressed()
+            => m_blockCancelOnThisScreen;
+        
         void AutoBindFromChildren()
         {
             var bindings = GetComponentsInChildren<VariableBinding>(true);
