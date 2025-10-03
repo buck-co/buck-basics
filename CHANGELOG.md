@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.4] - 2025-10-03
+- MenuScreens can now be backed out of with a default UI cancel button. If a menu should not be dismissed - such as a Main Menu - that can be set from either the MenuScreen or MenuController component.
+- Added keyboard and mouse support to MenuPager components, so that they can be used without a Gamepad.
+
 ## [3.2.3] - 2025-10-02
 
 - Fixed an issue where when using a keyboard and mouse, then switching to a Gamepad, menu selection would not be restored properly.
