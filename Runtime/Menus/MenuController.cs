@@ -319,6 +319,18 @@ namespace Buck
             UpdateIndicatorActiveState();
             NotifyCountChange(oldCount);
         }
+
+        /// <summary>
+        /// Restores Time.timeScale to its previous value if it was paused by this MenuController.
+        /// Normally this is handled automatically when the last menu is closed.
+        /// However, this can be useful to call when transitioning scenes (say from gameplay to main menu)
+        /// in cases where you don't want to dismiss all menus before a scene transition.
+        /// </summary>
+        public void RestoreTimeScale()
+        {
+            if (m_pauseTimeScale)
+                Time.timeScale = m_prevTimeScale;
+        }
         
 #endregion
 
