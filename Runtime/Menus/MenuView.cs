@@ -84,6 +84,6 @@ namespace Buck
 
         /// <summary>True if this view is interactable and visible.</summary>
         protected bool IsVisible()
-            => m_canvasGroup && m_canvasGroup.interactable && m_canvasGroup.blocksRaycasts && m_canvasGroup.alpha > 0.0f;
+            => m_canvasGroup.IsVisible();
     }
 }

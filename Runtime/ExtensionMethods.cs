@@ -83,6 +83,12 @@ namespace Buck
         }
 
         /// <summary>
+        /// Returns true if the CanvasGroup is interactable, blocks raycasts, and has an alpha greater than 0.
+        /// </summary>
+        public static bool IsVisible(this CanvasGroup canvasGroup)
+            => canvasGroup.interactable && canvasGroup.blocksRaycasts && canvasGroup.alpha > 0.0f;
+
+        /// <summary>
         /// Sets the given Guid byte array to a new Guid byte array if it is null, empty, or an empty Guid.
         /// </summary>
         public static byte[] GetSerializableGuid(ref byte[] guidBytes)
