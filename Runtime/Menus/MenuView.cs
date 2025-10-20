@@ -11,12 +11,13 @@ namespace Buck
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class MenuView : MonoBehaviour
     {
+        [Header("Menu Title")]
         [SerializeField, Tooltip("Title shown in headers/pagers for this view.")]
         UILabel m_title = new UILabel();
         
-        [Header("Title Target (optional)")]
+        [Header("Menu Title Target (optional)")]
         [SerializeField, Tooltip("Optional target to set the title text on when this view is shown, such as a header.")]
-        TMP_Text m_titleLabelTMP;
+        TMP_Text m_titleLabel;
 
         [Tooltip("Should this view be visible when enabled?")]
         [SerializeField] protected bool m_startVisible = false;
@@ -40,8 +41,8 @@ namespace Buck
             if (!m_canvasGroup)
                 m_canvasGroup = GetComponent<CanvasGroup>();
             
-            if (m_titleLabelTMP)
-                m_title.BindTo(m_titleLabelTMP);
+            if (m_titleLabel)
+                m_title.BindTo(m_titleLabel);
         }
 
         protected virtual void OnEnable()
