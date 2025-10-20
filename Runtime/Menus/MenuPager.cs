@@ -7,10 +7,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-using UnityEngine.Localization;
-using UnityEngine.Localization.Components;
-#endif
 
 namespace Buck
 {
@@ -50,16 +46,12 @@ namespace Buck
         [Header("Events (optional)")]
         [SerializeField] UnityEvent<string> m_onTitleChanged;
         
-        
         class Item
         {
             public MenuScreen Screen;
             public RectTransform Container;
             public TextMeshProUGUI Label;
             public LayoutElement Layout;
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-            public LocalizeStringEvent LocalizeEvent;
-#endif
         }
 
         readonly List<Item> m_items = new();
@@ -195,7 +187,6 @@ namespace Buck
                 
                 // Bind label (localized if available) and compute width
                 BindLabelForPage(label, page, layoutElement);
-                
                 AddPointerHitTarget(containerGO, page);
 
                 m_items.Add(new Item
@@ -209,10 +200,24 @@ namespace Buck
 
             // Force a layout pass so preferred sizes are valid
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_itemsRoot);
-
             m_builtGroup = group;
         }
         
+        TextMeshProUGUI CreateDefaultLabel(RectTransform parent)
+        {
+            var go = new GameObject("Label", typeof(RectTransform));
+            var rt = go.GetComponent<RectTransform>();
+            rt.SetParent(parent, false);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.enableWordWrapping = false;
+            tmp.overflowMode = TextOverflowModes.Overflow;
+            return tmp;
+        }
+
         void AddPointerHitTarget(GameObject containerGO, MenuScreen page)
         {
             // Ensure a raycast target exists (transparent Image is fine).
@@ -222,7 +227,6 @@ namespace Buck
                 var img = containerGO.AddComponent<Image>();
                 img.color = new Color(0, 0, 0, 0); // fully transparent
                 img.raycastTarget = true;
-                graphic = img;
             }
             else
             {
@@ -259,107 +263,71 @@ namespace Buck
             trigger.triggers.Add(entry);
         }
 
-        TextMeshProUGUI CreateDefaultLabel(RectTransform parent)
-        {
-            var go = new GameObject("Label", typeof(RectTransform));
-            var rt = go.GetComponent<RectTransform>();
-            rt.SetParent(parent, false);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.enableWordWrapping = false;
-            tmp.overflowMode = TextOverflowModes.Overflow;
-            return tmp;
-        }
-
         void UpdateSelected(MenuSiblingGroup group, MenuScreen current)
         {
-            // Find selected item
-            Item sel = null;
+            Item selected = null;
             var index = group.IndexOf(current);
             if (index >= 0 && index < m_items.Count)
-                sel = m_items[index];
+                selected = m_items[index];
 
-            // Update label offsets
             foreach (var it in m_items)
             {
                 var lblRt = it.Label.rectTransform;
-                lblRt.anchoredPosition = it == sel
+                lblRt.anchoredPosition = it == selected
                     ? new Vector2(0f, m_selectedYOffset)
                     : Vector2.zero;
             }
 
-            // Reparent & size underline
-            if (sel != null)
+            if (selected != null)
             {
-                m_underlineRect.SetParent(sel.Container, worldPositionStays: false);
+                m_underlineRect.SetParent(selected.Container, worldPositionStays: false);
                 m_underlineRect.anchorMin = new Vector2(0.5f, 0f);
                 m_underlineRect.anchorMax = new Vector2(0.5f, 0f);
                 m_underlineRect.pivot     = new Vector2(0.5f, 0.5f);
                 m_underlineRect.anchoredPosition = new Vector2(0f, m_underlineVerticalOffset);
 
-                sel.Label.ForceMeshUpdate();
-                float width = sel.Label.preferredWidth + (m_underlineHorizontalPadding * 2f);
+                selected.Label.ForceMeshUpdate();
+                float width = selected.Label.preferredWidth + (m_underlineHorizontalPadding * 2f);
                 m_underlineRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
-                // Make underline non-blocking so hit targets receive the click.
                 var g = m_underlineRect.GetComponent<Graphic>();
                 if (g) g.raycastTarget = false;
                 
                 m_underlineRect.SetAsLastSibling();
 
-                // Notify external listeners with the *current* (possibly localized) title
                 var title = current?.TitleText;
                 m_onTitleChanged?.Invoke(title ?? string.Empty);
             }
 
-            m_selectedItem = sel;
+            m_selectedItem = selected;
         }
         
         void BindLabelForPage(TextMeshProUGUI label, MenuScreen page, LayoutElement layout)
         {
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-            if (page != null && page.TryGetTitleLocalizedString(out var localized) && localized != null)
+            if (!page || !label || !layout) return;
+
+            void OnTextChanged(string s)
             {
-                var localizeStringEvent = label.GetComponent<LocalizeStringEvent>() ?? label.gameObject.AddComponent<LocalizeStringEvent>();
-                localizeStringEvent.StringReference = localized;
-                localizeStringEvent.OnUpdateString.RemoveAllListeners();
-                localizeStringEvent.OnUpdateString.AddListener(s =>
-                {
-                    label.SetText(s);
-                    label.ForceMeshUpdate();
-                    var pw = label.preferredWidth;
-                    if (pw > 0f)
-                    {
-                        layout.minWidth = layout.preferredWidth = pw;
-                        LayoutRebuilder.MarkLayoutForRebuild(m_itemsRoot);
-                    }
-
-                    // If this is the selected item, keep the underline in sync.
-                    if (m_selectedItem != null && m_selectedItem.Label == label)
-                        UpdateUnderlineWidthForSelected();
-
-                    // Mirror pager title out to listeners when the selected page's title changes
-                    if (m_selectedItem != null && m_selectedItem.Label == label)
-                        m_onTitleChanged?.Invoke(s ?? string.Empty);
-                });
-                localizeStringEvent.RefreshString(); // immediate initial text
-
-                // Ensure initial width is correct
                 label.ForceMeshUpdate();
-                var initW = label.preferredWidth;
-                if (initW > 0f) layout.minWidth = layout.preferredWidth = initW;
-                return;
+                var pw = label.preferredWidth;
+                if (pw > 0f)
+                {
+                    layout.minWidth = layout.preferredWidth = pw;
+                    LayoutRebuilder.MarkLayoutForRebuild(m_itemsRoot);
+                }
+
+                if (m_selectedItem != null && m_selectedItem.Label == label)
+                {
+                    UpdateUnderlineWidthForSelected();
+                    m_onTitleChanged?.Invoke(s ?? string.Empty);
+                }
             }
-#endif
-            // Fallback: literal
-            var text = string.IsNullOrEmpty(page?.TitleText) ? page?.name ?? string.Empty : page.TitleText;
-            label.text = text;
+
+            page.Title.BindTo(label, OnTextChanged);
+
             label.ForceMeshUpdate();
-            var w = label.preferredWidth;
-            if (w > 0f) layout.minWidth = layout.preferredWidth = w;
+            var initW = label.preferredWidth;
+            if (initW > 0f) layout.minWidth = layout.preferredWidth = initW;
         }
                 
         void UpdateUnderlineWidthForSelected()

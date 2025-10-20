@@ -12,54 +12,22 @@ namespace Buck
     public abstract class BaseVariable : GameEvent
     {
         public abstract Type Type { get; }
-        public abstract string LabelText { get; }
         
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-        // Default: no localized label
-        public virtual bool TryGetLabelLocalizedString(out LocalizedString localized)
-        {
-            localized = null;
-            return false;
-        }
-#endif
+        /// <summary>Structured label data for this variable.</summary>
+        public abstract UILabel Label { get; }
+
+        /// <summary>Resolved label text (convenience wrapper around Label.Text).</summary>
+        public abstract string LabelText { get; }
     }
     
     public abstract class BaseVariable<T> : BaseVariable, IFormattable
     {
-        [SerializeField, Tooltip("The initial value of this variable when the application starts.")] protected T m_defaultValue;
+        [SerializeField, Tooltip("The initial value of this variable when the application starts.")]
+        protected T m_defaultValue;
 
-        [SerializeField, Tooltip("The label text to use when displaying this variable in user-facing UI.")] string m_labelText;
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-        [SerializeField] bool m_localizeLabelText = false;
-        [SerializeField] LocalizedString m_localizedLabelText;
-
-        public override bool TryGetLabelLocalizedString(out LocalizedString localized)
-        {
-            if (m_localizeLabelText && m_localizedLabelText != null)
-            {
-                localized = m_localizedLabelText;
-                return true;
-            }
-            localized = null;
-            return false;
-        }
-#endif
-
-        /// <summary>
-        /// The label text to use when displaying this variable in user-facing UI. Can be localized if localization is enabled.
-        /// </summary>
-        public override string LabelText
-        {
-            get
-            {
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-                // If localization is enabled and a localized string is set, use it
-                if (m_localizeLabelText && m_localizedLabelText != null)
-                    return m_localizedLabelText.GetLocalizedString();
-#endif
-                return m_labelText;
-            }
-        }
+        [Header("Label")]
+        [SerializeField, Tooltip("UI label for this variable (literal or localized).")]
+        UILabel m_label = new UILabel();
         
         [SerializeField, Tooltip("When enabled, if any of the \"Restart Events\" are raised, this variable will be reset to its Default Value. " +
                                  "This is useful for resetting variables when a new game or level starts.")]
@@ -72,6 +40,12 @@ namespace Buck
         
         public override Type Type
             => typeof(T);
+        
+        public override UILabel Label
+            => m_label;
+
+        public override string LabelText
+            => m_label != null ? m_label.Text : string.Empty;
         
         public T Value
         {
