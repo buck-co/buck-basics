@@ -13,6 +13,15 @@ namespace Buck
     {
         public abstract Type Type { get; }
         public abstract string LabelText { get; }
+        
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+        // Default: no localized label
+        public virtual bool TryGetLabelLocalizedString(out LocalizedString localized)
+        {
+            localized = null;
+            return false;
+        }
+#endif
     }
     
     public abstract class BaseVariable<T> : BaseVariable, IFormattable
@@ -21,9 +30,19 @@ namespace Buck
 
         [SerializeField, Tooltip("The label text to use when displaying this variable in user-facing UI.")] string m_labelText;
 #if BUCK_BASICS_ENABLE_LOCALIZATION
-        [SerializeField, Tooltip("When enabled, the LabelText property will use the \"Localized Label Text\" instead of the \"Label Text\" string.")]
-        bool m_localizeLabelText = false;
+        [SerializeField] bool m_localizeLabelText = false;
         [SerializeField] LocalizedString m_localizedLabelText;
+
+        public override bool TryGetLabelLocalizedString(out LocalizedString localized)
+        {
+            if (m_localizeLabelText && m_localizedLabelText != null)
+            {
+                localized = m_localizedLabelText;
+                return true;
+            }
+            localized = null;
+            return false;
+        }
 #endif
 
         /// <summary>

@@ -7,6 +7,10 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
+#endif
 
 namespace Buck
 {
@@ -52,6 +56,10 @@ namespace Buck
             public MenuScreen Screen;
             public RectTransform Container;
             public TextMeshProUGUI Label;
+            public LayoutElement Layout;
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+            public LocalizeStringEvent LocalizeEvent;
+#endif
         }
 
         readonly List<Item> m_items = new();
@@ -175,8 +183,8 @@ namespace Buck
                 container.anchorMin = container.anchorMax = new Vector2(0.5f, 0.5f);
                 container.pivot     = new Vector2(0.5f, 0.5f);
 
-                var le = containerGO.AddComponent<LayoutElement>();
-                if (m_itemHeight > 0f) le.minHeight = le.preferredHeight = m_itemHeight;
+                var layoutElement = containerGO.AddComponent<LayoutElement>();
+                if (m_itemHeight > 0f) layoutElement.minHeight = layoutElement.preferredHeight = m_itemHeight;
 
                 // Label
                 TextMeshProUGUI label = m_itemPrototype
@@ -184,15 +192,9 @@ namespace Buck
                     : CreateDefaultLabel(container);
 
                 label.raycastTarget = false;
-                label.text = string.IsNullOrEmpty(page.TitleText) ? page.name : page.TitleText;
-
-                // Ensure layout width fits text
-                label.ForceMeshUpdate();
-                float pw = label.preferredWidth;
-                if (pw > 0f)
-                {
-                    le.minWidth = le.preferredWidth = pw;
-                }
+                
+                // Bind label (localized if available) and compute width
+                BindLabelForPage(label, page, layoutElement);
                 
                 AddPointerHitTarget(containerGO, page);
 
@@ -200,7 +202,8 @@ namespace Buck
                 {
                     Screen = page,
                     Container = container,
-                    Label = label
+                    Label = label,
+                    Layout = layoutElement
                 });
             }
 
@@ -307,11 +310,64 @@ namespace Buck
                 
                 m_underlineRect.SetAsLastSibling();
 
+                // Notify external listeners with the *current* (possibly localized) title
                 var title = current?.TitleText;
                 m_onTitleChanged?.Invoke(title ?? string.Empty);
             }
 
             m_selectedItem = sel;
+        }
+        
+        void BindLabelForPage(TextMeshProUGUI label, MenuScreen page, LayoutElement layout)
+        {
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+            if (page != null && page.TryGetTitleLocalizedString(out var localized) && localized != null)
+            {
+                var localizeStringEvent = label.GetComponent<LocalizeStringEvent>() ?? label.gameObject.AddComponent<LocalizeStringEvent>();
+                localizeStringEvent.StringReference = localized;
+                localizeStringEvent.OnUpdateString.RemoveAllListeners();
+                localizeStringEvent.OnUpdateString.AddListener(s =>
+                {
+                    label.SetText(s);
+                    label.ForceMeshUpdate();
+                    var pw = label.preferredWidth;
+                    if (pw > 0f)
+                    {
+                        layout.minWidth = layout.preferredWidth = pw;
+                        LayoutRebuilder.MarkLayoutForRebuild(m_itemsRoot);
+                    }
+
+                    // If this is the selected item, keep the underline in sync.
+                    if (m_selectedItem != null && m_selectedItem.Label == label)
+                        UpdateUnderlineWidthForSelected();
+
+                    // Mirror pager title out to listeners when the selected page's title changes
+                    if (m_selectedItem != null && m_selectedItem.Label == label)
+                        m_onTitleChanged?.Invoke(s ?? string.Empty);
+                });
+                localizeStringEvent.RefreshString(); // immediate initial text
+
+                // Ensure initial width is correct
+                label.ForceMeshUpdate();
+                var initW = label.preferredWidth;
+                if (initW > 0f) layout.minWidth = layout.preferredWidth = initW;
+                return;
+            }
+#endif
+            // Fallback: literal
+            var text = string.IsNullOrEmpty(page?.TitleText) ? page?.name ?? string.Empty : page.TitleText;
+            label.text = text;
+            label.ForceMeshUpdate();
+            var w = label.preferredWidth;
+            if (w > 0f) layout.minWidth = layout.preferredWidth = w;
+        }
+                
+        void UpdateUnderlineWidthForSelected()
+        {
+            if (m_selectedItem == null || m_underlineRect == null) return;
+            m_selectedItem.Label.ForceMeshUpdate();
+            float width = m_selectedItem.Label.preferredWidth + (m_underlineHorizontalPadding * 2f);
+            m_underlineRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
         }
     }
 }

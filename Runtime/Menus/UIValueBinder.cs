@@ -2,6 +2,7 @@
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 
 namespace Buck
 {
@@ -79,19 +80,52 @@ namespace Buck
         }
 
         /// <summary>
-        /// Attempts to set a child text component to the variable's label.
+        /// Attempts to set or bind a child text component to the variable's label.
         /// </summary>
         protected void TrySetLabelText()
         {
+#if BUCK_BASICS_ENABLE_LOCALIZATION
+            // If the variable exposes a LocalizedString, bind via a LocalizeStringEvent component which will auto-refresh on locale changes.
+            if (m_variable is BaseVariable baseVar &&
+                baseVar.TryGetLabelLocalizedString(out var localized) &&
+                localized != null)
+            {
+                // TMP first
+                var tmp = GetComponentInChildren<TMP_Text>();
+                if (tmp)
+                {
+                    var localizeStringEvent = tmp.GetComponent<LocalizeStringEvent>() ?? tmp.gameObject.AddComponent<LocalizeStringEvent>();
+                    localizeStringEvent.StringReference = localized;
+                    localizeStringEvent.OnUpdateString.RemoveAllListeners();
+                    localizeStringEvent.OnUpdateString.AddListener(tmp.SetText);
+                    localizeStringEvent.RefreshString(); // immediate update
+                    return;
+                }
+#if UNITY_UGUI_PRESENT
+                // Legacy uGUI Text
+                var legacy = GetComponentInChildren<UnityEngine.UI.Text>();
+                if (legacy)
+                {
+                    var localizeStringEvent = legacy.GetComponent<LocalizeStringEvent>() ?? legacy.gameObject.AddComponent<LocalizeStringEvent>();
+                    localizeStringEvent.StringReference = localized;
+                    localizeStringEvent.OnUpdateString.RemoveAllListeners();
+                    localizeStringEvent.OnUpdateString.AddListener(s => legacy.text = s);
+                    localizeStringEvent.RefreshString();
+                    return;
+                }
+#endif
+            }
+#endif
+            // Fallback: just set the current literal label once.
             var label = GetVariableLabel();
             if (string.IsNullOrEmpty(label)) return;
 
-            var tmp = GetComponentInChildren<TMP_Text>();
-            if (tmp) { tmp.text = label; return; }
+            var tmp2 = GetComponentInChildren<TMP_Text>();
+            if (tmp2) { tmp2.text = label; return; }
 
 #if UNITY_UGUI_PRESENT
-            var legacy = GetComponentInChildren(UnityEngine.UI.Text);
-            if (legacy) legacy.text = label;
+            var legacy2 = GetComponentInChildren<UnityEngine.UI.Text>();
+            if (legacy2) legacy2.text = label;
 #endif
         }
 
