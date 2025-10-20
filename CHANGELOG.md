@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.0] - 2025-10-20
+User-facing labels for BUCK Variables and MenuViews were in need of a refactor, and unfortunately, this is a breaking change for anyone that was using the label feature. Given the relative recency of this feature's introduction, it seemed best to make this change now rather than wait too much longer.
+
+- Added a UILabel class which is a serializable container for either a regular string or a LocalizedString. The options to localize are only exposed if the Unity Localization package is installed. Currently, this class is used by the BaseVariable class and the MenuView class so that Variables can have user-facing text that is made visible when used in combination with a Variable Binding component on a UIToggle or UISlider.
+- Fixed an issue where localized strings would not refresh when the locale was changed. This is now managed by the UILabel class, which, has the ability to bind a LocalizeStringEvent component to its GameObject. Calling the UILabel's binding methods is generally the responsibility of the class that has UILabel as a member; this is the pattern followed in MenuView, MenuPager, and UIValueBinder. Then the Unity Localization package and its LocalizeStringEvent component can handle locale changes from there.
+
 ## [3.2.4] - 2025-10-03
 - MenuScreens can now be backed out of with a default UI cancel button. If a menu should not be dismissed - such as a Main Menu - that can be set from either the MenuScreen or MenuController component.
 - Added keyboard and mouse support to MenuPager components, so that they can be used without a Gamepad.
