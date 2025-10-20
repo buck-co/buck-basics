@@ -11,7 +11,6 @@ namespace Buck
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class MenuView : MonoBehaviour
     {
-        [Header("Title")]
         [SerializeField, Tooltip("Title shown in headers/pagers for this view.")]
         UILabel m_title = new UILabel();
         

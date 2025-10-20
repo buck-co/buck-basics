@@ -9,38 +9,38 @@ namespace Buck
     // All of these CustomEditors behave identically and have the same names for their serialized variables so they can just inherit from BaseVariableEditor
     
     [CustomEditor(typeof(BoolVariable)), CanEditMultipleObjects]
-    public class BoolVariableEditor:BaseVariableEditor<bool>{}
+    public class BoolVariableEditor : BaseVariableEditor<bool> { }
 
     [CustomEditor(typeof(ColorVariable)), CanEditMultipleObjects]
-    public class ColorVariableEditor:BaseVariableEditor<Color>{}
+    public class ColorVariableEditor : BaseVariableEditor<Color> { }
 
     [CustomEditor(typeof(GameObjectVariable)), CanEditMultipleObjects]
-    public class GameObjectVariableEditor:BaseVariableEditor<GameObject>{}
+    public class GameObjectVariableEditor : BaseVariableEditor<GameObject> { }
 
     [CustomEditor(typeof(MaterialVariable)), CanEditMultipleObjects]
-    public class MaterialVariableEditor:BaseVariableEditor<Material>{}
+    public class MaterialVariableEditor : BaseVariableEditor<Material> { }
 
     [CustomEditor(typeof(QuaternionVariable)), CanEditMultipleObjects]
-    public class QuaternionVariableEditor:BaseVariableEditor<Quaternion>{}
+    public class QuaternionVariableEditor : BaseVariableEditor<Quaternion> { }
 
     [CustomEditor(typeof(SpriteVariable)), CanEditMultipleObjects]
-    public class SpriteVariableEditor:BaseVariableEditor<Sprite>{}
+    public class SpriteVariableEditor : BaseVariableEditor<Sprite> { }
 
     [CustomEditor(typeof(StringVariable)), CanEditMultipleObjects]
-    public class StringVariableEditor:BaseVariableEditor<string>{}
+    public class StringVariableEditor : BaseVariableEditor<string> { }
 
     [CustomEditor(typeof(Texture2DVariable)), CanEditMultipleObjects]
-    public class Texture2DVariableEditor:BaseVariableEditor<Texture2D>{}
+    public class Texture2DVariableEditor : BaseVariableEditor<Texture2D> { }
 
     [CustomEditor(typeof(Vector2IntVariable)), CanEditMultipleObjects]
-    public class Vector2IntVariableEditor:BaseVariableEditor<Vector4>
+    public class Vector2IntVariableEditor : BaseVariableEditor<Vector4>
     {
         protected override void DefaultValueGUI()
             => m_defaultValue.vector4Value = (Vector2)EditorGUILayout.Vector2IntField("Default Value", ((Vector2)m_defaultValue.vector4Value).ToVector2Int());
     }
 
     [CustomEditor(typeof(Vector2Variable)), CanEditMultipleObjects]
-    public class Vector2VariableEditor:BaseVariableEditor<Vector4>
+    public class Vector2VariableEditor : BaseVariableEditor<Vector4>
     {
         protected override void DefaultValueGUI()
             => m_defaultValue.vector4Value = EditorGUILayout.Vector2Field("Default Value", (Vector2)m_defaultValue.vector4Value);
@@ -70,11 +70,7 @@ namespace Buck
     public class BaseVariableEditor<T> : GameEventEditor
     {
         protected SerializedProperty m_defaultValue;
-        protected SerializedProperty m_labelText;
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-        protected SerializedProperty m_localizeLabelText;
-        protected SerializedProperty m_localizedLabelText;
-#endif
+        protected SerializedProperty m_label;
         protected SerializedProperty m_resetOnRestart;
         protected SerializedProperty m_restartEvents;
 
@@ -83,14 +79,10 @@ namespace Buck
             base.OnEnable();
             
             // Cache serialized properties:
-            m_defaultValue = serializedObject.FindProperty("m_defaultValue");
-            m_labelText = serializedObject.FindProperty("m_labelText");
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-            m_localizeLabelText = serializedObject.FindProperty("m_localizeLabelText");
-            m_localizedLabelText = serializedObject.FindProperty("m_localizedLabelText");
-#endif
+            m_defaultValue   = serializedObject.FindProperty("m_defaultValue");
+            m_label          = serializedObject.FindProperty("m_label");
             m_resetOnRestart = serializedObject.FindProperty("m_resetOnRestart");
-            m_restartEvents = serializedObject.FindProperty("m_restartEvents");
+            m_restartEvents  = serializedObject.FindProperty("m_restartEvents");
         }
 
         public override void OnInspectorGUI()
@@ -114,14 +106,8 @@ namespace Buck
         protected virtual void LabelGUI()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("UI Label Text", EditorStyles.boldLabel);
-#if BUCK_BASICS_ENABLE_LOCALIZATION
-            EditorGUILayout.PropertyField(m_localizeLabelText);
-
-            EditorGUILayout.PropertyField(m_localizeLabelText.boolValue ? m_localizedLabelText : m_labelText);
-#else
-            EditorGUILayout.PropertyField(m_labelText);
-#endif
+            // Draw the UILabel using its custom drawer (inline; toggle + text / localized text)
+            EditorGUILayout.PropertyField(m_label, new GUIContent("UI Label"), includeChildren: true);
             EditorGUILayout.Space();
         }
 

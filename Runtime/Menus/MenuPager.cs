@@ -213,7 +213,7 @@ namespace Buck
 
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.enableWordWrapping = false;
+            tmp.textWrappingMode = TextWrappingModes.NoWrap;
             tmp.overflowMode = TextOverflowModes.Overflow;
             return tmp;
         }
