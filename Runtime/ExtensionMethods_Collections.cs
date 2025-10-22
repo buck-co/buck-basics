@@ -97,5 +97,21 @@ namespace Buck
         /// </summary>
         public static T[,] Rotate180<T>(this T[,] arr)
             => arr.ReverseColumns().ReverseRows();
+        
+        /// <summary>
+        /// Returns the index of the first occurrence of the specified element in the IReadOnlyList.
+        /// Credit to Mike Nakis from this Stack Overflow post: https://stackoverflow.com/a/60316143
+        /// </summary>
+        public static int IndexOf<T>(this IReadOnlyList<T> self, T elementToFind)
+        {
+            int i = 0;
+            foreach (T element in self)
+            {
+                if (Equals(element, elementToFind))
+                    return i;
+                i++;
+            }
+            return -1;
+        }
     }
 }

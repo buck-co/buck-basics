@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.1] - 2025-10-22
+Added multiple classes to help with common game settings that can be trickier to implement, like Locale selection and changing Screen Resolution.
+
 ## [3.3.0] - 2025-10-20
 User-facing labels for BUCK Variables and MenuViews were in need of a refactor, and unfortunately, this is a breaking change for anyone that was using the label feature. Given the relative recency of this feature's introduction, it seemed best to make this change now rather than wait too much longer.
 
