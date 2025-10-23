@@ -62,10 +62,11 @@ namespace Buck
             Unregister();
         }
 
-        void HandleBack(MenuScreen _)
+        void HandleBack(MenuScreen screen)
         {
             UpdateVisibilityForCurrent();
-            OnCloseEvent();
+            if (screen && s_lookup.TryGetValue(screen, out var g) && g == this)
+                OnCloseEvent();
         }
         
         void HandleScreenChanged(MenuScreen _)
