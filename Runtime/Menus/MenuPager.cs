@@ -46,6 +46,9 @@ namespace Buck
         [Header("Events (optional)")]
         [SerializeField] UnityEvent<string> m_onTitleChanged;
         
+        bool m_enabledPrev;
+        bool m_enabledNext;
+        
         class Item
         {
             public MenuScreen Screen;
@@ -76,12 +79,8 @@ namespace Buck
                 m_controller.OnStackEmptyChanged += HandleStackEmptyChanged;
             }
             
-            // Bind input actions
-            if (m_prevPageAction && m_prevPageAction.action != null)
-                m_prevPageAction.action.performed += OnPrevAction;
-
-            if (m_nextPageAction && m_nextPageAction.action != null)
-                m_nextPageAction.action.performed += OnNextAction;
+            EnableAndBind(m_prevPageAction, OnPrevAction, ref m_enabledPrev);
+            EnableAndBind(m_nextPageAction, OnNextAction, ref m_enabledNext);
             
             Refresh();
         }
@@ -95,12 +94,35 @@ namespace Buck
             m_controller.OnBack              -= HandleScreenChanged;
             m_controller.OnStackEmptyChanged -= HandleStackEmptyChanged;
             
-            // Unbind input actions
-            if (m_prevPageAction && m_prevPageAction.action != null)
-                m_prevPageAction.action.performed -= OnPrevAction;
+            DisableAndUnbind(m_prevPageAction, OnPrevAction, ref m_enabledPrev);
+            DisableAndUnbind(m_nextPageAction, OnNextAction, ref m_enabledNext);
+        }
+        
+        static void EnableAndBind(InputActionReference inputActionReference, 
+            System.Action<InputAction.CallbackContext> callbackContext, 
+            ref bool menuPagerEnabled)
+        {
+            var action = inputActionReference?.action;
+            if (action == null) return;
 
-            if (m_nextPageAction && m_nextPageAction.action != null)
-                m_nextPageAction.action.performed -= OnNextAction;
+            // If nobody enabled this action, enable it now and remember this class did.
+            if (!action.enabled) { action.Enable(); menuPagerEnabled = true; }
+
+            action.performed += callbackContext;
+        }
+
+        static void DisableAndUnbind(InputActionReference inputActionReference, 
+            System.Action<InputAction.CallbackContext> callbackContext, 
+            ref bool menuPagerEnabled)
+        {
+            var action = inputActionReference?.action;
+            if (action == null) return;
+
+            action.performed -= callbackContext;
+
+            // Only disable if this class enabled it.
+            if (menuPagerEnabled && action.enabled) action.Disable();
+            menuPagerEnabled = false;
         }
         
         void HandleScreenChanged(MenuScreen _) => Refresh();
@@ -120,6 +142,11 @@ namespace Buck
         
         void OnPrevAction(InputAction.CallbackContext ctx) { if (ctx.performed) PrevPage(); }
         void OnNextAction(InputAction.CallbackContext ctx) { if (ctx.performed) NextPage(); }
+
+        void Update()
+        {
+            
+        }
 
         public void NextPage()
         {
