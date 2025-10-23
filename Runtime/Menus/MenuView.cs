@@ -70,20 +70,14 @@ namespace Buck
         public virtual void OnOpenEvent()
         {
             if (m_onOpen)
-            {
-                Debug.Log("MenuView.OnOpenEvent() - Raising open event for view: " + name, this);
                 m_onOpen.Raise();
-            }
         }
         
         /// <summary>Raise close event. Generally called by MenuController to indicate action taken by the user.</summary>
         public virtual void OnCloseEvent()
         {
             if (m_onClose)
-            {
-                Debug.Log("MenuView.OnCloseEvent() - Raising close event for view: " + name, this);
                 m_onClose.Raise();
-            }
         }
 
         /// <summary>Set visibility.</summary>
