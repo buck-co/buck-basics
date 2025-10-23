@@ -79,7 +79,9 @@ namespace Buck
 
             m_dropdown.options = options;
 
-            var selectedIndex = Mathf.Max(0, ids.IndexOf(currentId));
+            var selectedIndex = ids.IndexOf(currentId);
+            if (selectedIndex < 0) selectedIndex = 0;
+
             m_dropdown.SetValueWithoutNotify(selectedIndex);
             m_dropdown.RefreshShownValue();
         }
@@ -87,10 +89,7 @@ namespace Buck
         static TMP_Dropdown EnsureDropdownOn(GameObject go)
         {
             var dd = go.GetComponent<TMP_Dropdown>();
-            if (dd) return dd;
-
-            dd = go.AddComponent<TMP_Dropdown>();
-            return dd;
+            return dd ? dd : go.AddComponent<TMP_Dropdown>();
         }
         
         static void EnsureTemplateScrollerHook(TMP_Dropdown dd)

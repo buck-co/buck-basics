@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Buck
 {
@@ -75,7 +76,24 @@ namespace Buck
             }
         }
 
-        public override void Hide() => base.Hide();
+        public override void Hide()
+        {
+            CollapseDropdownsInChildren();
+            base.Hide();
+        }
+        
+        void CollapseDropdownsInChildren()
+        {
+            var dropdownComponents = GetComponentsInChildren<TMP_Dropdown>(true);
+            foreach (var dropdown in dropdownComponents)
+            {
+                if (dropdown && dropdown.IsExpanded)
+                {
+                    // TMP_Dropdown.Hide() destroys the spawned "Dropdown List" and returns the control to a collapsed state.
+                    dropdown.Hide();
+                }
+            }
+        }
 
         /// <summary>
         /// Called by MenuController when UI/Cancel is pressed while this screen is current.

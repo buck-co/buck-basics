@@ -9,8 +9,12 @@ using UnityEngine;
 namespace Buck
 {
     /// <summary>
-    /// ISingleChoiceProvider for desktop display resolutions. Produces stable IDs ("<width>x<height>").
-    /// Works with SingleChoiceDropdown or SingleChoiceToggleGroup.
+    /// ISingleChoiceProvider for desktop display resolutions.
+    /// Responsibilities:
+    /// - Expose stable IDs ("<width>x<height>") and labels for a presenter (dropdown or toggles).
+    /// - Apply resolution size on selection.
+    /// - Toggle fullscreen mode independently of size.
+    /// - "Auto" sets size to native desktop resolution without changing fullscreen.
     /// </summary>
     [AddComponentMenu("BUCK/Display/Resolution Choice Provider")]
     public class ResolutionChoiceProvider : MonoBehaviour, ISingleChoiceProvider
@@ -30,35 +34,29 @@ namespace Buck
         };
 
         [Header("Display")]
-        [SerializeField, Tooltip("Show labels as \"1920 × 1080\". When enabled, aspect ratio suffix (e.g., 16:9) is appended.")]
-        bool m_showAspectRatio = true;
-
-        [Header("Auto-Select")]
-        [SerializeField, Tooltip("Ideal horizontal padding below native width when Windowed for the auto algorithm.")]
-        int m_windowedIdealPad = 64;
+        [SerializeField] bool m_showAspectRatio = true;
 
         readonly List<string> m_ids = new();
         readonly Dictionary<string, Vector2Int> m_idToSize = new(StringComparer.Ordinal);
-        string m_lastManualId;
+        string m_currentId;
 
         public event Action LabelsChanged;
 
         public void Initialize()
         {
             BuildList();
-            // Match current screen on startup
-            m_lastManualId = FindIdForSize(new Vector2Int(Screen.width, Screen.height));
+
+            // Seed selection from the current physical size; ensure it's present in the list.
+            var current = new Vector2Int(Screen.width, Screen.height);
+            m_currentId = FindOrAddId(current);
         }
 
         public IReadOnlyList<string> GetIds() => m_ids;
 
         public string GetCurrentId()
         {
-            // Prefer the current physical screen size; fall back to last manual selection if not present
-            var current = new Vector2Int(Screen.width, Screen.height);
-            var id = FindIdForSize(current);
-            if (!string.IsNullOrEmpty(id)) return id;
-            if (!string.IsNullOrEmpty(m_lastManualId) && m_ids.Contains(m_lastManualId)) return m_lastManualId;
+            if (!string.IsNullOrEmpty(m_currentId) && m_ids.Contains(m_currentId))
+                return m_currentId;
             return m_ids.Count > 0 ? m_ids[0] : string.Empty;
         }
 
@@ -67,11 +65,9 @@ namespace Buck
             if (string.IsNullOrEmpty(id)) return;
             if (!m_idToSize.TryGetValue(id, out var size)) return;
 
-            ApplyResolution(size, IsFullscreen());
-            m_lastManualId = id;
-
-            // Keep the presenter selection in sync (e.g., dropdown index).
-            LabelsChanged?.Invoke();
+            m_currentId = id;
+            SetResolution(size);
+            LabelsChanged?.Invoke(); // presenters (e.g., dropdown) reselect immediately
         }
 
         public string GetLabel(string id)
@@ -82,10 +78,8 @@ namespace Buck
             if (!m_showAspectRatio)
                 return $"{sz.x} × {sz.y}";
 
-            var gcd = GCD(sz.x, sz.y);
-            var arW = sz.x / gcd;
-            var arH = sz.y / gcd;
-            return $"{sz.x} × {sz.y}  ({arW}:{arH})";
+            var g = GCD(sz.x, sz.y);
+            return $"{sz.x} × {sz.y}  ({sz.x / g}:{sz.y / g})";
         }
 
         public void BindLabelTo(string id, TMP_Text target)
@@ -95,47 +89,52 @@ namespace Buck
         }
 
         /// <summary>
-        /// Recompute and apply a best-fit size based on the current fullscreen mode and display metrics.
-        /// Also updates the current selection for presenters.
+        /// Set size to native desktop resolution (does not change fullscreen).
+        /// Adds the native size to the list if missing, then selects it.
         /// </summary>
         public void ApplyAuto()
         {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (m_ids.Count == 0) return;
-
-            var full = IsFullscreen();
+            EnsureBuilt();
             var native = GetNativeDisplaySize();
-            var best = BestFit(native, full);
-            ApplyResolution(best, full);
-
-            // Reflect new size in selection.
-            m_lastManualId = FindIdForSize(best);
+            var id = FindOrAddId(native);
+            m_currentId = id;
+            SetResolution(native);
             LabelsChanged?.Invoke();
 #endif
         }
 
-        /// <summary>Apply the current dropdown/toggle selection again (useful after toggling fullscreen).</summary>
-        public void ReapplyCurrentSelectionOrClosest()
-        {
-            var id = GetCurrentId();
-            if (!string.IsNullOrEmpty(id) && m_idToSize.TryGetValue(id, out var sz))
-            {
-                ApplyResolution(sz, IsFullscreen());
-            }
-            else if (m_ids.Count > 0)
-            {
-                SelectById(m_ids[0]);
-            }
-        }
-
-        /// <summary>Set fullscreen/windowed mode without changing width/height.</summary>
+        /// <summary>
+        /// Flip fullscreen mode only; width/height are preserved.
+        /// </summary>
         public void ApplyFullscreen(bool fullscreen)
         {
-            ApplyResolution(new Vector2Int(Screen.width, Screen.height), fullscreen);
-            LabelsChanged?.Invoke();
+            var mode = fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+            Screen.fullScreenMode = mode;
+            Screen.fullScreen = fullscreen;
+            // Resolution choice and list are independent of mode; no LabelsChanged here.
         }
 
-        // ---- internal ----
+        /// <summary>
+        /// Re-applies the current selection's size; useful if the caller wants to enforce the chosen size again.
+        /// </summary>
+        public void ReapplyCurrentSelectionOrClosest()
+        {
+            EnsureBuilt();
+            if (!string.IsNullOrEmpty(m_currentId) && m_idToSize.TryGetValue(m_currentId, out var sz))
+            {
+                SetResolution(sz);
+                LabelsChanged?.Invoke();
+            }
+        }
+
+        // -------- internals --------
+
+        void EnsureBuilt()
+        {
+            if (m_ids.Count == 0)
+                Initialize();
+        }
 
         void BuildList()
         {
@@ -144,14 +143,14 @@ namespace Buck
 
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             IEnumerable<Vector2Int> sizes = m_useSystemResolutions
-                ? Screen.resolutions
-                    .Select(r => new Vector2Int(r.width, r.height))
-                    .Distinct()
-                : m_supportedResolutions.Distinct();
+                ? Screen.resolutions.Select(r => new Vector2Int(r.width, r.height))
+                : m_supportedResolutions;
 
-            // Sort descending by area, then width
+            // Always include the current and native sizes so Auto and startup selection are present.
             sizes = sizes
+                .Concat(new[] { new Vector2Int(Screen.width, Screen.height), GetNativeDisplaySize() })
                 .Where(s => s.x > 0 && s.y > 0)
+                .Distinct()
                 .OrderByDescending(s => s.x * s.y)
                 .ThenByDescending(s => s.x);
 
@@ -162,88 +161,35 @@ namespace Buck
                 m_idToSize[id] = s;
                 m_ids.Add(id);
             }
-#else
-            // Non-desktop platforms typically don't expose resolution switching.
 #endif
         }
 
-        static int GCD(int a, int b)
-        {
-            while (b != 0) (a, b) = (b, a % b);
-            return Mathf.Max(1, a);
-        }
+        static int GCD(int a, int b) { while (b != 0) (a, b) = (b, a % b); return Mathf.Max(1, a); }
 
         static Vector2Int GetNativeDisplaySize()
         {
-            var w = Display.main != null ? Display.main.systemWidth : Screen.currentResolution.width;
+            var w = Display.main != null ? Display.main.systemWidth  : Screen.currentResolution.width;
             var h = Display.main != null ? Display.main.systemHeight : Screen.currentResolution.height;
             if (w <= 0 || h <= 0) { w = Screen.width; h = Screen.height; }
             return new Vector2Int(w, h);
         }
 
-        bool IsFullscreen()
-        {
-            var mode = Screen.fullScreenMode;
-            return mode == FullScreenMode.ExclusiveFullScreen || mode == FullScreenMode.FullScreenWindow;
-        }
-
-        void ApplyResolution(Vector2Int size, bool fullscreen)
-        {
-            var targetMode = fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
-
-            // Ensure the mode toggles even if width/height don't change
-            if (Screen.fullScreenMode != targetMode)
-                Screen.fullScreenMode = targetMode;
-
-            Screen.fullScreen = fullscreen;
-
-            // Set size for windowed; harmless for FullScreenWindow (uses native)
-            Screen.SetResolution(size.x, size.y, targetMode);
-        }
-
-        string FindIdForSize(Vector2Int size)
+        string FindOrAddId(Vector2Int size)
         {
             var id = $"{size.x}x{size.y}";
-            return m_idToSize.ContainsKey(id) ? id : string.Empty;
+            if (!m_idToSize.ContainsKey(id))
+            {
+                // Insert at front so native/current appear at the top if they weren’t in the source list.
+                m_idToSize[id] = size;
+                m_ids.Insert(0, id);
+            }
+            return id;
         }
 
-        Vector2Int BestFit(Vector2Int native, bool fullscreen)
+        void SetResolution(Vector2Int size)
         {
-            // Find candidate with closest aspect ratio; tie-break by width closeness policy.
-            float nativeAR = (float)native.x / native.y;
-            Vector2Int best = default;
-            float bestArDiff = float.PositiveInfinity;
-            int bestWidthScore = int.MinValue;
-
-            foreach (var kv in m_idToSize)
-            {
-                var s = kv.Value;
-                if (s.x > native.x || s.y > native.y)
-                    continue; // don't exceed native desktop size
-
-                float ar = (float)s.x / s.y;
-                float diff = Mathf.Abs(ar - nativeAR);
-
-                // Windowed: prefer widths close to a small pad below native (e.g., 64 px).
-                // Fullscreen: prefer the largest width under native.
-                int widthScore = fullscreen
-                    ? s.x
-                    : -Mathf.Abs((native.x - m_windowedIdealPad) - s.x);
-
-                if (diff < bestArDiff - 0.0001f ||
-                    (Mathf.Abs(diff - bestArDiff) <= 0.0001f && widthScore > bestWidthScore))
-                {
-                    best = s;
-                    bestArDiff = diff;
-                    bestWidthScore = widthScore;
-                }
-            }
-
-            // Fallback to largest available if nothing matched the <= native rule.
-            if (best == default && m_ids.Count > 0)
-                best = m_idToSize[m_ids[0]];
-
-            return best;
+            var mode = Screen.fullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+            Screen.SetResolution(size.x, size.y, mode);
         }
     }
 }

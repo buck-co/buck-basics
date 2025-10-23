@@ -20,7 +20,7 @@ namespace Buck
         [SerializeField] TMP_Dropdown m_resolutionDropdown;
         [SerializeField] bool m_disableDropdownWhenAuto = true;
 
-        // Optional authoritatitive sources (resolved from VariableBinding if left null)
+        // Optional authoritative sources (resolved from VariableBinding if left null)
         [SerializeField] BoolVariable m_autoVariable;
         [SerializeField] BoolVariable m_fullScreenVariable;
 
@@ -35,15 +35,17 @@ namespace Buck
             if (m_fullScreenToggle)
                 m_fullScreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
 
-            // Immediate initial sync based on variables (no reliance on UI events)
+            // Ensure the provider has built its list before we drive it.
+            m_provider.Initialize();
+
             var autoOn = GetAutoOn();
             var fullOn = GetFullOn();
 
             SyncDropdownInteractable(autoOn);
-            m_provider.ApplyFullscreen(fullOn);
 
+            // Order: set mode (doesn't change size), then optionally set size if Auto is on.
+            m_provider.ApplyFullscreen(fullOn);
             if (autoOn) m_provider.ApplyAuto();
-            else        m_provider.ReapplyCurrentSelectionOrClosest();
         }
 
         void OnDisable()
@@ -64,10 +66,6 @@ namespace Buck
         void OnFullscreenChanged(bool full)
         {
             m_provider.ApplyFullscreen(full);
-
-            // Recompute best fit when Auto is enabled; otherwise reapply current pick.
-            if (GetAutoOn()) m_provider.ApplyAuto();
-            else             m_provider.ReapplyCurrentSelectionOrClosest();
         }
 
         void SyncDropdownInteractable(bool autoOn)
@@ -76,7 +74,7 @@ namespace Buck
             m_resolutionDropdown.interactable = !autoOn;
         }
 
-        // Resolve BoolVariables from VariableBinding on the toggles if not explicitly wired
+        // Resolve BoolVariables from VariableBinding on the toggles if not explicitly wired.
         void TryResolveVariablesFromBindings()
         {
             if (!m_autoVariable && m_autoResolutionToggle)
