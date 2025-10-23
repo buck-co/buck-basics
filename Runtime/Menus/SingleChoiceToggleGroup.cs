@@ -62,12 +62,7 @@ namespace Buck
             ClearChildren();
 
             // Ensure a ToggleGroup exists under the spawn root.
-            //var groupGO = new GameObject(m_groupName, typeof(RectTransform), typeof(ToggleGroup));
             m_spawnRoot.gameObject.AddComponent(typeof(ToggleGroup));
-            /*var groupRT = m_spawnRoot.GetComponent<RectTransform>();
-            groupRT.SetParent(m_spawnRoot, false);
-            groupRT.anchorMin = groupRT.anchorMax = new Vector2(0.5f, 0.5f);
-            groupRT.pivot     = new Vector2(0.5f, 0.5f);*/
             m_group = m_spawnRoot.GetComponent<ToggleGroup>();
             m_group.allowSwitchOff = false;
 

@@ -42,7 +42,7 @@ namespace Buck
             {
                 m_controller.OnOpenMenu          += HandleScreenChanged;
                 m_controller.OnOpenSiblingMenu   += HandleScreenChanged;
-                m_controller.OnBack              += HandleScreenChanged;
+                m_controller.OnBack              += HandleBack;
                 m_controller.OnStackEmptyChanged += HandleStackEmptyChanged;
             }
 
@@ -55,13 +55,19 @@ namespace Buck
             {
                 m_controller.OnOpenMenu          -= HandleScreenChanged;
                 m_controller.OnOpenSiblingMenu   -= HandleScreenChanged;
-                m_controller.OnBack              -= HandleScreenChanged;
+                m_controller.OnBack              -= HandleBack;
                 m_controller.OnStackEmptyChanged -= HandleStackEmptyChanged;
             }
 
             Unregister();
         }
 
+        void HandleBack(MenuScreen _)
+        {
+            UpdateVisibilityForCurrent();
+            OnCloseEvent();
+        }
+        
         void HandleScreenChanged(MenuScreen _)
             => UpdateVisibilityForCurrent();
 
@@ -71,7 +77,9 @@ namespace Buck
         void UpdateVisibilityForCurrent()
         {
             var cur = m_controller ? m_controller.Current : null;
-            Toggle(ShouldShowFor(cur));
+            var show = ShouldShowFor(cur);
+            Toggle(show);
+            if (show) OnOpenEvent();
         }
 
         bool ShouldShowFor(MenuScreen screen)

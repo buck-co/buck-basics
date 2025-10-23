@@ -110,7 +110,7 @@ namespace Buck
             if (candidate)
             {
                 // This will re-call Show() on the screen, which is safe and ensures selection reticle logic runs.
-                MenuNav_OpenMenu(candidate);
+                MenuNav_OpenMenu(candidate, raiseEvent:false);
             }
             else
             {
@@ -206,7 +206,7 @@ namespace Buck
         /// <summary>
         /// Open a new menu on top of the stack (push).
         /// </summary>
-        public void MenuNav_OpenMenu(MenuScreen screen)
+        public void MenuNav_OpenMenu(MenuScreen screen, bool raiseEvent = true)
         {
             if (!screen) return;
             
@@ -225,6 +225,10 @@ namespace Buck
             
             m_stack.Push(screen);
             screen.Show();
+            
+            if (raiseEvent)
+                screen.OnOpenEvent();
+            
             EnsureSelectionAndSnap();
             m_forceIndicatorInstant = true;
 
@@ -260,6 +264,7 @@ namespace Buck
 
             m_stack.Push(screen);
             screen.Show();
+            screen.OnOpenEvent();
             EnsureSelectionAndSnap();
             m_forceIndicatorInstant = true;
 
@@ -279,6 +284,7 @@ namespace Buck
 
             var top = m_stack.Pop();
             top.Hide();
+            top.OnCloseEvent();
             OnBack?.Invoke(top);
 
             if (m_stack.Count > 0)
@@ -309,6 +315,7 @@ namespace Buck
             {
                 var top = m_stack.Pop();
                 top.Hide();
+                top.OnCloseEvent();
                 OnBack?.Invoke(top);
             }
 
@@ -343,7 +350,7 @@ namespace Buck
 
             var es = EventSystem.current;
             var ui = es ? es.currentInputModule as InputSystemUIInputModule : null;
-            return ui ? ui.cancel.action : null; // same action you already observe for navigation intent
+            return ui ? ui.cancel.action : null;
         }
 
         void OnCancelAction(InputAction.CallbackContext ctx)

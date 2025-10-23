@@ -22,6 +22,12 @@ namespace Buck
         [Tooltip("Should this view be visible when enabled?")]
         [SerializeField] protected bool m_startVisible = false;
 
+        [Tooltip("Optional event raised when this view is opened. Can be left null.")]
+        [SerializeField] GameEvent m_onOpen;
+        
+        [Tooltip("Optional event raised when this view is closed. Can be left null.")]
+        [SerializeField] GameEvent m_onClose;
+        
         protected CanvasGroup m_canvasGroup;
 
         /// <summary>Structured title label for this view.</summary>
@@ -58,6 +64,26 @@ namespace Buck
         public virtual void Hide()
         {
             if (m_canvasGroup) m_canvasGroup.SetVisible(false);
+        }
+
+        // <summary>Raise open event. Generally called by MenuController to indicate action taken by the user.</summary>
+        public virtual void OnOpenEvent()
+        {
+            if (m_onOpen)
+            {
+                Debug.Log("MenuView.OnOpenEvent() - Raising open event for view: " + name, this);
+                m_onOpen.Raise();
+            }
+        }
+        
+        /// <summary>Raise close event. Generally called by MenuController to indicate action taken by the user.</summary>
+        public virtual void OnCloseEvent()
+        {
+            if (m_onClose)
+            {
+                Debug.Log("MenuView.OnCloseEvent() - Raising close event for view: " + name, this);
+                m_onClose.Raise();
+            }
         }
 
         /// <summary>Set visibility.</summary>
