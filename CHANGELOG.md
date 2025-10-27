@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.2] - 2025-10-27
+In ResolutionSettingsCoordinator.Enable(), if AutoResolution is set to off, it will now apply the current selection or closest from the resolution provider.
+
 ## [3.3.1] - 2025-10-22
 Added multiple classes to help with common game settings that can be trickier to implement, like Locale selection and changing Screen Resolution.
 

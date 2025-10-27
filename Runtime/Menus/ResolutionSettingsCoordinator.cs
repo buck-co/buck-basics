@@ -45,7 +45,12 @@ namespace Buck
 
             // Order: set mode (doesn't change size), then optionally set size if Auto is on.
             m_provider.ApplyFullscreen(fullOn);
-            if (autoOn) m_provider.ApplyAuto();
+            
+            // If auto is on, apply it; otherwise reapply current selection or the closest selection.
+            if (autoOn)
+                m_provider.ApplyAuto();
+            else
+                m_provider.ReapplyCurrentSelectionOrClosest();
         }
 
         void OnDisable()
