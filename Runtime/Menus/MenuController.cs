@@ -27,6 +27,13 @@ namespace Buck
     [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
+        [Header("Input Mode")]
+        [SerializeField] bool m_hideSelectionInPointerMode = true;
+        [SerializeField, Tooltip("Seconds to prefer the most recent input type (pointer vs nav).")]
+        float m_inputModeHysteresis = 0.35f;
+        [SerializeField, Tooltip("If true, still select the first item when opening in pointer mode.")]
+        bool m_selectFirstOnOpenInPointerMode = false;
+        
         [Header("Navigation (Cancel / Back)")]
         [Tooltip("If assigned, this action will be used for Cancel/Back. If not, this will fall back to the UI Input Module's Cancel action.")]
         [SerializeField] InputActionReference m_cancelActionOverride;
@@ -69,6 +76,24 @@ namespace Buck
         public event Action<MenuScreen> OnBack;
         public event Action<MenuScreen> OnOpenSiblingMenu;
         public event Action<bool> OnStackEmptyChanged;
+        
+        // Input-mode tracking
+        public enum UiInputMode { Pointer, Navigation }
+        public UiInputMode CurrentUiInputMode => IsPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation;
+        public event Action<UiInputMode> OnInputModeChanged;
+
+        UiInputMode m_lastUiMode = UiInputMode.Pointer;
+        
+        Vector2 m_lastPointerPos;
+        bool m_havePointerPos;
+        float m_lastPointerTime = -999f;
+        float m_lastNavTime = -999f;
+        
+        /// <summary>
+        /// True if the most recent input was pointer-based (mouse, touch, pen).
+        /// False if the most recent input was navigation-based (gamepad, keyboard).
+        /// </summary>
+        bool IsPointerMode => (m_lastPointerTime + m_inputModeHysteresis) >= m_lastNavTime;
 
 #region MonoBehaviour Messages
         
@@ -121,14 +146,60 @@ namespace Buck
         
         void LateUpdate()
         {
-            if (!m_selectionIndicatorRect) return;
+            // 1) Track input activity to decide mode
+            var eventSystem = EventSystem.current;
+            var ui = eventSystem ? eventSystem.currentInputModule as InputSystemUIInputModule : null;
+            if (ui)
+            {
+                // Pointer: move/click/scroll update "last pointer time"
+                if (ui.point.action != null)
+                {
+                    var p = ui.point.action.ReadValue<Vector2>();
+                    if (m_havePointerPos && (p - m_lastPointerPos).sqrMagnitude > 0.25f)
+                        m_lastPointerTime = Time.unscaledTime;
+                    m_lastPointerPos = p;
+                    m_havePointerPos = true;
+                }
+                
+                if ((ui.leftClick   && ui.leftClick.action   != null && ui.leftClick.action.triggered)   ||
+                    (ui.rightClick  && ui.rightClick.action  != null && ui.rightClick.action.triggered)  ||
+                    (ui.middleClick && ui.middleClick.action != null && ui.middleClick.action.triggered) ||
+                    (ui.scrollWheel && ui.scrollWheel.action != null && ui.scrollWheel.action.triggered))
+                {
+                    m_lastPointerTime = Time.unscaledTime;
+                }
 
-            // Keep visibility correct even if nobody called Open/Back this frame
-            UpdateIndicatorActiveState();
+                // Nav: dpad/left-stick/keyboard arrows/submit/cancel update "last nav time"
+                if ((ui.move   && ui.move.action   != null && ui.move.action.triggered)   ||
+                    (ui.submit && ui.submit.action != null && ui.submit.action.triggered) ||
+                    (ui.cancel && ui.cancel.action != null && ui.cancel.action.triggered))
+                {
+                    m_lastNavTime = Time.unscaledTime;
+                }
+            }
+
+            var modeNow = IsPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation;
+            if (modeNow != m_lastUiMode)
+            {
+                m_lastUiMode = modeNow;
+                OnInputModeChanged?.Invoke(modeNow);
+            }
             
+            // 2) If pointer mode, clear selection so only hover visuals remain
+            if (IsPointerMode && m_hideSelectionInPointerMode && Current)
+            {
+                var selGO = eventSystem ? eventSystem.currentSelectedGameObject : null;
+                if (selGO && selGO.transform.IsChildOf(Current.transform))
+                    eventSystem.SetSelectedGameObject(null);
+            }
+
+            // Keep visibility up to date and retain your existing logic
+            UpdateIndicatorActiveState();
+
             // Restore selection if user is navigating but selection was cleared by the mouse
             EnsureSelectionOnNavigationIntent();
-            
+
+            if (!m_selectionIndicatorRect) return;
             if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
 
@@ -229,7 +300,7 @@ namespace Buck
             if (raiseEvent)
                 screen.OnOpenEvent();
             
-            EnsureSelectionAndSnap();
+            EnsureInitialSelectionBasedOnMode();
             m_forceIndicatorInstant = true;
 
             UpdateIndicatorActiveState();
@@ -265,7 +336,7 @@ namespace Buck
             m_stack.Push(screen);
             screen.Show();
             screen.OnOpenEvent();
-            EnsureSelectionAndSnap();
+            EnsureInitialSelectionBasedOnMode();
             m_forceIndicatorInstant = true;
 
             UpdateIndicatorActiveState();
@@ -290,7 +361,7 @@ namespace Buck
             if (m_stack.Count > 0)
             {
                 m_stack.Peek().Show();
-                EnsureSelectionAndSnap();
+                EnsureInitialSelectionBasedOnMode();
             }
             else if (m_pauseTimeScale)
             {
@@ -428,8 +499,30 @@ namespace Buck
                 shouldShow = selected.IsChildOf(Current.transform);
             }
 
+            // Hide the indicator in pointer mode
+            if (m_hideSelectionInPointerMode && IsPointerMode)
+                shouldShow = false;
+            
             if (m_selectionIndicatorRect.gameObject.activeSelf != shouldShow)
                 m_selectionIndicatorRect.gameObject.SetActive(shouldShow);
+        }
+        
+        // Ensure selection based on input mode before snapping.
+        void EnsureInitialSelectionBasedOnMode()
+        {
+            var eventSystem = EventSystem.current;
+            if (IsPointerMode && !m_selectFirstOnOpenInPointerMode)
+            {
+                // Make sure nothing is selected; pointer hover will drive visuals.
+                eventSystem?.SetSelectedGameObject(null);
+                UpdateIndicatorActiveState();
+            }
+            else
+            {
+                // Pad/keyboard (or explicit opt-in) → ensure selection and snap indicator.
+                EnsureSelectionAndSnap();
+                m_forceIndicatorInstant = true;
+            }
         }
         
         // Ensures the EventSystem has a valid selection under the current screen,
@@ -476,6 +569,8 @@ namespace Buck
                 (ui.submit.action != null && ui.submit.action.triggered) ||
                 (ui.cancel.action != null && ui.cancel.action.triggered);
 
+            if (navIntent) m_lastNavTime = Time.unscaledTime;
+            
             if (!navIntent) return;
 
             var selGO = eventSystem.currentSelectedGameObject;
@@ -491,7 +586,6 @@ namespace Buck
             SnapIndicatorTo(first, instant: true);
             UpdateIndicatorActiveState();
         }
-
 
         // Compute the indicator target from a Selectable's RectTransform in world space,
         // apply X-mode and padding, and set the position (instant or smoothed).
