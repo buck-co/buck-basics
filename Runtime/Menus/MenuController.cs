@@ -28,8 +28,7 @@ namespace Buck
     [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
-        enum UiInputMode { Pointer, Navigation }
-
+        public enum UiInputMode { Pointer, Navigation }
         
         [Header("Input Mode")]
         
