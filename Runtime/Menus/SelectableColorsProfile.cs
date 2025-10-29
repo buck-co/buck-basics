@@ -19,12 +19,12 @@ namespace Buck
             var def = ColorBlock.defaultColorBlock;
 
             // Pointer mode: strong hover, subtle selected.
-            var pointer = def;
+            var pointer     = def;
             pointer.fadeDuration     = 0.08f;
             pointer.normalColor      = Color.white;
-            pointer.highlightedColor = new Color(1f, 0.92f, 0.4f, 1f);
+            pointer.highlightedColor = Color.white;
             pointer.pressedColor     = new Color(1f, 0.92f, 0.4f, 1f);
-            pointer.selectedColor    = pointer.normalColor; // selection is subdued in pointer mode
+            pointer.selectedColor    = new Color(1f, 0.92f, 0.4f, 1f);
             pointer.disabledColor    = new Color(1f, 1f, 1f, 0.5f);
             m_pointer = pointer;
 
@@ -32,9 +32,9 @@ namespace Buck
             var nav = def;
             nav.fadeDuration         = 0.08f;
             nav.normalColor          = Color.white;
-            nav.highlightedColor     = nav.normalColor;
+            nav.highlightedColor     = new Color(1f, 0.92f, 0.4f, 1f);
             nav.selectedColor        = new Color(1f, 0.92f, 0.4f, 1f);
-            nav.pressedColor         = nav.selectedColor;
+            nav.pressedColor         = new Color(1f, 0.92f, 0.4f, 1f);
             nav.disabledColor        = new Color(1f, 1f, 1f, 0.5f);
             m_navigation = nav;
         }
