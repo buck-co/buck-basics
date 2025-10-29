@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.3] - 2025-10-29
+MenuController now has the concept of a "UI Input Mode" which can be Pointer or Navigation based. An initial mode can be set, and an optional reference to a BoolVariable can be supplied that represents whether or not the current device type is a Gamepad. If this boolean is available, the UI Input Mode will automatically switch to Navigation if true, and Pointer if false. This BoolVariable should be set elsewhere in your code, such as where input is being managed.
+
 ## [3.3.2] - 2025-10-27
 In ResolutionSettingsCoordinator.Enable(), if AutoResolution is set to off, it will now apply the current selection or closest from the resolution provider.
 
