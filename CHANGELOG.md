@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.4] - 2025-10-29
+- Improved the MenuController's ability to distinguish between "Pointer" mode and "Navigation" mode.
+- Improved hover states in MenuController when a mouse is being used.
+- Improved the ability to switch between keyboard and gamepad when Navigation mode is detected.
+- Added a SelectableColorsProfile asset, which stores two sets of colors for navigation mode and pointer mode.
+
 ## [3.3.3] - 2025-10-29
 MenuController now has the concept of a "UI Input Mode" which can be Pointer or Navigation based. An initial mode can be set, and an optional reference to a BoolVariable can be supplied that represents whether or not the current device type is a Gamepad. If this boolean is available, the UI Input Mode will automatically switch to Navigation if true, and Pointer if false. This BoolVariable should be set elsewhere in your code, such as where input is being managed.
 
