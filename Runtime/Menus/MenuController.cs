@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -21,47 +22,41 @@ namespace Buck
     /// <summary>
     /// Manages a stack of MenuScreens. Top is active. Optional timeScale pause.
     /// Drives a shared selection indicator. Input *mode* (Pointer vs Navigation)
-    /// is controlled externally (e.g., by InputManager via GameEvent).
+    /// is controlled externally by a BoolReference.
     /// </summary>
     [AddComponentMenu("BUCK/UI/Menu Controller")]
     [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
-        public enum UiInputMode { Pointer, Navigation }
+        enum UiInputMode { Pointer, Navigation }
 
-        [Header("Input Mode (driven by InputManager/GameEvent)")]
+        
+        [Header("Input Mode")]
+        
         [SerializeField, Tooltip("Initial mode if we can't sync from InputManager on enable.")]
         UiInputMode m_initialMode = UiInputMode.Pointer;
 
-        [SerializeField, Tooltip("Hide the selection indicator and clear selection in Pointer mode.")]
-        bool m_hideSelectionInPointerMode = true;
-
-        [SerializeField, Tooltip("If true, still select the first item when opening in Pointer mode.")]
-        bool m_selectFirstOnOpenInPointerMode = false;
+        [SerializeField, Tooltip("If true, the UI runs in \"pointer\" mode (mouse/touch). If false, \"navigation\" mode (keyboard/gamepad).")]
+        BoolReference m_BV_UiPointerMode;
         
 
-        [SerializeField, Tooltip("Optional field. If this Bool Variable is provided and is true, " +
-                                 "the input mode will be set to Navigation; otherwise Pointer.")]
-        BoolReference m_BV_DeviceTypeGamepad;
-
-        UiInputMode m_currentUiInputMode;
-        public UiInputMode CurrentUiInputMode => m_currentUiInputMode;
-        public event Action<UiInputMode> OnInputModeChanged;
-        bool IsPointerMode => m_currentUiInputMode == UiInputMode.Pointer;
-
-
         [Header("Navigation (Cancel / Back)")]
+        
         [Tooltip("If assigned, this action will be used for Cancel/Back. If not, this will fall back to the UI Input Module's Cancel action.")]
         [SerializeField] InputActionReference m_cancelActionOverride;
 
         [Tooltip("If false, pressing Cancel at the bottom of the stack does nothing (e.g., a Main Menu). If true, the last screen can be closed (e.g., a Pause menu).")]
         [SerializeField] bool m_allowClosingLastMenu = true;
         
+        
         [Header("Behavior")]
+        
         [Tooltip("Automatically set Time.timeScale = 0 when the first menu opens, and restores when all menus close.")]
         [SerializeField] bool m_pauseTimeScale = true;
 
+        
         [Header("Selection Indicator (optional)")]
+        
         [Tooltip("Indicator graphic to follow the currently selected UI element.")]
         [SerializeField] RectTransform m_selectionIndicatorRect;
 
@@ -74,10 +69,26 @@ namespace Buck
         [Tooltip("Padding used by LeftOf/RightOf modes (in pixels).")]
         [SerializeField] float m_indicatorXPadding = 24f;
         
-        protected CanvasGroup m_canvasGroup;
         
-        InputAction m_boundCancelAction;
+        [Header("Selectable Colors")]
+        
+        [SerializeField, Tooltip("Colors to use when for UI Input Modes (Pointer and Navigation). " +
+                                 "Can be created from the menu BUCK/Selectable Colors Profile.")]
+        SelectableColorsProfile m_profile;
+        
+        [SerializeField, Tooltip("Automatically exclude Dropdown components from color application.")]
+        bool m_excludeDropdowns = true;
+        
+        [SerializeField, Tooltip("Additional selectables to exclude from color application.")]
+        List<Selectable> m_excludeSelectables = new();
 
+
+        bool m_selectableColorsInitialized = false;
+        UiInputMode m_currentUiInputMode;
+        readonly List<Selectable> m_scratch = new();
+        protected CanvasGroup m_canvasGroup;
+        InputAction m_boundCancelAction;
+        readonly List<RaycastResult> m_raycastResults = new();
         readonly Stack<MenuScreen> m_stack = new();
         float m_prevTimeScale = 1f;
 
@@ -119,11 +130,21 @@ namespace Buck
                 m_boundCancelAction.performed += OnCancelAction;
             }
 
-            // Use the device flag if provided, otherwise fall back to the initial mode.
-            if (m_BV_DeviceTypeGamepad != null)
-                SetUiInputMode(m_BV_DeviceTypeGamepad.Value ? UiInputMode.Navigation : UiInputMode.Pointer, immediate: true);
+            // Sync to the UI pointer mode if provided; else use initial.
+            if (m_BV_UiPointerMode != null)
+                SetUiInputMode(m_BV_UiPointerMode.Value ? UiInputMode.Pointer : UiInputMode.Navigation, immediate: true);
             else
                 SetUiInputMode(m_initialMode, immediate: true);
+
+            // Apply selectable colors
+            InitializeSelectableColors();
+            
+            /*// For each Selectable in children...
+            var selectables = GetComponentsInChildren<Selectable>(true);
+            foreach (var s in selectables)
+            {
+                s.OnPointerEnter() += Something();
+            }*/
         }
 
         void OnDisable()
@@ -137,7 +158,6 @@ namespace Buck
         {
             // If something else already opened a menu before Start(), don't override it.
             if (m_stack.Count > 0) return;
-
             
             var candidate = FindFirstVisibleChildScreen();
             if (candidate)
@@ -154,8 +174,8 @@ namespace Buck
         
         void LateUpdate()
         {
-            if (m_BV_DeviceTypeGamepad != null)
-                SetUiInputMode(m_BV_DeviceTypeGamepad ? UiInputMode.Navigation : UiInputMode.Pointer);
+            if (m_BV_UiPointerMode != null)
+                SetUiInputMode(m_BV_UiPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation);
             
             if (!m_selectionIndicatorRect) return;
 
@@ -164,6 +184,10 @@ namespace Buck
 
             if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
+            
+            // In Pointer mode, hover selects so the indicator follows the pointer naturally.
+            if (m_currentUiInputMode == UiInputMode.Pointer)
+                SelectUnderPointerIfAny();
 
             var selectedRT = EventSystem.current?.currentSelectedGameObject?.GetComponent<RectTransform>();
             if (!selectedRT) return;
@@ -376,20 +400,9 @@ namespace Buck
                 return;
 
             m_currentUiInputMode = mode;
-            if (m_currentUiInputMode == UiInputMode.Pointer)
-            {
-                if (m_hideSelectionInPointerMode)
-                    ClearSelectionUnderCurrent();
-
-                UpdateIndicatorActiveState();
-            }
-            else // Navigation
-            {
-                EnsureSelectionAndSnap();
-                if (immediate) m_forceIndicatorInstant = true;
-            }
-
-            OnInputModeChanged?.Invoke(m_currentUiInputMode);
+            EnsureSelectionAndSnap();
+            RefreshSelectableColors();
+            if (immediate) m_forceIndicatorInstant = true;
         }
 
         InputAction ResolveCancelAction()
@@ -476,10 +489,6 @@ namespace Buck
                 var selected = EventSystem.current.currentSelectedGameObject.transform;
                 shouldShow = selected.IsChildOf(Current.transform);
             }
-
-            // Hide the indicator in pointer mode
-            if (m_hideSelectionInPointerMode && IsPointerMode)
-                shouldShow = false;
             
             if (m_selectionIndicatorRect.gameObject.activeSelf != shouldShow)
                 m_selectionIndicatorRect.gameObject.SetActive(shouldShow);
@@ -488,26 +497,44 @@ namespace Buck
         // Ensure selection based on input mode before snapping.
         void EnsureInitialSelectionBasedOnMode()
         {
-            if (IsPointerMode && !m_selectFirstOnOpenInPointerMode)
-            {
-                ClearSelectionUnderCurrent();
-                UpdateIndicatorActiveState();
-            }
-            else
-            {
-                EnsureSelectionAndSnap();
-                m_forceIndicatorInstant = true;
-            }
+            EnsureSelectionAndSnap();
+            m_forceIndicatorInstant = true;
         }
-
-        void ClearSelectionUnderCurrent()
+        
+        // Pointer-mode: pick the topmost Selectable under the pointer (if any) within the current screen.
+        void SelectUnderPointerIfAny()
         {
-            var es = EventSystem.current;
-            if (!es || !Current) return;
+            var eventSystem = EventSystem.current;
+            if (!eventSystem || !Current)
+                return;
+            
+            if (Mouse.current == null)
+                return;
+            
+            var pointerEventData = new PointerEventData(eventSystem) 
+            { 
+                position = Mouse.current.position.ReadValue() 
+            };
+            
+            m_raycastResults.Clear();
+            eventSystem.RaycastAll(pointerEventData, m_raycastResults);
+            
+            foreach (var raycastResult in m_raycastResults)
+            {
+                var go = raycastResult.gameObject;
+                if (!go) continue;
+                if (!go.transform.IsChildOf(Current.transform)) continue;
 
-            var selGO = es.currentSelectedGameObject;
-            if (selGO && selGO.transform.IsChildOf(Current.transform))
-                es.SetSelectedGameObject(null);
+                var sel = go.GetComponentInParent<Selectable>();
+                if (!sel || !sel.IsActive() || !sel.interactable) continue;
+
+                if (eventSystem.currentSelectedGameObject != sel.gameObject)
+                {
+                    eventSystem.SetSelectedGameObject(sel.gameObject);
+                    SnapIndicatorTo(sel, instant: false);
+                }
+                break;
+            }
         }
 
         // Ensures the EventSystem has a valid selection under the current screen,
@@ -576,6 +603,65 @@ namespace Buck
                 // Let LateUpdate smooth to the target
                 m_forceIndicatorInstant = false;
             }
+        }
+
+        void InitializeSelectableColors()
+        {
+            if (m_selectableColorsInitialized)
+                return;
+            
+            // Optionally exclude Dropdown components
+            if (m_excludeDropdowns)
+            {
+                var dropdowns = GetComponentsInChildren<Dropdown>(true);
+                var TMPdropdowns = GetComponentsInChildren<TMP_Dropdown>(true);
+                
+                // Combine both types of dropdowns into a single list of type Selectable
+                var allDropdownSelectables = new List<Selectable>();
+                allDropdownSelectables.AddRange(dropdowns);
+                allDropdownSelectables.AddRange(TMPdropdowns);
+
+                foreach (var dd in allDropdownSelectables)
+                {
+                    if (dd && !m_excludeSelectables.Contains(dd))
+                    {
+                        m_excludeSelectables.Add(dd);
+                        
+                        // Also exclude the Dropdown's child Selectable (the item toggle and scrollbar button)
+                        var childSelectables = dd.GetComponentsInChildren<Selectable>(true);
+                        foreach (var cs in childSelectables)
+                            if (cs && !m_excludeSelectables.Contains(cs))
+                                m_excludeSelectables.Add(cs);
+                    }
+                }
+            }
+
+            m_selectableColorsInitialized = true;
+        }
+        
+        void RefreshSelectableColors()
+        {
+            if (!m_profile)
+            {
+                Debug.LogWarning("MenuController.RefreshSelectableColors() - No SelectableColorsProfile assigned; cannot refresh colors.");
+                return;
+            }
+
+            if (!m_BV_UiPointerMode)
+            {
+                Debug.LogWarning("MenuController.RefreshSelectableColors() - m_BV_UiPointerMode is not assigned; cannot refresh colors.");
+                return;
+            }
+
+            // Ensure exclusions are initialized
+            InitializeSelectableColors();
+            
+            m_scratch.Clear();
+            GetComponentsInChildren(true, m_scratch);
+            var block = (m_BV_UiPointerMode.Value ? m_profile.Pointer : m_profile.Navigation);
+            
+            foreach (var s in m_scratch)
+                if (s && !m_excludeSelectables.Contains(s)) s.colors = block;
         }
         
 #endregion
