@@ -40,7 +40,8 @@ namespace Buck
         bool m_selectFirstOnOpenInPointerMode = false;
         
 
-        [SerializeField, Tooltip("Optional field. If this Bool Variable is provided and is true...")]
+        [SerializeField, Tooltip("Optional field. If this Bool Variable is provided and is true, " +
+                                 "the input mode will be set to Navigation; otherwise Pointer.")]
         BoolReference m_BV_DeviceTypeGamepad;
 
         UiInputMode m_currentUiInputMode;
