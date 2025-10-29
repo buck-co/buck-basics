@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.5] - 2025-10-29
+- Fixed an issue where the enum UiInputMode should have been public.
+
 ## [3.3.4] - 2025-10-29
 - Improved the MenuController's ability to distinguish between "Pointer" mode and "Navigation" mode.
 - Improved hover states in MenuController when a mouse is being used.
