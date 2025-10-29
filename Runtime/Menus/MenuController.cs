@@ -119,7 +119,11 @@ namespace Buck
                 m_boundCancelAction.performed += OnCancelAction;
             }
 
-            SetUiInputMode(m_initialMode, immediate: true);
+            // Use the device flag if provided, otherwise fall back to the initial mode.
+            if (m_BV_DeviceTypeGamepad != null)
+                SetUiInputMode(m_BV_DeviceTypeGamepad.Value ? UiInputMode.Navigation : UiInputMode.Pointer, immediate: true);
+            else
+                SetUiInputMode(m_initialMode, immediate: true);
         }
 
         void OnDisable()
@@ -150,10 +154,10 @@ namespace Buck
         
         void LateUpdate()
         {
-            if (!m_selectionIndicatorRect) return;
-            
             if (m_BV_DeviceTypeGamepad != null)
                 SetUiInputMode(m_BV_DeviceTypeGamepad ? UiInputMode.Navigation : UiInputMode.Pointer);
+            
+            if (!m_selectionIndicatorRect) return;
 
             // Keep visibility correct even if nobody called Open/Back this frame
             UpdateIndicatorActiveState();
@@ -570,7 +574,7 @@ namespace Buck
             else
             {
                 // Let LateUpdate smooth to the target
-                m_forceIndicatorInstant = true;
+                m_forceIndicatorInstant = false;
             }
         }
         
