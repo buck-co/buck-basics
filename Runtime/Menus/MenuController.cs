@@ -20,20 +20,35 @@ namespace Buck
 
     /// <summary>
     /// Manages a stack of MenuScreens. Top is active. Optional timeScale pause.
-    /// Raises events when the stack becomes empty/non-empty.
-    /// Also drives a shared selection indicator for all screens under this controller.
+    /// Drives a shared selection indicator. Input *mode* (Pointer vs Navigation)
+    /// is controlled externally (e.g., by InputManager via GameEvent).
     /// </summary>
     [AddComponentMenu("BUCK/UI/Menu Controller")]
     [RequireComponent(typeof(CanvasGroup))]
     public class MenuController : MonoBehaviour
     {
-        [Header("Input Mode")]
-        [SerializeField] bool m_hideSelectionInPointerMode = true;
-        [SerializeField, Tooltip("Seconds to prefer the most recent input type (pointer vs nav).")]
-        float m_inputModeHysteresis = 0.35f;
-        [SerializeField, Tooltip("If true, still select the first item when opening in pointer mode.")]
+        public enum UiInputMode { Pointer, Navigation }
+
+        [Header("Input Mode (driven by InputManager/GameEvent)")]
+        [SerializeField, Tooltip("Initial mode if we can't sync from InputManager on enable.")]
+        UiInputMode m_initialMode = UiInputMode.Pointer;
+
+        [SerializeField, Tooltip("Hide the selection indicator and clear selection in Pointer mode.")]
+        bool m_hideSelectionInPointerMode = true;
+
+        [SerializeField, Tooltip("If true, still select the first item when opening in Pointer mode.")]
         bool m_selectFirstOnOpenInPointerMode = false;
         
+
+        [SerializeField, Tooltip("Optional field. If this Bool Variable is provided and is true...")]
+        BoolReference m_BV_DeviceTypeGamepad;
+
+        UiInputMode m_currentUiInputMode;
+        public UiInputMode CurrentUiInputMode => m_currentUiInputMode;
+        public event Action<UiInputMode> OnInputModeChanged;
+        bool IsPointerMode => m_currentUiInputMode == UiInputMode.Pointer;
+
+
         [Header("Navigation (Cancel / Back)")]
         [Tooltip("If assigned, this action will be used for Cancel/Back. If not, this will fall back to the UI Input Module's Cancel action.")]
         [SerializeField] InputActionReference m_cancelActionOverride;
@@ -76,24 +91,7 @@ namespace Buck
         public event Action<MenuScreen> OnBack;
         public event Action<MenuScreen> OnOpenSiblingMenu;
         public event Action<bool> OnStackEmptyChanged;
-        
-        // Input-mode tracking
-        public enum UiInputMode { Pointer, Navigation }
-        public UiInputMode CurrentUiInputMode => IsPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation;
-        public event Action<UiInputMode> OnInputModeChanged;
 
-        UiInputMode m_lastUiMode = UiInputMode.Pointer;
-        
-        Vector2 m_lastPointerPos;
-        bool m_havePointerPos;
-        float m_lastPointerTime = -999f;
-        float m_lastNavTime = -999f;
-        
-        /// <summary>
-        /// True if the most recent input was pointer-based (mouse, touch, pen).
-        /// False if the most recent input was navigation-based (gamepad, keyboard).
-        /// </summary>
-        bool IsPointerMode => (m_lastPointerTime + m_inputModeHysteresis) >= m_lastNavTime;
 
 #region MonoBehaviour Messages
         
@@ -106,16 +104,21 @@ namespace Buck
                 // Start hidden. If a child screen is visible at Start(), it will be shown.
                 m_canvasGroup.SetVisible(false);
             }
+
+            // Seed a safe starting mode
+            m_currentUiInputMode = m_initialMode;
         }
         
         void OnEnable()
         {
             var action = ResolveCancelAction();
-            if (action == null) return;
+            if (action != null)
+            {
+                m_boundCancelAction = action;
+                m_boundCancelAction.performed += OnCancelAction;
+            }
 
-            m_boundCancelAction = action;
-            m_boundCancelAction.performed += OnCancelAction;
-            // We do not force-enable here; UI Input Module already manages its actions.
+            SetUiInputMode(m_initialMode, immediate: true);
         }
 
         void OnDisable()
@@ -134,8 +137,8 @@ namespace Buck
             var candidate = FindFirstVisibleChildScreen();
             if (candidate)
             {
-                // This will re-call Show() on the screen, which is safe and ensures selection reticle logic runs.
-                MenuNav_OpenMenu(candidate, raiseEvent:false);
+                // This will re-call Show() on the screen and (by default) focus its first Selectable.
+                MenuNav_OpenMenu(candidate, raiseEvent: false);
             }
             else
             {
@@ -146,60 +149,14 @@ namespace Buck
         
         void LateUpdate()
         {
-            // 1) Track input activity to decide mode
-            var eventSystem = EventSystem.current;
-            var ui = eventSystem ? eventSystem.currentInputModule as InputSystemUIInputModule : null;
-            if (ui)
-            {
-                // Pointer: move/click/scroll update "last pointer time"
-                if (ui.point.action != null)
-                {
-                    var p = ui.point.action.ReadValue<Vector2>();
-                    if (m_havePointerPos && (p - m_lastPointerPos).sqrMagnitude > 0.25f)
-                        m_lastPointerTime = Time.unscaledTime;
-                    m_lastPointerPos = p;
-                    m_havePointerPos = true;
-                }
-                
-                if ((ui.leftClick   && ui.leftClick.action   != null && ui.leftClick.action.triggered)   ||
-                    (ui.rightClick  && ui.rightClick.action  != null && ui.rightClick.action.triggered)  ||
-                    (ui.middleClick && ui.middleClick.action != null && ui.middleClick.action.triggered) ||
-                    (ui.scrollWheel && ui.scrollWheel.action != null && ui.scrollWheel.action.triggered))
-                {
-                    m_lastPointerTime = Time.unscaledTime;
-                }
-
-                // Nav: dpad/left-stick/keyboard arrows/submit/cancel update "last nav time"
-                if ((ui.move   && ui.move.action   != null && ui.move.action.triggered)   ||
-                    (ui.submit && ui.submit.action != null && ui.submit.action.triggered) ||
-                    (ui.cancel && ui.cancel.action != null && ui.cancel.action.triggered))
-                {
-                    m_lastNavTime = Time.unscaledTime;
-                }
-            }
-
-            var modeNow = IsPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation;
-            if (modeNow != m_lastUiMode)
-            {
-                m_lastUiMode = modeNow;
-                OnInputModeChanged?.Invoke(modeNow);
-            }
+            if (!m_selectionIndicatorRect) return;
             
-            // 2) If pointer mode, clear selection so only hover visuals remain
-            if (IsPointerMode && m_hideSelectionInPointerMode && Current)
-            {
-                var selGO = eventSystem ? eventSystem.currentSelectedGameObject : null;
-                if (selGO && selGO.transform.IsChildOf(Current.transform))
-                    eventSystem.SetSelectedGameObject(null);
-            }
+            if (m_BV_DeviceTypeGamepad != null)
+                SetUiInputMode(m_BV_DeviceTypeGamepad ? UiInputMode.Navigation : UiInputMode.Pointer);
 
-            // Keep visibility up to date and retain your existing logic
+            // Keep visibility correct even if nobody called Open/Back this frame
             UpdateIndicatorActiveState();
 
-            // Restore selection if user is navigating but selection was cleared by the mouse
-            EnsureSelectionOnNavigationIntent();
-
-            if (!m_selectionIndicatorRect) return;
             if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
 
@@ -273,33 +230,27 @@ namespace Buck
             // TODO: Is this fallback a good idea? It could lead to surprising behavior if there are multiple controllers in the scene.
             return FindFirstObjectByType<MenuController>();
         }
-
-        /// <summary>
-        /// Open a new menu on top of the stack (push).
-        /// </summary>
+        
+        /// <summary>Open a new menu on top of the stack (push).</summary>
         public void MenuNav_OpenMenu(MenuScreen screen, bool raiseEvent = true)
         {
             if (!screen) return;
             
             var oldCount = m_stack.Count;
 
-            // If this is the first menu and we're pausing timeScale
-            // then save the current timeScale and set to 0.
             if (m_stack.Count == 0 && m_pauseTimeScale)
             {
                 m_prevTimeScale = Time.timeScale;
                 Time.timeScale = 0f;
             }
 
-            if (Current)
-                Current.Hide();
-            
+            if (Current) Current.Hide();
+
             m_stack.Push(screen);
-            screen.Show();
-            
-            if (raiseEvent)
-                screen.OnOpenEvent();
-            
+            screen.Show(); // Show() may select first; we'll reconcile below.
+
+            if (raiseEvent) screen.OnOpenEvent();
+
             EnsureInitialSelectionBasedOnMode();
             m_forceIndicatorInstant = true;
 
@@ -414,6 +365,28 @@ namespace Buck
 
 #region Helper Methods
 
+        void SetUiInputMode(UiInputMode mode, bool immediate = false)
+        {
+            if (m_currentUiInputMode == mode)
+                return;
+
+            m_currentUiInputMode = mode;
+            if (m_currentUiInputMode == UiInputMode.Pointer)
+            {
+                if (m_hideSelectionInPointerMode)
+                    ClearSelectionUnderCurrent();
+
+                UpdateIndicatorActiveState();
+            }
+            else // Navigation
+            {
+                EnsureSelectionAndSnap();
+                if (immediate) m_forceIndicatorInstant = true;
+            }
+
+            OnInputModeChanged?.Invoke(m_currentUiInputMode);
+        }
+
         InputAction ResolveCancelAction()
         {
             if (m_cancelActionOverride && m_cancelActionOverride.action != null)
@@ -510,21 +483,28 @@ namespace Buck
         // Ensure selection based on input mode before snapping.
         void EnsureInitialSelectionBasedOnMode()
         {
-            var eventSystem = EventSystem.current;
             if (IsPointerMode && !m_selectFirstOnOpenInPointerMode)
             {
-                // Make sure nothing is selected; pointer hover will drive visuals.
-                eventSystem?.SetSelectedGameObject(null);
+                ClearSelectionUnderCurrent();
                 UpdateIndicatorActiveState();
             }
             else
             {
-                // Pad/keyboard (or explicit opt-in) → ensure selection and snap indicator.
                 EnsureSelectionAndSnap();
                 m_forceIndicatorInstant = true;
             }
         }
-        
+
+        void ClearSelectionUnderCurrent()
+        {
+            var es = EventSystem.current;
+            if (!es || !Current) return;
+
+            var selGO = es.currentSelectedGameObject;
+            if (selGO && selGO.transform.IsChildOf(Current.transform))
+                es.SetSelectedGameObject(null);
+        }
+
         // Ensures the EventSystem has a valid selection under the current screen,
         // then snaps the indicator immediately to that element (world space).
         void EnsureSelectionAndSnap()
@@ -551,40 +531,6 @@ namespace Buck
 
             // Snap the indicator immediately (no waiting for LateUpdate/input).
             SnapIndicatorTo(sel, instant: true);
-        }
-        
-        // If the user is trying to navigate the UI but there is no valid selection under the
-        // current screen, select the first item and snap the indicator immediately.
-        void EnsureSelectionOnNavigationIntent()
-        {
-            if (!Current) return;
-
-            var eventSystem = EventSystem.current;
-            var ui = eventSystem ? eventSystem.currentInputModule as InputSystemUIInputModule : null;
-            if (!ui) return;
-
-            // Consider "navigation intent" any of these UI actions firing this frame.
-            bool navIntent =
-                (ui.move.action   != null && ui.move.action.triggered)   ||
-                (ui.submit.action != null && ui.submit.action.triggered) ||
-                (ui.cancel.action != null && ui.cancel.action.triggered);
-
-            if (navIntent) m_lastNavTime = Time.unscaledTime;
-            
-            if (!navIntent) return;
-
-            var selGO = eventSystem.currentSelectedGameObject;
-            bool selectionInvalid = selGO == null || !selGO.transform.IsChildOf(Current.transform);
-            if (!selectionInvalid) return;
-            
-            var first = Current.FindFirstSelectable();
-            if (!first)return;
-            
-            eventSystem.SetSelectedGameObject(first.gameObject);
-            
-            // Snap so the indicator appears right away.
-            SnapIndicatorTo(first, instant: true);
-            UpdateIndicatorActiveState();
         }
 
         // Compute the indicator target from a Selectable's RectTransform in world space,
