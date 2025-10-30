@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.6] - 2025-10-30
+- A MenuScreen can now optionally _not_ select the first item when being opened.
+
 ## [3.3.5] - 2025-10-29
 - Fixed an issue where the enum UiInputMode should have been public.
 

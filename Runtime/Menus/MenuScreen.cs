@@ -20,6 +20,9 @@ namespace Buck
                                  "Use this for things like a Main Menu where the user should not back out any further.")]
         bool m_blockCancelOnThisScreen = false;
         
+        [Tooltip("If true, when this screen is shown, the first Selectable child will be focused.")]
+        [SerializeField] bool m_focusFirstOnShow = true;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -29,7 +32,7 @@ namespace Buck
         protected override void OnEnable()
         {
             if (m_startVisible)
-                Show(focusFirst: true);
+                Show(m_focusFirstOnShow);
             else
                 Hide();
         }
@@ -68,7 +71,7 @@ namespace Buck
             // Always pull fresh values from variables when a screen is shown.
             RefreshBindingsInChildren();
 
-            if (focusFirst)
+            if (focusFirst && m_focusFirstOnShow)
             {
                 var first = FindFirstSelectable();
                 if (first)
