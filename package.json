@@ -1,6 +1,6 @@
 {
   "name": "co.buck.basics",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "displayName": "BUCK Basics",
   "description": "This is BUCK's general Unity code package. It includes extension methods, utility scripts, and debugging tools.",
   "unity": "2021.3",

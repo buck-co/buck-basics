@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.7] - 2026-02-04
+- Refined MenuController events to make it easier for subscribers to differentiate between different types of menu navigation.
+
 ## [3.3.6] - 2025-10-30
 - A MenuScreen can now optionally _not_ select the first item when being opened.
 
