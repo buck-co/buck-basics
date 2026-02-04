@@ -90,6 +90,8 @@ namespace Buck
         readonly List<RaycastResult> m_raycastResults = new();
         readonly Stack<MenuScreen> m_stack = new();
         float m_prevTimeScale = 1f;
+        GameObject m_currentSelection;
+        MenuScreen m_previousMenuScreen;
 
         // indicator state
         Vector3 m_indicatorWorldVelocity;
@@ -100,8 +102,10 @@ namespace Buck
         // Events
         public event Action<MenuScreen> OnOpenMenu;
         public event Action<MenuScreen> OnBack;
+        public event Action<MenuScreen> OnSiblingMenuChanged;
         public event Action<MenuScreen> OnOpenSiblingMenu;
         public event Action<bool> OnStackEmptyChanged;
+        public event Action<GameObject> OnSelectionChanged;
 
 
 #region MonoBehaviour Messages
@@ -137,13 +141,6 @@ namespace Buck
 
             // Apply selectable colors
             InitializeSelectableColors();
-            
-            /*// For each Selectable in children...
-            var selectables = GetComponentsInChildren<Selectable>(true);
-            foreach (var s in selectables)
-            {
-                s.OnPointerEnter() += Something();
-            }*/
         }
 
         void OnDisable()
@@ -183,60 +180,29 @@ namespace Buck
 
             if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
+
+            bool menuScreenChangedThisFrame = false;
+            if (m_previousMenuScreen)
+                menuScreenChangedThisFrame = Current != m_previousMenuScreen;
+            
+            m_previousMenuScreen = Current;
             
             // In Pointer mode, hover selects so the indicator follows the pointer naturally.
             if (m_currentUiInputMode == UiInputMode.Pointer)
-                SelectUnderPointerIfAny();
+            {
+                SelectUnderPointerIfAny(); // TODO: Is this correct? Seems like this will never "unstick" a pointer selection.
+            }
 
-            var selectedRT = EventSystem.current?.currentSelectedGameObject?.GetComponent<RectTransform>();
-            if (!selectedRT) return;
+            var selectedGO = EventSystem.current?.currentSelectedGameObject;
             
-            // Compute world-space center/edges of the selected item
-            var corners = new Vector3[4];
-            selectedRT.GetWorldCorners(corners);
-            var left  = corners[0];
-            var right = corners[2];
-            var center = 0.5f * (left + right);
-
-            // Choose target X in world space based on mode
-            float targetX = m_selectionIndicatorRect.position.x;
-            switch (m_indicatorXMode)
-            {
-                case IndicatorXMode.MatchItemCenterX:
-                    targetX = center.x;
-                    break;
-                case IndicatorXMode.LeftOfItemWithPadding:
-                    targetX = left.x - m_indicatorXPadding;
-                    break;
-                case IndicatorXMode.RightOfItemWithPadding:
-                    targetX = right.x + m_indicatorXPadding;
-                    break;
-                case IndicatorXMode.KeepCurrentX:
-                default:
-                    // do nothing
-                    break;
-            }
-
-            // Target world position: keep current Z
-            var target = new Vector3(targetX, center.y, m_selectionIndicatorRect.position.z);
-
-            if (m_forceIndicatorInstant)
-            {
-                m_indicatorWorldVelocity = Vector3.zero;
-                m_selectionIndicatorRect.position = target;
-                m_forceIndicatorInstant = false;
-                return;
-            }
-
-            // Smooth in unscaled time (works while paused)
-            m_selectionIndicatorRect.position = Vector3.SmoothDamp(
-                m_selectionIndicatorRect.position,
-                target,
-                ref m_indicatorWorldVelocity,
-                m_indicatorSmoothTime,
-                Mathf.Infinity,
-                Time.unscaledDeltaTime
-            );
+            if (!selectedGO) return;
+            
+            // Invoke an event if the user changes the selection (different from pagination or changing menu views), and record the previous selection for the next change.
+            if (m_currentSelection != null && m_currentSelection != selectedGO && !menuScreenChangedThisFrame)
+                OnSelectionChanged?.Invoke(selectedGO);
+            
+            m_currentSelection = selectedGO;
+            UpdateSelectionIndicatorPosition(selectedGO);
         }
         
 #endregion
@@ -301,7 +267,7 @@ namespace Buck
             {
                 var old = m_stack.Pop();
                 old.Hide();
-                OnBack?.Invoke(old);
+                OnSiblingMenuChanged?.Invoke(old);
             }
 
             // If this is the first menu and we're pausing timeScale
@@ -474,10 +440,65 @@ namespace Buck
             if (wasEmpty != isEmpty)
                 OnStackEmptyChanged?.Invoke(isEmpty);
         }
+        
+        void UpdateSelectionIndicatorPosition(GameObject selectedGO)
+        {
+            if (!selectedGO) return;
+            
+            var selectedRT = selectedGO.GetComponent<RectTransform>();
+            if (!selectedRT) return;
+            
+            // Compute world-space center/edges of the selected item
+            var corners = new Vector3[4];
+            selectedRT.GetWorldCorners(corners);
+            var left  = corners[0];
+            var right = corners[2];
+            var center = 0.5f * (left + right);
+
+            // Choose target X in world space based on mode
+            float targetX = m_selectionIndicatorRect.position.x;
+            switch (m_indicatorXMode)
+            {
+                case IndicatorXMode.MatchItemCenterX:
+                    targetX = center.x;
+                    break;
+                case IndicatorXMode.LeftOfItemWithPadding:
+                    targetX = left.x - m_indicatorXPadding;
+                    break;
+                case IndicatorXMode.RightOfItemWithPadding:
+                    targetX = right.x + m_indicatorXPadding;
+                    break;
+                case IndicatorXMode.KeepCurrentX:
+                default:
+                    // do nothing
+                    break;
+            }
+
+            // Target world position: keep current Z
+            var target = new Vector3(targetX, center.y, m_selectionIndicatorRect.position.z);
+
+            if (m_forceIndicatorInstant)
+            {
+                m_indicatorWorldVelocity = Vector3.zero;
+                m_selectionIndicatorRect.position = target;
+                m_forceIndicatorInstant = false;
+                return;
+            }
+
+            // Smooth in unscaled time (works while paused)
+            m_selectionIndicatorRect.position = Vector3.SmoothDamp(
+                m_selectionIndicatorRect.position,
+                target,
+                ref m_indicatorWorldVelocity,
+                m_indicatorSmoothTime,
+                Mathf.Infinity,
+                Time.unscaledDeltaTime
+            );
+        }
 
         void UpdateIndicatorActiveState()
         {
-            if (!m_selectionIndicatorRect)return;
+            if (!m_selectionIndicatorRect) return;
             
             bool shouldShow = m_stack.Count > 0 && EventSystem.current &&
                               EventSystem.current.currentSelectedGameObject;

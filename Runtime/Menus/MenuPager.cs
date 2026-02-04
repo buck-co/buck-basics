@@ -73,10 +73,10 @@ namespace Buck
         {
             if (m_controller)
             {
-                m_controller.OnOpenMenu          += HandleScreenChanged;
-                m_controller.OnOpenSiblingMenu   += HandleScreenChanged;
-                m_controller.OnBack              += HandleScreenChanged;
-                m_controller.OnStackEmptyChanged += HandleStackEmptyChanged;
+                m_controller.OnOpenMenu            += HandleScreenChanged;
+                m_controller.OnOpenSiblingMenu     += HandleScreenChanged;
+                m_controller.OnSiblingMenuChanged  += HandleScreenChanged;
+                m_controller.OnStackEmptyChanged   += HandleStackEmptyChanged;
             }
             
             EnableAndBind(m_prevPageAction, OnPrevAction, ref m_enabledPrev);
@@ -89,10 +89,10 @@ namespace Buck
         {
             if (!m_controller) return;
 
-            m_controller.OnOpenMenu          -= HandleScreenChanged;
-            m_controller.OnOpenSiblingMenu   -= HandleScreenChanged;
-            m_controller.OnBack              -= HandleScreenChanged;
-            m_controller.OnStackEmptyChanged -= HandleStackEmptyChanged;
+            m_controller.OnOpenMenu            -= HandleScreenChanged;
+            m_controller.OnOpenSiblingMenu     -= HandleScreenChanged;
+            m_controller.OnSiblingMenuChanged  -= HandleScreenChanged;
+            m_controller.OnStackEmptyChanged   -= HandleStackEmptyChanged;
             
             DisableAndUnbind(m_prevPageAction, OnPrevAction, ref m_enabledPrev);
             DisableAndUnbind(m_nextPageAction, OnNextAction, ref m_enabledNext);
@@ -142,11 +142,6 @@ namespace Buck
         
         void OnPrevAction(InputAction.CallbackContext ctx) { if (ctx.performed) PrevPage(); }
         void OnNextAction(InputAction.CallbackContext ctx) { if (ctx.performed) NextPage(); }
-
-        void Update()
-        {
-            
-        }
 
         public void NextPage()
         {
