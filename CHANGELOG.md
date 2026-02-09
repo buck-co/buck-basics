@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.8] - 2026-02-09
+- Fixed an issue where MenuScreens with m_startVisible enabled would not be added to their MenuController's stack at startup.
+
 ## [3.3.7] - 2026-02-04
 - Refined MenuController events to make it easier for subscribers to differentiate between different types of menu navigation.
 

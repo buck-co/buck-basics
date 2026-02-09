@@ -32,7 +32,7 @@ namespace Buck
         protected override void OnEnable()
         {
             if (m_startVisible)
-                Show(m_focusFirstOnShow);
+                MenuNav_OpenThisMenu();
             else
                 Hide();
         }

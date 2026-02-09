@@ -81,7 +81,7 @@ namespace Buck
         [SerializeField, Tooltip("Additional selectables to exclude from color application.")]
         List<Selectable> m_excludeSelectables = new();
 
-
+        bool m_initialized = false;
         bool m_selectableColorsInitialized = false;
         UiInputMode m_currentUiInputMode;
         readonly List<Selectable> m_scratch = new();
@@ -111,18 +111,7 @@ namespace Buck
 #region MonoBehaviour Messages
         
         void Awake()
-        {
-            if (!m_canvasGroup)
-            {
-                m_canvasGroup = GetComponent<CanvasGroup>();
-                
-                // Start hidden. If a child screen is visible at Start(), it will be shown.
-                m_canvasGroup.SetVisible(false);
-            }
-
-            // Seed a safe starting mode
-            m_currentUiInputMode = m_initialMode;
-        }
+            => Initialize();
         
         void OnEnable()
         {
@@ -359,6 +348,25 @@ namespace Buck
 
 #region Helper Methods
 
+        void Initialize()
+        {
+            if (m_initialized)
+                return;
+            
+            if (!m_canvasGroup)
+            {
+                m_canvasGroup = GetComponent<CanvasGroup>();
+                
+                // Start hidden. If a child screen is visible at Start(), it will be shown.
+                m_canvasGroup.SetVisible(false);
+            }
+
+            // Seed a safe starting mode
+            m_currentUiInputMode = m_initialMode;
+            
+            m_initialized = true;
+        }
+
         void SetUiInputMode(UiInputMode mode, bool immediate = false)
         {
             if (m_currentUiInputMode == mode)
@@ -431,6 +439,8 @@ namespace Buck
         
         void NotifyCountChange(int oldCount)
         {
+            Initialize(); // Make sure we're initialized before using m_canvasGroup
+            
             bool wasEmpty = oldCount == 0;
             bool isEmpty  = m_stack.Count == 0;
             
