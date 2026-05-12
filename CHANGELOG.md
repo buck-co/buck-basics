@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.10] - 2026-05-12
+- Fixed an issue where the versioning tool was not in an Editor folder.
+
 ## [3.3.9] - 2026-05-12
 - Added an editor script that makes it easy to increment the Unity project version in a reliable way using the major.minor.patch pattern. The tool is accessible in the Unity editor via the `Tools > Versioning` menu.
 
