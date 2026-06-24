@@ -76,6 +76,7 @@ namespace Buck
                 m_controller.OnOpenMenu            += HandleScreenChanged;
                 m_controller.OnOpenSiblingMenu     += HandleScreenChanged;
                 m_controller.OnSiblingMenuChanged  += HandleScreenChanged;
+                m_controller.OnBack                += HandleScreenChanged; // re-show when backing into a paged screen
                 m_controller.OnStackEmptyChanged   += HandleStackEmptyChanged;
             }
             
@@ -92,6 +93,7 @@ namespace Buck
             m_controller.OnOpenMenu            -= HandleScreenChanged;
             m_controller.OnOpenSiblingMenu     -= HandleScreenChanged;
             m_controller.OnSiblingMenuChanged  -= HandleScreenChanged;
+            m_controller.OnBack                -= HandleScreenChanged;
             m_controller.OnStackEmptyChanged   -= HandleStackEmptyChanged;
             
             DisableAndUnbind(m_prevPageAction, OnPrevAction, ref m_enabledPrev);
