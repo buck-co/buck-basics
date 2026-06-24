@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.11] - 2026-06-24
+- Fixed an issue where MenuPagers would not display properly when another screen went back to them.
+
 ## [3.3.10] - 2026-05-12
 - Fixed an issue where the versioning tool was not in an Editor folder.
 
