@@ -43,6 +43,18 @@ namespace Buck
         [SerializeField, Tooltip("Vertical offset for the underline relative to the bottom of the item container.")]
         float m_underlineVerticalOffset = 0f;
 
+        [Header("Selected/Unselected Styling (optional)")]
+        [SerializeField, Tooltip("When enabled, each item's label swaps its material preset and vertex color based on whether it's the selected page.")]
+        bool m_styleItemsBySelection;
+        [SerializeField, Tooltip("Material preset for the selected item's label. Leave empty to keep the item prototype's material.")]
+        Material m_selectedMaterial;
+        [SerializeField, Tooltip("Vertex color for the selected item's label.")]
+        Color m_selectedColor = Color.white;
+        [SerializeField, Tooltip("Material preset for unselected items' labels. Leave empty to keep the item prototype's material.")]
+        Material m_unselectedMaterial;
+        [SerializeField, Tooltip("Vertex color for unselected items' labels.")]
+        Color m_unselectedColor = Color.white;
+
         [Header("Events (optional)")]
         [SerializeField] UnityEvent<string> m_onTitleChanged;
         
@@ -296,10 +308,15 @@ namespace Buck
 
             foreach (var it in m_items)
             {
+                bool isSelected = it == selected;
+
                 var lblRt = it.Label.rectTransform;
-                lblRt.anchoredPosition = it == selected
+                lblRt.anchoredPosition = isSelected
                     ? new Vector2(0f, m_selectedYOffset)
                     : Vector2.zero;
+
+                if (m_styleItemsBySelection)
+                    ApplyItemStyle(it.Label, isSelected);
             }
 
             if (selected != null)
@@ -326,6 +343,16 @@ namespace Buck
             m_selectedItem = selected;
         }
         
+        void ApplyItemStyle(TextMeshProUGUI label, bool selected)
+        {
+            if (!label) return;
+
+            var material = selected ? m_selectedMaterial : m_unselectedMaterial;
+            if (material) label.fontSharedMaterial = material;
+
+            label.color = selected ? m_selectedColor : m_unselectedColor;
+        }
+
         void BindLabelForPage(TextMeshProUGUI label, MenuScreen page, LayoutElement layout)
         {
             if (!page || !label || !layout) return;
