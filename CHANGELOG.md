@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.12] - 2026-07-14
+- MenuPager can now optionally swap each item's font material preset and vertex color based on whether it's the selected page.
+
 ## [3.3.11] - 2026-06-24
 - Fixed an issue where MenuPagers would not display properly when another screen went back to them.
 
