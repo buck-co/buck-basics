@@ -32,7 +32,11 @@ namespace Buck
         protected override void OnEnable()
         {
             if (m_startVisible)
-                MenuNav_OpenThisMenu();
+                // Nobody asked for this menu - it is authored visible and is putting itself on the
+                // stack as the scene comes up. Open it without raising, so listeners don't treat a
+                // scene load as the user opening a menu (which had the main menu greeting you with
+                // its own confirm sound every time it loaded).
+                MenuController.FindFor(transform)?.MenuNav_OpenMenu(this, raiseEvent: false);
             else
                 Hide();
         }

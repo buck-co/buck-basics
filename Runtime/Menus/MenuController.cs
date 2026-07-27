@@ -215,6 +215,13 @@ namespace Buck
         }
         
         /// <summary>Open a new menu on top of the stack (push).</summary>
+        /// <param name="screen">The screen to push.</param>
+        /// <param name="raiseEvent">
+        /// True when the user opened this menu, false when we are just adopting a screen that was
+        /// already showing (scene load, a start-visible screen enabling itself). Listeners such as
+        /// menu audio use this to tell a real open from bookkeeping, so an auto-adopted screen
+        /// doesn't announce itself with a selection sound the moment a scene loads.
+        /// </param>
         public void MenuNav_OpenMenu(MenuScreen screen, bool raiseEvent = true)
         {
             if (!screen) return;
@@ -238,7 +245,9 @@ namespace Buck
             m_forceIndicatorInstant = true;
 
             UpdateIndicatorActiveState();
-            OnOpenMenu?.Invoke(screen);
+
+            if (raiseEvent) OnOpenMenu?.Invoke(screen);
+
             NotifyCountChange(oldCount);
         }
 
