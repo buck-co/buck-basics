@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.13] - 2026-07-29
+- Added an Aspect Ratio Policy asset, which describes the aspect ratios a game supports as bounds on width divided by height. Assign one to a ResolutionChoiceProvider and any resolution outside those bounds is dropped from its list, so a game that doesn't support 4:3 can set a minimum of 1.6 and be done with it. Bounds rather than a list of ratios, because real resolutions rarely reduce to their marketing ratio: 1366x768 is 683:384 and 2560x1080 is 64:27. Assigning a policy is optional, so existing setups are unaffected.
+- ResolutionChoiceProvider now resolves the current and native display sizes through its Aspect Ratio Policy, so an unsupported size can no longer reappear through startup selection or through Auto. When a size is unsupported, the largest supported size that fits inside it is used instead. If a policy would leave the list empty it is ignored and a warning is logged.
+- Added ResolutionChoiceProvider.ToId() and ResolutionChoiceProvider.TryParseId() so resolution IDs can be formatted and validated outside the component, which is useful for vetting a size restored from save data.
+- A menu that opens itself no longer plays the menu open sound.
+
 ## [3.3.12] - 2026-07-14
 - MenuPager can now optionally swap each item's font material preset and vertex color based on whether it's the selected page.
 
