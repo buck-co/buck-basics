@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.14] - 2026-07-30
+- Selection-change events no longer require a selection indicator. MenuController.LateUpdate bailed out early whenever m_selectionIndicatorRect was unassigned, and the selection tracking sat below that guard. The indicator is a cosmetic add-on that most controllers leave unassigned, so in practice OnSelectionChanged never fired and anything driven by it — menu navigation audio, for one — was silently dead.
+
 ## [3.3.13] - 2026-07-29
 - Added an Aspect Ratio Policy asset, which describes the aspect ratios a game supports as bounds on width divided by height. Assign one to a ResolutionChoiceProvider and any resolution outside those bounds is dropped from its list, so a game that doesn't support 4:3 can set a minimum of 1.6 and be done with it. Bounds rather than a list of ratios, because real resolutions rarely reduce to their marketing ratio: 1366x768 is 683:384 and 2560x1080 is 64:27. Assigning a policy is optional, so existing setups are unaffected.
 - ResolutionChoiceProvider now resolves the current and native display sizes through its Aspect Ratio Policy, so an unsupported size can no longer reappear through startup selection or through Auto. When a size is unsupported, the largest supported size that fits inside it is used instead. If a policy would leave the list empty it is ignored and a warning is logged.
