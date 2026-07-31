@@ -162,14 +162,17 @@ namespace Buck
             if (m_BV_UiPointerMode != null)
                 SetUiInputMode(m_BV_UiPointerMode ? UiInputMode.Pointer : UiInputMode.Navigation);
             
-            if (!m_selectionIndicatorRect) return;
-
-            // Keep visibility correct even if nobody called Open/Back this frame
+            // Keep visibility correct even if nobody called Open/Back this frame. Self-guards when
+            // no indicator is assigned.
             UpdateIndicatorActiveState();
 
-            if (!m_selectionIndicatorRect.gameObject.activeInHierarchy) return;
             if (!Current) return;
 
+            // Selection tracking below is deliberately NOT gated on m_selectionIndicatorRect. The
+            // indicator is a cosmetic add-on that most controllers leave unassigned, and gating on it
+            // meant OnSelectionChanged never fired for them — so anything driven by that event (menu
+            // navigation audio, for one) was silently dead. Only the indicator's own position update
+            // needs the indicator to exist.
             bool menuScreenChangedThisFrame = false;
             if (m_previousMenuScreen)
                 menuScreenChangedThisFrame = Current != m_previousMenuScreen;
@@ -191,7 +194,9 @@ namespace Buck
                 OnSelectionChanged?.Invoke(selectedGO);
             
             m_currentSelection = selectedGO;
-            UpdateSelectionIndicatorPosition(selectedGO);
+
+            if (m_selectionIndicatorRect && m_selectionIndicatorRect.gameObject.activeInHierarchy)
+                UpdateSelectionIndicatorPosition(selectedGO);
         }
         
 #endregion
