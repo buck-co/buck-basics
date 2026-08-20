@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.3.15] - 2026-08-20
+- Added UIInteractionEvent, a component that raises a UnityEvent when the user actually activates the control it sits on (left click or Submit while interactable). Wire interaction SFX to this instead of onValueChanged: value-changed events also fire for programmatic changes (seeding values on menu setup, ToggleGroup registration, refreshing bindings), which had toggle sounds playing on their own every time an options screen was built. It also fires once per interaction, where a ToggleGroup selection fires onValueChanged on both the toggle turning on and the one turning off.
+- SingleChoiceToggleGroup now seeds each spawned toggle's value before assigning its ToggleGroup. Joining a group notifies with callbacks, and a prototype prefab authored isOn would audibly knock the previously registered toggle off once per spawned option every time the menu was built.
+- SingleChoiceToggleGroup no longer adds a duplicate ToggleGroup component to the spawn root on every rebuild.
+
 ## [3.3.14] - 2026-07-30
 - Selection-change events no longer require a selection indicator. MenuController.LateUpdate bailed out early whenever m_selectionIndicatorRect was unassigned, and the selection tracking sat below that guard. The indicator is a cosmetic add-on that most controllers leave unassigned, so in practice OnSelectionChanged never fired and anything driven by it — menu navigation audio, for one — was silently dead.
 
