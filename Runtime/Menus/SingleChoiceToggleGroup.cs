@@ -61,9 +61,10 @@ namespace Buck
         {
             ClearChildren();
 
-            // Ensure a ToggleGroup exists under the spawn root.
-            m_spawnRoot.gameObject.AddComponent(typeof(ToggleGroup));
-            m_group = m_spawnRoot.GetComponent<ToggleGroup>();
+            // Ensure a ToggleGroup exists under the spawn root. Rebuilds must reuse it —
+            // this runs every OnEnable, and adding unconditionally stacked up duplicates.
+            if (!m_spawnRoot.TryGetComponent(out m_group))
+                m_group = m_spawnRoot.gameObject.AddComponent<ToggleGroup>();
             m_group.allowSwitchOff = false;
 
             m_idToToggle.Clear();
@@ -74,6 +75,11 @@ namespace Buck
             foreach (var id in ids)
             {
                 var toggle = CreateToggle(m_spawnRoot);
+
+                // Seed the value before joining the group. Joining notifies with callbacks, and a
+                // prototype authored isOn would knock the previously registered toggle off audibly
+                // once per spawned toggle. With values settled first there is nothing to change.
+                toggle.SetIsOnWithoutNotify(id == currentId);
                 toggle.group = m_group;
 
                 // Label binding (preferred: provider adds LocalizeStringEvent; fallback to literal)
@@ -93,7 +99,6 @@ namespace Buck
                     if (on) m_provider.SelectById(id);
                 });
 
-                toggle.SetIsOnWithoutNotify(id == currentId);
                 m_idToToggle[id] = toggle;
             }
 
