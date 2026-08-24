@@ -15,7 +15,8 @@ namespace Buck
     /// - Expose stable IDs ("<width>x<height>") and labels for a presenter (dropdown or toggles).
     /// - Apply resolution size on selection.
     /// - Toggle fullscreen mode independently of size.
-    /// - "Auto" sets size to native desktop resolution without changing fullscreen.
+    /// - "Auto" sets size without changing fullscreen: native desktop resolution when fullscreen,
+    ///   one size down at the native aspect ratio when windowed.
     /// </summary>
     [AddComponentMenu("BUCK/Display/Resolution Choice Provider")]
     public class ResolutionChoiceProvider : MonoBehaviour, ISingleChoiceProvider
@@ -103,22 +104,65 @@ namespace Buck
         }
 
         /// <summary>
-        /// Set size to native desktop resolution (does not change fullscreen).
-        /// If an Aspect Ratio Policy disallows the native ratio, the nearest supported size is used
-        /// instead, so "Auto" means "native, or the closest thing to native this game supports".
-        /// Adds the resulting size to the list if missing, then selects it.
+        /// Set size to the automatic choice for the CURRENT fullscreen mode (does not change fullscreen).
+        /// Prefer the overload taking the mode explicitly: Screen.fullScreen reads stale within the frame
+        /// the mode was just changed.
         /// </summary>
-        public void ApplyAuto()
+        public void ApplyAuto() => ApplyAuto(Screen.fullScreen);
+
+        /// <summary>
+        /// Set size to the automatic choice for <paramref name="fullscreen"/> (does not change fullscreen).
+        /// Fullscreen auto is the native desktop resolution; windowed auto is one size down at the native
+        /// aspect ratio, so the window doesn't awkwardly fill the entire desktop. If an Aspect Ratio Policy
+        /// disallows the native ratio, the nearest supported size is used instead, so "Auto" means "native,
+        /// or the closest thing to native this game supports". Adds the resulting size to the list if
+        /// missing, then selects it.
+        /// </summary>
+        public void ApplyAuto(bool fullscreen)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             EnsureBuilt();
             var native = Resolve(GetNativeDisplaySize());
-            var id = FindOrAddId(native);
+            var size = PickAutoSize(native, m_idToSize.Values, windowed: !fullscreen);
+            var id = FindOrAddId(size);
             m_currentId = id;
-            SetResolution(native);
+            SetResolution(size, fullscreen);
             LabelsChanged?.Invoke();
 #endif
         }
+
+        /// <summary>
+        /// The size "Auto" should use. Fullscreen: <paramref name="native"/> as-is. Windowed: the largest
+        /// candidate strictly smaller than native (both axes) at the same aspect ratio, falling back to
+        /// native when no such candidate exists. Static so startup code outside this provider can apply
+        /// the same rule.
+        /// </summary>
+        public static Vector2Int PickAutoSize(Vector2Int native, IEnumerable<Vector2Int> candidates, bool windowed)
+        {
+            if (!windowed || candidates == null)
+                return native;
+
+            float nativeAspect = native.y > 0 ? (float)native.x / native.y : 0f;
+            Vector2Int best = native;
+            long bestArea = -1;
+            foreach (var c in candidates)
+            {
+                if (c.x >= native.x || c.y >= native.y || c.y <= 0)
+                    continue;
+                if (Mathf.Abs((float)c.x / c.y - nativeAspect) > k_autoAspectEpsilon)
+                    continue;
+                long area = (long)c.x * c.y;
+                if (area > bestArea)
+                {
+                    bestArea = area;
+                    best = c;
+                }
+            }
+            return best;
+        }
+
+        // Wide enough to group near-identical ratios (1366x768 vs 16:9) while separating 16:9 from 16:10.
+        const float k_autoAspectEpsilon = 0.01f;
 
         /// <summary>
         /// Flip fullscreen mode only; width/height are preserved.
@@ -257,8 +301,11 @@ namespace Buck
         }
 
         void SetResolution(Vector2Int size)
+            => SetResolution(size, Screen.fullScreen);
+
+        void SetResolution(Vector2Int size, bool fullscreen)
         {
-            var mode = Screen.fullScreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+            var mode = fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
             Screen.SetResolution(size.x, size.y, mode);
         }
     }

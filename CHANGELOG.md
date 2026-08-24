@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.16] - 2026-08-24
+- Cancel with an expanded dropdown open now collapses the dropdown instead of backing out of the screen. MenuScreen.OnCancelPressed consumes the press whenever a child TMP_Dropdown reports IsExpanded, which also covers the frame where the EventSystem's own cancel already started hiding the dropdown (IsExpanded stays true through the hide animation).
+- Auto resolution now distinguishes windowed from fullscreen: fullscreen keeps the native desktop size, windowed steps down to the largest available size strictly smaller than native at the native aspect ratio, so an auto-sized window no longer fills the entire desktop. Flipping fullscreen off while Auto is on re-derives the size. The selection rule is exposed as the pure static ResolutionChoiceProvider.PickAutoSize for startup code that applies resolutions outside the provider.
+- ApplyAuto and the coordinator now pass the intended fullscreen mode explicitly instead of reading Screen.fullScreen back, which is stale within the frame the mode was just changed.
+- MenuController's pointer hover-select and MenuScreen.FindFirstSelectable now test Selectable.IsInteractable() rather than the raw interactable flag, so controls disabled through a parent CanvasGroup (gated sub-options) are skipped the same way Unity's own navigation skips them. The FindFirstSelectable fallback prefers an interactable control before returning anything at all.
+
 ## [3.3.15] - 2026-08-20
 - Added UIInteractionEvent, a component that raises a UnityEvent when the user actually activates the control it sits on (left click or Submit while interactable). Wire interaction SFX to this instead of onValueChanged: value-changed events also fire for programmatic changes (seeding values on menu setup, ToggleGroup registration, refreshing bindings), which had toggle sounds playing on their own every time an options screen was built. It also fires once per interaction, where a ToggleGroup selection fires onValueChanged on both the toggle turning on and the one turning off.
 - SingleChoiceToggleGroup now seeds each spawned toggle's value before assigning its ToggleGroup. Joining a group notifies with callbacks, and a prototype prefab authored isOn would audibly knock the previously registered toggle off once per spawned option every time the menu was built.

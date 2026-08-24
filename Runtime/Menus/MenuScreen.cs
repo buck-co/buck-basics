@@ -88,26 +88,37 @@ namespace Buck
             CollapseDropdownsInChildren();
             base.Hide();
         }
-        
-        void CollapseDropdownsInChildren()
+
+        /// <summary>Collapse any expanded dropdown under this screen. Returns true if one was open.</summary>
+        bool CollapseDropdownsInChildren()
         {
+            bool anyExpanded = false;
             var dropdownComponents = GetComponentsInChildren<TMP_Dropdown>(true);
             foreach (var dropdown in dropdownComponents)
             {
                 if (dropdown && dropdown.IsExpanded)
                 {
+                    anyExpanded = true;
                     // TMP_Dropdown.Hide() destroys the spawned "Dropdown List" and returns the control to a collapsed state.
                     dropdown.Hide();
                 }
             }
+            return anyExpanded;
         }
 
         /// <summary>
         /// Called by MenuController when UI/Cancel is pressed while this screen is current.
         /// Return true to consume the input (no auto-back). Return false to allow default back behavior.
+        /// An expanded dropdown consumes the press to collapse itself, so backing out of a dropdown
+        /// doesn't also back out of the screen. (IsExpanded stays true for the dropdown's short hide
+        /// animation, which also covers the EventSystem delivering the same cancel to the dropdown first.)
         /// </summary>
         public virtual bool OnCancelPressed()
-            => m_blockCancelOnThisScreen;
+        {
+            if (CollapseDropdownsInChildren())
+                return true;
+            return m_blockCancelOnThisScreen;
+        }
         
         void AutoBindFromChildren()
         {
@@ -166,13 +177,16 @@ namespace Buck
             var queue = new Queue<Transform>();
             queue.Enqueue(transform);
 
+            // IsInteractable() rather than the raw interactable flag: it folds in parent CanvasGroups,
+            // so controls disabled via a group (e.g. gated sub-options) are skipped like Unity's own
+            // navigation skips them.
             while (queue.Count > 0)
             {
                 var t = queue.Dequeue();
 
                 if (t.TryGetComponent<Selectable>(out var sel))
                 {
-                    if (sel.IsActive() && sel.interactable)
+                    if (sel.IsActive() && sel.IsInteractable())
                         return sel;
                 }
 
@@ -180,6 +194,11 @@ namespace Buck
                     queue.Enqueue(t.GetChild(i));
             }
 
+            // Last resort for screens whose items aren't ready yet: prefer anything interactable,
+            // then anything at all.
+            foreach (var sel in GetComponentsInChildren<Selectable>(true))
+                if (sel.IsInteractable())
+                    return sel;
             return GetComponentInChildren<Selectable>(true);
         }
     }

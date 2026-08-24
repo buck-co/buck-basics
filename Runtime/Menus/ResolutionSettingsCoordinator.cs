@@ -43,12 +43,13 @@ namespace Buck
 
             SyncDropdownInteractable(autoOn);
 
-            // Order: set mode (doesn't change size), then optionally set size if Auto is on.
+            // Order: set mode (doesn't change size), then optionally set size if Auto is on. The mode is
+            // passed through because Screen.fullScreen reads stale within the frame it was just changed.
             m_provider.ApplyFullscreen(fullOn);
-            
+
             // If auto is on, apply it; otherwise reapply current selection or the closest selection.
             if (autoOn)
-                m_provider.ApplyAuto();
+                m_provider.ApplyAuto(fullOn);
             else
                 m_provider.ReapplyCurrentSelectionOrClosest();
         }
@@ -65,12 +66,17 @@ namespace Buck
         void OnAutoChanged(bool on)
         {
             SyncDropdownInteractable(on);
-            if (on) m_provider.ApplyAuto();
+            if (on) m_provider.ApplyAuto(GetFullOn());
         }
 
         void OnFullscreenChanged(bool full)
         {
             m_provider.ApplyFullscreen(full);
+
+            // Auto's choice depends on the mode (windowed auto sits one size below native), so flipping
+            // fullscreen <-> windowed re-derives the size while Auto is on.
+            if (GetAutoOn())
+                m_provider.ApplyAuto(full);
         }
 
         void SyncDropdownInteractable(bool autoOn)

@@ -43,4 +43,63 @@ public class ResolutionChoiceProviderTests
         Assert.IsFalse(ResolutionChoiceProvider.TryParseId("nonsense", out var size));
         Assert.AreEqual(default(Vector2Int), size);
     }
+
+    static readonly Vector2Int[] k_typicalMonitorSizes =
+    {
+        new Vector2Int(2560, 1440),
+        new Vector2Int(2560, 1600),
+        new Vector2Int(1920, 1200),
+        new Vector2Int(1920, 1080),
+        new Vector2Int(1680, 1050),
+        new Vector2Int(1600, 900),
+        new Vector2Int(1366, 768),
+        new Vector2Int(1280, 720),
+    };
+
+    [Test]
+    public void PickAutoSizeFullscreenReturnsNative()
+    {
+        var native = new Vector2Int(2560, 1440);
+        Assert.AreEqual(native,
+            ResolutionChoiceProvider.PickAutoSize(native, k_typicalMonitorSizes, windowed: false));
+    }
+
+    [Test]
+    public void PickAutoSizeWindowedStepsDownAtSameAspect()
+    {
+        // 16:9 native steps down past the 16:10 entries to the largest smaller 16:9 size.
+        Assert.AreEqual(new Vector2Int(1920, 1080),
+            ResolutionChoiceProvider.PickAutoSize(new Vector2Int(2560, 1440), k_typicalMonitorSizes, windowed: true));
+
+        // 16:10 native likewise ignores the 16:9 entries.
+        Assert.AreEqual(new Vector2Int(1680, 1050),
+            ResolutionChoiceProvider.PickAutoSize(new Vector2Int(1920, 1200), k_typicalMonitorSizes, windowed: true));
+    }
+
+    [Test]
+    public void PickAutoSizeWindowedRequiresBothAxesSmaller()
+    {
+        // 1920x1080 is not "smaller" than a 1920x1200 native (equal width), so it must not be picked
+        // even before the aspect check rules it out.
+        var candidates = new[] { new Vector2Int(1920, 1080), new Vector2Int(1600, 1000) };
+        Assert.AreEqual(new Vector2Int(1600, 1000),
+            ResolutionChoiceProvider.PickAutoSize(new Vector2Int(1920, 1200), candidates, windowed: true));
+    }
+
+    [Test]
+    public void PickAutoSizeWindowedFallsBackToNativeWhenNoSmallerSameAspect()
+    {
+        var native = new Vector2Int(1280, 720);
+        Assert.AreEqual(native,
+            ResolutionChoiceProvider.PickAutoSize(native, new[] { new Vector2Int(1280, 800) }, windowed: true));
+    }
+
+    [Test]
+    public void PickAutoSizeWindowedToleratesNearIdenticalAspects()
+    {
+        // 1366x768 (1.7786) counts as 16:9 (1.7778) for the step-down.
+        Assert.AreEqual(new Vector2Int(1366, 768),
+            ResolutionChoiceProvider.PickAutoSize(new Vector2Int(1600, 900),
+                new[] { new Vector2Int(1366, 768), new Vector2Int(1280, 800) }, windowed: true));
+    }
 }

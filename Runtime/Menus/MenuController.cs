@@ -570,7 +570,8 @@ namespace Buck
                 if (!go.transform.IsChildOf(Current.transform)) continue;
 
                 var sel = go.GetComponentInParent<Selectable>();
-                if (!sel || !sel.IsActive() || !sel.interactable) continue;
+                // IsInteractable() folds in parent CanvasGroups, so group-disabled controls are skipped.
+                if (!sel || !sel.IsActive() || !sel.IsInteractable()) continue;
 
                 if (eventSystem.currentSelectedGameObject != sel.gameObject)
                 {
