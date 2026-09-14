@@ -17,6 +17,7 @@ namespace Buck
     /// - Toggle fullscreen mode independently of size.
     /// - "Auto" sets size without changing fullscreen: native desktop resolution when fullscreen,
     ///   one size down at the native aspect ratio when windowed.
+    /// - Do nothing on platforms that own their output resolution (see IsSupportedPlatform).
     /// </summary>
     [AddComponentMenu("BUCK/Display/Resolution Choice Provider")]
     public class ResolutionChoiceProvider : MonoBehaviour, ISingleChoiceProvider
@@ -48,6 +49,19 @@ namespace Buck
         string m_currentId;
 
         public event Action LabelsChanged;
+
+        /// <summary>
+        /// True where the game controls its own window: desktop players and the editor. Consoles own
+        /// their output resolution (Switch swaps 720p/1080p on dock through the player's Screen
+        /// Resolution Behavior), so every Screen write in this class is a no-op there. Startup code
+        /// that applies saved display settings itself should check this first.
+        /// </summary>
+        public static bool IsSupportedPlatform =>
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+            true;
+#else
+            false;
+#endif
 
         /// <summary>
         /// Optional aspect ratio rules applied to this provider's list. Null means no filtering.
@@ -120,7 +134,8 @@ namespace Buck
         /// </summary>
         public void ApplyAuto(bool fullscreen)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+            if (!IsSupportedPlatform) return;
+
             EnsureBuilt();
             var native = Resolve(GetNativeDisplaySize());
             var size = PickAutoSize(native, m_idToSize.Values, windowed: !fullscreen);
@@ -128,7 +143,6 @@ namespace Buck
             m_currentId = id;
             SetResolution(size, fullscreen);
             LabelsChanged?.Invoke();
-#endif
         }
 
         /// <summary>
@@ -169,6 +183,8 @@ namespace Buck
         /// </summary>
         public void ApplyFullscreen(bool fullscreen)
         {
+            if (!IsSupportedPlatform) return;
+
             var mode = fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
             Screen.fullScreenMode = mode;
             Screen.fullScreen = fullscreen;
@@ -224,7 +240,8 @@ namespace Buck
             m_ids.Clear();
             m_idToSize.Clear();
 
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+            if (!IsSupportedPlatform) return;
+
             IEnumerable<Vector2Int> source = m_useSystemResolutions
                 ? Screen.resolutions.Select(r => new Vector2Int(r.width, r.height))
                 : m_supportedResolutions;
@@ -242,8 +259,8 @@ namespace Buck
             AddSizes(sizes.Where(IsAllowed));
 
             // Never present an empty list. If the policy excluded everything, ignore it and say so.
-            // This has to stay inside the platform check, or it would fire on every Initialize() for
-            // targets where the whole block compiles out and the list is legitimately empty.
+            // This has to stay below the platform early-out, or it would fire on every Initialize()
+            // for targets where the list is legitimately empty.
             if (m_ids.Count == 0)
             {
                 if (m_aspectRatioPolicy && m_aspectRatioPolicy.IsActive)
@@ -253,7 +270,6 @@ namespace Buck
 
                 AddSizes(sizes);
             }
-#endif
         }
 
         void AddSizes(IEnumerable<Vector2Int> sizes)
@@ -305,6 +321,8 @@ namespace Buck
 
         void SetResolution(Vector2Int size, bool fullscreen)
         {
+            if (!IsSupportedPlatform) return;
+
             var mode = fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
             Screen.SetResolution(size.x, size.y, mode);
         }

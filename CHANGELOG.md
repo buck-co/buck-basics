@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.17] - 2026-09-14
+- Added ResolutionChoiceProvider.IsSupportedPlatform: true on desktop players and in the editor, false on consoles, which own their output resolution. Every Screen write in the provider (fullscreen, resolution, Auto, list building) is now a no-op where it is false, and ResolutionSettingsCoordinator skips its OnEnable apply there. Game code that applies saved display settings itself, such as a startup restore, should check the flag before touching Screen.
+
 ## [3.3.16] - 2026-08-24
 - Cancel with an expanded dropdown open now collapses the dropdown instead of backing out of the screen. MenuScreen.OnCancelPressed consumes the press whenever a child TMP_Dropdown reports IsExpanded, which also covers the frame where the EventSystem's own cancel already started hiding the dropdown (IsExpanded stays true through the hide animation).
 - Auto resolution now distinguishes windowed from fullscreen: fullscreen keeps the native desktop size, windowed steps down to the largest available size strictly smaller than native at the native aspect ratio, so an auto-sized window no longer fills the entire desktop. Flipping fullscreen off while Auto is on re-derives the size. The selection rule is exposed as the pure static ResolutionChoiceProvider.PickAutoSize for startup code that applies resolutions outside the provider.

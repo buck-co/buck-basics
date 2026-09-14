@@ -26,6 +26,10 @@ namespace Buck
 
         void OnEnable()
         {
+            // Consoles own their output resolution; the provider's Screen writes are no-ops there.
+            if (!ResolutionChoiceProvider.IsSupportedPlatform)
+                return;
+
             if (!m_provider) m_provider = GetComponent<ResolutionChoiceProvider>();
             TryResolveVariablesFromBindings();
 
