@@ -8,6 +8,10 @@ namespace Buck
     {
         public List<T> Items = new();
 
+        // The items are objects of the Play session that added them; see PlayModeStatics.
+        internal override void OnPlaySessionStarted()
+            => Items.Clear();
+
         public void Add(T thing)
         {
             if (!Items.Contains(thing))

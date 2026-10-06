@@ -17,6 +17,20 @@ namespace Buck
         /// The list of listeners that this event will notify if it is raised.
         /// </summary>
         readonly List<GameEventListenerReference> m_eventListenerReferences = new();
+
+        /// <summary>
+        /// Drops every registered listener. Called by PlayModeStatics at the start of a Play
+        /// session: listeners belong to the objects of the session that registered them, and
+        /// without a domain reload this asset keeps its list from the previous session.
+        /// </summary>
+        internal virtual void ClearRuntimeListeners()
+            => m_eventListenerReferences.Clear();
+
+        /// <summary>
+        /// Puts the asset's runtime state back to what a fresh load would give it. Called by
+        /// PlayModeStatics after every loaded GameEvent has had ClearRuntimeListeners.
+        /// </summary>
+        internal virtual void OnPlaySessionStarted() { }
         
         string GetListenerName(GameEventListenerReference listenerReference)
             => listenerReference.EventListener is GameObject gameObject

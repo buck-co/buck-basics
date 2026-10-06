@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.19] - 2026-10-06
+- Play mode without domain reload (Enter Play Mode Settings, and Unity's CoreCLR runtime) is supported. A new PlayModeStatics class runs at the start of every Play session: Singleton<T> and SoftSingleton<T> statics are reset (Unity does not run RuntimeInitializeOnLoadMethod inside generic types, so each closed type registers a reset from its static constructor), GameEvent listener lists are cleared, BaseVariable<T> values return to their default (the work OnEnable used to do after each domain reload) and RuntimeSet<T> items are cleared. Nothing changes in a player or in an editor that still reloads the domain.
+- Added an EditMode test that runs two Play sessions with domain reload disabled and checks that the second one starts clean.
+
 ## [3.3.18] - 2026-10-06
 - Added the Scene Screenshot Utility (Tools > Scene Screenshot Utility). It renders everything in the open scenes to a PNG at a fixed pixels-per-world-unit scale so captures of different scenes share one texel density, tiles the capture when it would exceed the max texture size, trims transparent pixels, and can composite a background color. Settings persist per project in EditorPrefs. Projects hook in through SceneScreenshotUtility.IncludeRenderer (leave debug or oversized renderers out of the capture and its bounds) and the BeforeCapture/AfterCapture events (shader globals, hidden backgrounds).
 

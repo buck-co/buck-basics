@@ -16,6 +16,25 @@ namespace Buck
         static object m_Lock = new object();
         static T m_Instance;
 
+        // Unity does not invoke RuntimeInitializeOnLoadMethod inside a generic type, so every
+        // closed Singleton<T> registers its reset here and PlayModeStatics runs it at the start
+        // of each Play session. Without it, a session that ends with m_AppIsQuitting set (every
+        // editor Play session does) would deny Instance to the next session once its first
+        // scene swap destroys an instance, and a lazy Instance access before the instance exists
+        // would return null with the "already destroyed" warning.
+        static Singleton()
+            => PlayModeStatics.Register(ResetStatics);
+
+        static void ResetStatics()
+        {
+            lock (m_Lock)
+            {
+                m_Instance = null;
+                m_ShuttingDown = false;
+                m_AppIsQuitting = false;
+            }
+        }
+
         /// <summary>
         /// Access singleton instance through this propriety.
         /// </summary>

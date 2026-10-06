@@ -14,6 +14,10 @@ namespace Buck
     {
         protected static T m_Instance;
 
+        // See Singleton<T>: a generic type's statics are reset through PlayModeStatics.
+        static SoftSingleton()
+            => PlayModeStatics.Register(() => m_Instance = null);
+
         [SerializeField] bool m_dontDestroyOnLoad = true;
 
         /// <summary>

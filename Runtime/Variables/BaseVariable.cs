@@ -64,6 +64,15 @@ namespace Buck
             => Value != null ? Value.ToString() : name + ".Value is null.";
 
         protected virtual void OnEnable()
+            => InitializeRuntimeState();
+
+        // OnEnable ran after every domain reload, which gave each Play session a variable at its
+        // default value. Without a domain reload an already loaded asset gets no OnEnable, so
+        // PlayModeStatics calls this at the start of each Play session instead.
+        internal override void OnPlaySessionStarted()
+            => InitializeRuntimeState();
+
+        void InitializeRuntimeState()
         {
             ResetValueToDefault();
             m_restartEventListenerReferences.Clear();
