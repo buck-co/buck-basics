@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.18] - 2026-10-06
+- Added the Scene Screenshot Utility (Tools > Scene Screenshot Utility). It renders everything in the open scenes to a PNG at a fixed pixels-per-world-unit scale so captures of different scenes share one texel density, tiles the capture when it would exceed the max texture size, trims transparent pixels, and can composite a background color. Settings persist per project in EditorPrefs. Projects hook in through SceneScreenshotUtility.IncludeRenderer (leave debug or oversized renderers out of the capture and its bounds) and the BeforeCapture/AfterCapture events (shader globals, hidden backgrounds).
+
 ## [3.3.17] - 2026-09-14
 - Added ResolutionChoiceProvider.IsSupportedPlatform: true on desktop players and in the editor, false on consoles, which own their output resolution. Every Screen write in the provider (fullscreen, resolution, Auto, list building) is now a no-op where it is false, and ResolutionSettingsCoordinator skips its OnEnable apply there. Game code that applies saved display settings itself, such as a startup restore, should check the flag before touching Screen.
 

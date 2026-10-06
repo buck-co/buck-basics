@@ -352,6 +352,15 @@ if (!collectedItems.Contains(item.Guid))
 This GUID system ensures your references remain stable even when assets are renamed or reorganized, making it invaluable for save systems, inventory management, and asset tracking.
 
 
+### Scene Screenshot Utility
+`Tools > Scene Screenshot Utility` renders everything in the open scenes to a PNG at a fixed pixels-per-world-unit scale (tiled when it would exceed the max texture size), so captures of different scenes share one texel density. Settings persist per project. Hook project-specific tweaks in from an `[InitializeOnLoad]` editor class:
+
+```csharp
+SceneScreenshotUtility.IncludeRenderer = r => !r.TryGetComponent<FogQuad>(out _); // keep debug or oversized renderers out
+SceneScreenshotUtility.BeforeCapture += () => Shader.SetGlobalFloat("_Distortion", 0f);
+SceneScreenshotUtility.AfterCapture += () => Shader.SetGlobalFloat("_Distortion", 1f);
+```
+
 # Contributing
 
 Found a bug or have a feature request? We'd love to hear from you!
