@@ -18,17 +18,37 @@ namespace Buck
         /// </summary>
         readonly List<GameEventListenerReference> m_eventListenerReferences = new();
 
-        /// <summary>
-        /// Drops every registered listener. Called by PlayModeStatics at the start of a Play
-        /// session: listeners belong to the objects of the session that registered them, and
-        /// without a domain reload this asset keeps its list from the previous session.
-        /// </summary>
-        internal virtual void ClearRuntimeListeners()
-            => m_eventListenerReferences.Clear();
+        // Without a domain reload, a GameEvent asset that is already loaded keeps its runtime state
+        // from the previous Play session, since OnEnable does not run again. So at the start of every
+        // Play session, every loaded GameEvent (variables and runtime sets derive from it) drops its
+        // listeners, and then each one restores its runtime state. Two passes, so that a variable
+        // re-registering its restart listeners in the second pass is never cleared by the first.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetLoadedEventsForPlaySession()
+        {
+            var events = Resources.FindObjectsOfTypeAll<GameEvent>();
+
+            foreach (var gameEvent in events)
+                gameEvent.m_eventListenerReferences.Clear();
+
+            // One asset that fails (a variable with an empty restart event slot, say) must not stop
+            // the others.
+            foreach (var gameEvent in events)
+            {
+                try
+                {
+                    gameEvent.OnPlaySessionStarted();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e, gameEvent);
+                }
+            }
+        }
 
         /// <summary>
-        /// Puts the asset's runtime state back to what a fresh load would give it. Called by
-        /// PlayModeStatics after every loaded GameEvent has had ClearRuntimeListeners.
+        /// Puts the asset's runtime state back to what loading it gives it. Called at the start of
+        /// every Play session, once every loaded GameEvent has dropped its listeners.
         /// </summary>
         internal virtual void OnPlaySessionStarted() { }
         

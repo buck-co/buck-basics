@@ -8,7 +8,7 @@ namespace Buck
     {
         public List<T> Items = new();
 
-        // The items are objects of the Play session that added them; see PlayModeStatics.
+        // The items are objects of the Play session that added them; see GameEvent.
         internal override void OnPlaySessionStarted()
             => Items.Clear();
 

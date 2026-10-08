@@ -64,15 +64,6 @@ namespace Buck
             => Value != null ? Value.ToString() : name + ".Value is null.";
 
         protected virtual void OnEnable()
-            => InitializeRuntimeState();
-
-        // OnEnable ran after every domain reload, which gave each Play session a variable at its
-        // default value. Without a domain reload an already loaded asset gets no OnEnable, so
-        // PlayModeStatics calls this at the start of each Play session instead.
-        internal override void OnPlaySessionStarted()
-            => InitializeRuntimeState();
-
-        void InitializeRuntimeState()
         {
             ResetValueToDefault();
             m_restartEventListenerReferences.Clear();
@@ -97,6 +88,16 @@ namespace Buck
                 restartEventListenerReference.Event.UnregisterListener(restartEventListenerReference);
             
             m_restartEventListenerReferences.Clear();
+        }
+
+        // A domain reload ran OnDisable and OnEnable on every loaded variable, which started each Play
+        // session at the default value. Without a domain reload an asset that is already loaded gets
+        // neither, so both are replayed at the start of each Play session instead. Going through the
+        // virtual methods keeps what subclasses add to them, such as NumberVariable's clamp.
+        internal override void OnPlaySessionStarted()
+        {
+            OnDisable();
+            OnEnable();
         }
         
         public void ResetValueToDefault()
