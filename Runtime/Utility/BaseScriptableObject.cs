@@ -40,8 +40,16 @@ namespace Buck
         public void OnValidate()
         {
 #if UNITY_EDITOR
+            // Instances that aren't assets, such as ones made with CreateInstance, have no path or GUID to store.
             var path = UnityEditor.AssetDatabase.GetAssetPath(this);
-            m_guidByteArray = new Guid(UnityEditor.AssetDatabase.AssetPathToGUID(path)).ToByteArray();
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var guid = UnityEditor.AssetDatabase.AssetPathToGUID(path);
+            if (string.IsNullOrEmpty(guid))
+                return;
+
+            m_guidByteArray = new Guid(guid).ToByteArray();
 #endif
         }
     }
